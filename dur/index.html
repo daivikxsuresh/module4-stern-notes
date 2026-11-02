@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Under Risk · Module 4 · NYU Stern MSBAi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0a0d12;
+  --surface: #10141b;
+  --card:    #141a22;
+  --border:  #1c2a38;
+  --accent:  #38bdf8;
+  --accent-soft: rgba(56,189,248,.08);
+  --amber:   #fbbf24;
+  --green:   #34d399;
+  --red:     #f87171;
+  --text:    #f2ede6;
+  --muted:   #7f98a9;
+  --faint:   #26384a;
+  --sidebar-w: 256px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 16px; line-height: 1.75;
+  display: flex; min-height: 100vh; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(56,189,248,.04) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(56,189,248,.07) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── GATE ── */
+#gate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.gate-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
+.gate-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; }
+.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
+.gate-input:focus { border-color: var(--accent); }
+.gate-btn { margin-top: 12px; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #0a0d12; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .2s; }
+.gate-btn:hover { opacity: .85; }
+.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); margin-top: 10px; min-height: 16px; }
+
+/* ── SIDEBAR ── */
+#sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: rgba(10,13,18,.97); border-right: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  overflow-y: auto; overflow-x: hidden;
+  z-index: 100; padding: 24px 0 40px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.sb-brand { padding: 0 18px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sb-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(56,189,248,.25); border-radius: 4px; padding: 3px 8px; margin-bottom: 8px; }
+.sb-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); line-height: 1.3; }
+.sb-sub { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+.sb-group { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); padding: 14px 18px 5px; }
+.sb-nav a { display: flex; align-items: center; gap: 9px; padding: 7px 18px; text-decoration: none; font-size: 13px; color: var(--muted); transition: color .15s, background .15s; border-left: 2px solid transparent; }
+.sb-nav a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.sb-nav a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+.sb-nav .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); flex-shrink: 0; transition: background .15s; }
+.sb-nav a.active .dot { background: var(--accent); }
+.sb-back-row { border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.sb-back-row a { display: flex; align-items: center; gap: 8px; padding: 12px 18px; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .05em; color: var(--muted); transition: color .15s, background .15s; }
+.sb-back-row a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+
+/* ── MAIN ── */
+#main { margin-left: var(--sidebar-w); flex: 1; position: relative; z-index: 1; }
+
+/* ── HEADER ── */
+#hdr { padding: 48px 56px 32px; border-bottom: 1px solid var(--border); }
+.hdr-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.hdr-title { font-family: 'DM Serif Display', serif; font-size: 42px; color: var(--text); line-height: 1.15; margin-bottom: 6px; }
+.hdr-title span { color: var(--accent); }
+.hdr-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; font-style: italic; }
+.day-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.day-tab { padding: 8px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .07em; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all .2s; }
+.day-tab:hover { color: var(--text); border-color: var(--accent); }
+.day-tab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+/* ── CONTENT ── */
+#content { padding: 36px 56px 80px; }
+.day-panel { display: none; }
+.day-panel.active { display: block; }
+
+/* ── SECTION CARD ── */
+.sc {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+  transition: box-shadow .2s, transform .18s;
+  animation: fadeUp .45s cubic-bezier(.16,1,.3,1) both;
+}
+.sc:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.35); }
+.sc.bl-accent { border-left: 3px solid var(--accent); }
+.sc.bl-amber  { border-left: 3px solid var(--amber); }
+.sc.bl-green  { border-left: 3px solid var(--green); }
+
+.sc-hdr { padding: 20px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; user-select: none; transition: background .15s; }
+.sc-hdr:hover { background: rgba(255,255,255,.02); }
+.sc-hdr-l { display: flex; align-items: center; gap: 14px; }
+.sc-ico { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2); }
+.sc-ico.amber { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.2); }
+.sc-ico.green { background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.2); }
+.sc-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; }
+.sc-tag.amber { color: var(--amber); }
+.sc-tag.green { color: var(--green); }
+.sc-name { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); line-height: 1.25; }
+.chevron { color: var(--muted); transition: transform .25s; font-size: 14px; flex-shrink: 0; opacity: .7; }
+.sc.open .chevron { transform: rotate(180deg); }
+
+.sc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease, opacity .3s ease; opacity: 0; }
+.sc.open .sc-body { max-height: 4000px; opacity: 1; }
+.sc-in { padding: 4px 28px 28px 80px; border-top: 1px solid var(--border); }
+
+/* ── PROSE ── */
+.sc-in p { margin-bottom: 14px; color: rgba(242,237,230,.88); }
+.sc-in p:last-child { margin-bottom: 0; }
+.sc-in strong, .sc-in b { color: var(--text); font-weight: 600; }
+.sc-in em { color: var(--accent); font-style: italic; }
+.sc-in ul { padding-left: 20px; margin-bottom: 14px; color: rgba(242,237,230,.85); }
+.sc-in li { margin-bottom: 7px; }
+.sc-in li::marker { color: var(--accent); }
+.sc-in ol { list-style: none; padding-left: 0; margin-bottom: 14px; counter-reset: step; }
+.sc-in ol li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; color: rgba(242,237,230,.85); }
+.sc-in ol li::before { content: counter(step); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.sc-in h4 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin: 22px 0 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+
+/* ── CALLOUT ── */
+.callout { background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2); border-radius: 9px; padding: 15px 18px; margin: 16px 0; }
+.callout.amber { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.22); }
+.callout.green { background: rgba(52,211,153,.07); border-color: rgba(52,211,153,.22); }
+.c-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 7px; }
+.callout.amber .c-label { color: var(--amber); }
+.callout.green .c-label { color: var(--green); }
+.callout p { color: rgba(242,237,230,.88); margin: 0; font-size: 14.5px; line-height: 1.65; }
+
+/* ── ANOMALY LIST (good/bad badges) ── */
+.anom-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.anom { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+.anom-b { flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; border-radius: 5px; padding: 3px 8px; margin-top: 2px; white-space: nowrap; }
+.anom-b.bad { color: var(--red); background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); }
+.anom-b.ok  { color: var(--green); background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.2); }
+.anom-text { font-size: 14.5px; color: rgba(242,237,230,.82); line-height: 1.65; }
+.anom-text strong { color: var(--text); }
+
+/* ── TABLE ── */
+.dt { width: 100%; border-collapse: collapse; font-size: 14px; margin: 14px 0; }
+.dt th { background: var(--accent-soft); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.dt td { padding: 10px 14px; border-bottom: 1px solid rgba(28,42,56,.7); color: rgba(242,237,230,.82); vertical-align: top; line-height: 1.55; }
+.dt td:first-child { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.dt td strong { color: var(--text); }
+.dt tr:last-child td { border-bottom: 0; }
+.dt tr:hover td { background: rgba(56,189,248,.03); }
+
+code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(56,189,248,.09); color: var(--accent); border-radius: 4px; padding: 1px 6px; }
+
+/* ── ASSIGNMENTS ── */
+.assign-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
+.ac-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(56,189,248,.2); display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.ac-b { flex: 1; }
+.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.ac-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+.ac-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+.ac-due { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
+.ac-due span { color: var(--accent); }
+.done-badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: rgba(52,211,153,.1); color: #34d399; border: 1px solid rgba(52,211,153,.2); border-radius: 20px; padding: 2px 8px; margin-left: 8px; }
+
+.divider { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 32px 0 14px; padding-left: 2px; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-label">Decision Under Risk · Module 4</div>
+    <div class="gate-title">Daivik's Notes</div>
+    <input id="gate-input" class="gate-input" type="password" placeholder="password" autocomplete="off" />
+    <button class="gate-btn" onclick="tryUnlock()">Enter</button>
+    <div class="gate-err" id="gate-err"></div>
+  </div>
+</div>
+
+<nav id="sidebar" style="display:none">
+  <div class="sb-back-row"><a href="../">← Module 4 hub</a></div>
+  <div class="sb-brand">
+    <div class="sb-badge">DUR · Module 4</div>
+    <div class="sb-title">Decision Under Risk</div>
+    <div class="sb-sub">Prof. Gustavo Vulcano</div>
+  </div>
+  <div class="sb-group">Day 1 — Mon Nov 2</div>
+  <div class="sb-nav">
+    <a href="#orientation"><span class="dot"></span>Orientation</a>
+    <a href="#prescriptive-ai"><span class="dot"></span>Prescriptive Analytics &amp; AI</a>
+    <a href="#course-map"><span class="dot"></span>The Course Map</a>
+    <a href="#trees"><span class="dot"></span>Decision Trees &amp; EMV</a>
+    <a href="#magnolia"><span class="dot"></span>Worked — Magnolia Inn</a>
+    <a href="#evpi"><span class="dot"></span>Perfect Information</a>
+    <a href="#evsi"><span class="dot"></span>Imperfect Info &amp; Bayes</a>
+    <a href="#test-market"><span class="dot"></span>Test Market — Morton Ward</a>
+    <a href="#utility"><span class="dot"></span>Utility &amp; Risk Aversion</a>
+    <a href="#log-utility"><span class="dot"></span>Worked — Log Utility</a>
+    <a href="#exp-utility"><span class="dot"></span>Exponential Utility &amp; RT</a>
+    <a href="#lp-refresher"><span class="dot"></span>LP — Wyndor Glass</a>
+    <a href="#shadow-prices"><span class="dot"></span>Shadow Prices</a>
+    <a href="#hundred-rule"><span class="dot"></span>The 100% Rule</a>
+    <a href="#pyomo"><span class="dot"></span>Pyomo + GLPK with Claude</a>
+    <a href="#sweep"><span class="dot"></span>The Shadow-Price Sweep</a>
+    <a href="#nimbus-sens"><span class="dot"></span>Nimbus — Q1 to Q5</a>
+    <a href="#nimbus-q6"><span class="dot"></span>Nimbus Q6 — In-Class</a>
+  </div>
+  <div class="sb-group">Reference</div>
+  <div class="sb-nav">
+    <a href="#hooks1"><span class="dot"></span>Exam Hooks — Day 1</a>
+  </div>
+</nav>
+
+<div id="main" style="display:none">
+  <div id="hdr">
+    <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 4 · Decision Under Risk</div>
+    <h1 class="hdr-title">Decision <span>Under Risk</span></h1>
+    <p class="hdr-sub">Prof. Gustavo Vulcano · decision trees · value of information · utility &amp; risk tolerance · LP sensitivity · Pyomo + GLPK with Claude</p>
+    <div class="day-tabs">
+      <button class="day-tab active" data-panel="day1">Day 1 — Mon Nov 2</button>
+      <button class="day-tab" data-panel="assignments">Assignments</button>
+    </div>
+  </div>
+
+  <div id="content">
+    <div id="panel-day1" class="day-panel active">
+      <div class="divider">Framing — where Decision Under Risk sits</div>
+
+      <div class="sc bl-accent open" id="orientation">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧭</div>
+            <div>
+              <div class="sc-tag ">01 · Orientation</div>
+              <div class="sc-name">Who's teaching this, and how it runs</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Gustavo Vulcano</b> — Tech, Ops and Stats Department, NYU Stern. PhD from Columbia's Decision, Risk and
+Operations division; BSc and MSc in Computer Science from the University of Buenos Aires. Research is
+<b>revenue and pricing analytics</b>: choice-based demand models, assortment optimization, network revenue
+management. Consults for airlines, retail, entertainment and ground transportation.</p>
+<p>The course is the follow-up to <b>Decision Models</b> (Module 2, Prof. Jiawei Zhang). Decision Models was
+LP, MIP (mixed-integer programming) and simulation in Crystal Ball, where every option led to <i>one</i>
+outcome. Here, every option leads to <b>many possible outcomes</b>, and the job is to judge an option by its risk.</p>
+<h4>Four chapters</h4>
+<table class="dt">
+<tr><th>Chapter</th><th>What it is</th><th>Tool</th></tr>
+<tr><td>1 · Decision analysis</td><td>Decision trees, value of information, utility theory. The only brand-new topic.</td><td>TreePlan</td></tr>
+<tr><td>2 · Advanced LP</td><td>Sensitivity analysis, plus Claude writing Python scripts (Pyomo model + GLPK solver)</td><td>Excel Solver · Claude</td></tr>
+<tr><td>3 · Advanced simulation</td><td>Evaluating risk profiles; Claude-generated scripts</td><td>Crystal Ball early, then Claude</td></tr>
+<tr><td>4 · Optimization + simulation</td><td>Stochastic optimization and optimization-embedded simulation. Computationally expensive, so it comes last</td><td>Claude + Pyomo/GLPK</td></tr>
+</table>
+<div class="callout amber"><span class="c-label amber">How class runs</span>
+<p>Lecture blocks alternate with <b>small-group work (up to 4 people)</b>. The in-class slides are deliberately
+incomplete; the version uploaded after class has <b>full solutions</b>. Excel and Claude are used throughout.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="prescriptive-ai">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🤖</div>
+            <div>
+              <div class="sc-tag ">02 · Framing</div>
+              <div class="sc-name">Prescriptive analytics and AI — AI is not decision-making</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The INFORMS (Institute for Operations Research and the Management Sciences) definition of business analytics
+has three layers:</p>
+<table class="dt">
+<tr><th>Layer</th><th>Question it answers</th></tr>
+<tr><td>Descriptive</td><td>What happened: historical data, patterns, reporting, visualization</td></tr>
+<tr><td>Predictive</td><td>What will happen: regression through to machine learning</td></tr>
+<tr><td>Prescriptive</td><td><b>What should we do</b>: optimal decisions that balance every constraint. <i>This course.</i></td></tr>
+</table>
+<h4>Vulcano's position, 2026</h4>
+<ul>
+<li><b>AI ≠ decision-making.</b> An LLM can generate insights and recommendations but <b>cannot guarantee optimality
+or feasibility</b> under constraints unless domain knowledge spells those constraints out.</li>
+<li><b>Prescriptive analytics needs structure.</b> Optimization turns predictions into actions; simulation measures
+risk, variability and robustness, which AI output usually ignores.</li>
+<li><b>Transparency.</b> Optimization and simulation give explainable, auditable results, which is what lets you
+validate or challenge an AI recommendation.</li>
+<li><b>Synergy.</b> Humans design the model; AI automates data and scenario exploration. Use AI for work you
+<i>could</i> do yourself but that is tedious.</li>
+</ul>
+<div class="anom-list">
+  <div class="anom"><span class="anom-b bad">Risk 1</span><div class="anom-text"><strong>Outsourcing judgment.</strong> Leaning on AI erodes domain knowledge and ownership of the decision.</div></div>
+  <div class="anom"><span class="anom-b bad">Risk 2</span><div class="anom-text"><strong>The black box.</strong> It is hard to pull the structural reasoning out of an AI answer, or to audit its logic.</div></div>
+</div>
+<h4>The class debate</h4>
+<p>Prompting is the bottleneck: getting every constraint and all the context into a prompt is genuinely hard. A
+student argued that agentic AI (Claude with connectors, which tolerates typos and missing context) is the
+near-term workaround. Vulcano admitted he was unsure where that goes but stayed cautious: domain knowledge is
+the anchor. A second thread covered training data. LLMs learn from biased or incomplete corpora, and history is
+interpretation, not exact science. The answer you get depends on which interpretation was in the training set.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="course-map">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🗺️</div>
+            <div>
+              <div class="sc-tag ">03 · The Map</div>
+              <div class="sc-name">Decision complexity vs. uncertainty complexity</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Every model in the course sits on two axes: how many decisions you are choosing between, and how richly you
+describe the uncertainty.</p>
+<table class="dt">
+<tr><th>Quadrant</th><th>Strength</th><th>Software</th></tr>
+<tr><td>Deterministic optimization</td><td>Explores <b>many decision alternatives</b>, but shrinks uncertainty to fixed numbers</td><td>Excel Solver + AI-generated scripts</td></tr>
+<tr><td>Decision trees</td><td>Few decisions, few discrete outcomes</td><td>TreePlan</td></tr>
+<tr><td>Simulation</td><td><b>Rich uncertainty</b>, but explores only a handful of decisions</td><td>Crystal Ball + AI-generated scripts</td></tr>
+<tr><td>Stochastic optimization</td><td>Both at once. The most powerful and the most expensive to compute</td><td>AI-generated scripts</td></tr>
+</table>
+<h4>The decision modeling process</h4>
+<ol>
+<li>Define the real-world managerial problem</li>
+<li>Gather and analyze data</li>
+<li>Formulate a model of the problem</li>
+<li>Derive solutions</li>
+<li>Test the model and refine. Did it include every relevant factor? Are the solutions reasonable? Does it beat what was done before?</li>
+<li>Apply the model and make recommendations</li>
+<li>Implement</li>
+</ol>
+</div></div>
+      </div>
+
+      <div class="divider">Chapter 1 — decision analysis</div>
+
+      <div class="sc bl-accent" id="trees">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🌳</div>
+            <div>
+              <div class="sc-tag ">04 · Decision Trees</div>
+              <div class="sc-name">Three nodes, three ingredients, one number (EMV)</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>A decision tree is a picture of a decision under uncertainty. It is <b>not</b> the machine-learning decision
+tree from Module 3; it only shares the name.</p>
+<table class="dt">
+<tr><th>Node</th><th>Shape</th><th>Meaning</th></tr>
+<tr><td>Decision</td><td>Square</td><td>A choice you control</td></tr>
+<tr><td>Event (chance)</td><td>Circle</td><td>A random outcome you don't control, with probabilities</td></tr>
+<tr><td>Terminal (leaf)</td><td>End of branch</td><td>The payoff collected at the end of that path</td></tr>
+</table>
+<h4>Three ingredients every decision model needs</h4>
+<ol>
+<li><b>The decisions</b>: the alternatives</li>
+<li><b>The outcomes</b> and their probabilities</li>
+<li><b>A value model</b> linking decisions and outcomes to payoffs</li>
+</ol>
+<h4>Solving it — fold back</h4>
+<p>Add cash flows up going forward along each path, then <b>roll back right to left</b>. At a chance node, take the
+<b>EMV (Expected Monetary Value)</b>, the probability-weighted average of its branches. At a decision node, keep the
+best branch. A <i>policy</i> is a decision for each piece of information you could have when you decide.</p>
+<ul>
+<li><b>Single-stage</b>: one decision. <b>Multistage</b>: decide → observe → collect → decide again, laid out as a tree.</li>
+<li>Uses: bidding for contracts, product launches, capacity planning, personal calls like buying a house.</li>
+</ul>
+<div class="callout amber"><span class="c-label amber">When EMV is the wrong yardstick</span>
+<p>Maximizing EMV assumes <b>risk neutrality</b>. That's fine when this decision is one of many in a portfolio,
+because the averages wash out. It is <b>not</b> fine for a one-off, high-stakes decision. That is what utility
+theory (card 09) is for.</p></div>
+<div class="callout"><span class="c-label">TreePlan habits</span>
+<p>Park every probability in a <b>named cell</b> (e.g. <code>p1</code>) and point every branch at it. In class,
+moving <code>p1</code> from 0.3 to 0.4 flipped the optimal alternative. That's the robustness check. Copy subtrees
+<i>through TreePlan</i>, copy the whole sheet to duplicate a tree, and never insert or delete rows inside the diagram.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="magnolia">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🏨</div>
+            <div>
+              <div class="sc-tag ">05 · Worked Example</div>
+              <div class="sc-name">Magnolia Inn — buy land before the airport is announced</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>An airport is going to site A (probability <b>0.4</b>) or site B (<b>0.6</b>). Land next to the winning site is
+worth a lot; land next to the loser has to be resold. Amounts in $ millions:</p>
+<table class="dt">
+<tr><th>Option</th><th>Cost</th><th>If A</th><th>If B</th><th>Net (A, B)</th><th>EMV</th></tr>
+<tr><td>Buy A</td><td>18</td><td>31</td><td>resale 6</td><td>(13, −12)</td><td>−2.0</td></tr>
+<tr><td>Buy B</td><td>12</td><td>resale 4</td><td>23</td><td>(−8, 11)</td><td><b>3.4 ✓</b></td></tr>
+<tr><td>Buy both</td><td>30</td><td></td><td></td><td>(5, −1)</td><td>1.4</td></tr>
+<tr><td>Buy neither</td><td>0</td><td></td><td></td><td>(0, 0)</td><td>0</td></tr>
+</table>
+<p><b>Decision: buy B.</b> EMV = 0.4 × (−8) + 0.6 × 11 = 3.4.</p>
+<p>With perfect information you would buy whichever site wins: 0.4 × 13 + 0.6 × 11 = <b>11.8</b>. So
+EVPI = 11.8 − 3.4 = <b>8.4</b> (card 06).</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="evpi">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔮</div>
+            <div>
+              <div class="sc-tag ">06 · Value of Information</div>
+              <div class="sc-name">EVPI — the clairvoyant tree</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>EVPI (Expected Value of Perfect Information)</b> = EMV <i>with</i> perfect information − EMV of the baseline
+tree. It is the <b>ceiling on what any information is worth</b>, because no study can beat a clairvoyant.</p>
+<h4>Building the clairvoyant tree</h4>
+<ol>
+<li>Start the tree with an <b>event node: the envelope</b>. The clairvoyant says hit or flop, with the prior probabilities.</li>
+<li>Once the envelope is open, the downstream probabilities become 0 or 1.</li>
+<li>Then the decision node: you choose knowing the answer.</li>
+<li>You pay the clairvoyant <i>before</i> you know what she'll say, so EVPI is an expected value.</li>
+</ol>
+<h4>High School Musical 4 (HSM4)</h4>
+<p>Prior: hit 0.4, flop 0.6. Release in theaters (25, −20), release on the channel (8, −2), or cancel (0, 0),
+in $ millions.</p>
+<table class="dt">
+<tr><th>Tree</th><th>Best play</th><th>EMV</th></tr>
+<tr><td>Baseline</td><td>Channel: 0.4 × 8 + 0.6 × (−2)</td><td>2</td></tr>
+<tr><td>Perfect info</td><td>Theaters if hit, cancel if flop: 0.4 × 25</td><td>10</td></tr>
+<tr><td>EVPI</td><td>10 − 2</td><td><b>8</b></td></tr>
+</table>
+<div class="callout green"><span class="c-label green">Reading it</span>
+<p>A big EVPI says go and look for information. A small one says don't bother: even perfect information wouldn't pay.
+<b>Compute EVPI first</b>, before pricing any real study.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="evsi">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📊</div>
+            <div>
+              <div class="sc-tag ">07 · Value of Information</div>
+              <div class="sc-name">Imperfect information — flip the probabilities with Bayes</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Real information is a <b>market research study</b> that comes back "encouraging" or "discouraging". Its value is the
+<b>EVSI (Expected Value of Sample Information)</b>, also called the value of imperfect information:</p>
+<p style="text-align:center"><code>EVSI = EMV with sample info − EMV without info</code></p>
+<div class="callout amber"><span class="c-label amber">The trap — time order</span>
+<p>The study's track record comes as <b>P(result | hit or flop)</b>, which is backwards in time. The tree needs
+<b>P(hit or flop | result)</b>, because you see the result first. <b>Bayes' rule</b> does the flip.</p></div>
+<h4>The Bayes table (HSM4)</h4>
+<p>P(encouraging | hit) = 0.6 · P(encouraging | flop) = 0.3.</p>
+<table class="dt">
+<tr><th>Step</th><th>Encouraging</th><th>Discouraging</th></tr>
+<tr><td>Joint · hit</td><td>0.4 × 0.6 = 0.24</td><td>0.4 × 0.4 = 0.16</td></tr>
+<tr><td>Joint · flop</td><td>0.6 × 0.3 = 0.18</td><td>0.6 × 0.7 = 0.42</td></tr>
+<tr><td>Marginal</td><td><b>0.42</b></td><td><b>0.58</b></td></tr>
+<tr><td>P(hit | result)</td><td>0.24 / 0.42 = <b>4/7</b></td><td>0.16 / 0.58 = <b>8/29</b></td></tr>
+</table>
+<p>Joints first, marginals by adding the joints, posteriors by dividing. The marginals go on the <b>first</b> event node
+(the study result); the posteriors go on the hit/flop nodes after the decision.</p>
+<h4>The tree and the answer</h4>
+<ul>
+<li>Encouraging → <b>theaters</b> (EMV 5.71) · Discouraging → <b>channel</b> (EMV 0.76)</li>
+<li>EMV with the study = 0.42 × 5.71 + 0.58 × 0.76 = <b>2.84</b></li>
+<li>EVSI = 2.84 − 2 = <b>0.84</b>, so the most you'd pay for the study is <b>$840,000</b></li>
+</ul>
+<div class="callout green"><span class="c-label green">The rule</span>
+<p>Information value is <b>never negative</b>, because you can always ignore it. It is <b>positive only if it changes
+at least one decision</b>. Here it does: theaters on good news, channel on bad. The Bayes spreadsheet is on Brightspace.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="test-market">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧪</div>
+            <div>
+              <div class="sc-tag ">08 · Two-Stage Trees</div>
+              <div class="sc-name">Test market first, then decide — Morton Ward</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Same logic, one more decision: <b>test or not</b>, then <b>introduce or not</b> after seeing the result. Morton Ward
+(problem set p. 4): success/failure prior 0.5/0.5; launch pays (40, −15), no launch 0; the test costs 2 ($ millions);
+P(approved | success) = 0.8, P(approved | failure) = 0.25.</p>
+<table class="dt">
+<tr><th>Tree</th><th>Working</th><th>EMV</th></tr>
+<tr><td>No test</td><td>Launch: 0.5 × 40 + 0.5 × (−15)</td><td>12.5</td></tr>
+<tr><td>Free test</td><td>P(approved) = 0.525 → launch (26.9); not approved → don't launch (0)</td><td>14.125</td></tr>
+<tr><td>Test at cost 2</td><td>14.125 − 2</td><td>12.125 → <b>don't test</b></td></tr>
+<tr><td>Perfect info</td><td>Launch only on success: 0.5 × 40</td><td>20</td></tr>
+</table>
+<ul>
+<li><b>Most you'd pay for the test</b> = EMV with a free test − EMV without = 14.125 − 12.5 = <b>1.625</b>. It costs 2, so skip it.</li>
+<li>Put the test cost <b>on the branch</b>. Once it's in, the optimal decision changes.</li>
+<li>EVPI = 20 − 12.5 = 7.5. The gap between the free test and perfect information is smaller than in HSM4, so there's less urgency to find better information.</li>
+</ul>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="utility">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">⚖️</div>
+            <div>
+              <div class="sc-tag ">09 · Utility Theory</div>
+              <div class="sc-name">Risk aversion, certainty equivalents, risk premiums</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Utility theory is a formal way to encode an attitude to risk. Money goes in, <b>utility points</b> come out.</p>
+<table class="dt">
+<tr><th>Shape</th><th>Attitude</th><th>Feels like</th></tr>
+<tr><td>Concave, increasing</td><td>Risk-averse</td><td>Losses hurt more than equal gains help. Most people, on gains.</td></tr>
+<tr><td>Straight line</td><td>Risk-neutral</td><td>Gains and losses symmetric. This is EMV.</td></tr>
+<tr><td>Convex</td><td>Risk-seeking</td><td>Gains valued more than losses</td></tr>
+</table>
+<p>The steeper the curve bends, the more risk-averse. On the slide's concave curve, <b>+$30K is worth +0.25 utility
+points but −$30K costs −0.5</b>. Consumers are typically risk-averse on gains and risk-seeking on losses (Kahneman and
+Tversky, Prospect Theory, 1979).</p>
+<h4>The fundamental property</h4>
+<p>You are <b>indifferent between two alternatives with the same expected utility</b>. Example: a lottery paying $100,000
+with probability 0.25 (else 0) has expected utility 0.25, the same as $10,000 for sure. So you're indifferent between them.</p>
+<div class="callout"><span class="c-label">Two definitions to know cold</span>
+<p><b>Certainty Equivalent (CE)</b>: the sure amount that makes you indifferent to the gamble. For a risk-averse person
+<b>CE &lt; EMV</b>.<br><b>Risk premium = EMV − CE</b>: what you'd give up to avoid the gamble.</p></div>
+<h4>The recipe</h4>
+<ol>
+<li>Turn every payoff into utility points with U(x)</li>
+<li>Take the probability-weighted average: the <b>expected utility</b></li>
+<li>Turn it back into dollars with the inverse function: that's the <b>CE</b></li>
+<li>Choose the alternative with the highest expected utility, which is the same as the highest CE</li>
+</ol>
+<p><b>Deal or No Deal</b> is the illustration. The contestant is offered <b>$341K</b>; the EMV of playing on is higher. A
+risk-neutral player refuses, but a risk-averse player can rationally take the deal. Utility makes that formal (card 11).</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="log-utility">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎟️</div>
+            <div>
+              <div class="sc-tag ">10 · Worked Example</div>
+              <div class="sc-name">Log utility — should you enter the competition?</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>You have $10,000. Entry costs $3,000 and gives a 1/3 chance of winning $19,000. U(x) = ln x, where
+<b>x is final wealth</b>, not the incremental payoff.</p>
+<table class="dt">
+<tr><th>Quantity</th><th>Working</th><th>Value</th></tr>
+<tr><td>Final wealth</td><td>Win: 10,000 − 3,000 + 19,000 · Lose: 10,000 − 3,000</td><td>26,000 / 7,000</td></tr>
+<tr><td>EMV</td><td>⅓ × 26,000 + ⅔ × 7,000</td><td>$13,333</td></tr>
+<tr><td>Expected utility</td><td>⅓ ln 26,000 + ⅔ ln 7,000</td><td>9.2911</td></tr>
+<tr><td>CE</td><td>e<sup>9.2911</sup></td><td><b>$10,841</b></td></tr>
+<tr><td>Risk premium</td><td>13,333 − 10,841</td><td>$2,493</td></tr>
+</table>
+<p><b>Enter.</b> The CE ($10,841) beats the $10,000 you hold for sure; equivalently 9.2911 &gt; ln 10,000 = 9.2103.</p>
+<div class="callout amber"><span class="c-label amber">Trap</span>
+<p>Log utility only works on <b>positive total wealth</b>. Feed it the incremental payoff (−3,000) and it breaks.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="exp-utility">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📐</div>
+            <div>
+              <div class="sc-tag ">11 · Utility in TreePlan</div>
+              <div class="sc-name">Exponential utility and the risk tolerance RT</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p style="text-align:center"><code>U(x) = A − B·e<sup>−x/RT</sup></code></p>
+<p>This is TreePlan's function. Its advantage is <b>one parameter to tune</b>: <b>RT, the risk tolerance</b>, in the same
+money units as the payoffs. Set <code>A</code>, <code>B</code> and <code>RT</code> in named cells.</p>
+<ul>
+<li><b>Smaller RT → more risk-averse.</b> Larger RT → closer to risk-neutral.</li>
+<li><b>RT → ∞ gives back EMV maximization.</b></li>
+<li>CE = −RT · ln E[e<sup>−X/RT</sup>]</li>
+</ul>
+<h4>Magnolia with RT = 100 ($M), A = B = 1</h4>
+<p>Buying B has expected utility 0.029185 and <b>CE = 2.96</b>, below its EMV of 3.4. The 0.44 gap is the risk premium.</p>
+<h4>Calibrating RT — Deal or No Deal</h4>
+<p>A 50/50 lottery of $1,000,000 or $25 (EMV $500,012.50) against a sure <b>$341,000</b>.</p>
+<ol>
+<li>Build the tree in TreePlan with exponential utility on.</li>
+<li><b>Goal Seek</b> (Data → What-If Analysis → Goal Seek): set the lottery's CE equal to 341,000 by changing RT.</li>
+<li>That gives the <b>threshold RT ≈ $731,548</b>. Below it, take the deal; above it, play.</li>
+</ol>
+<p>Check: at RT = $500,000 the lottery's CE is ≈ <b>$283,132</b>, less than $341,000, so a player that risk-averse takes the deal.</p>
+<div class="callout"><span class="c-label">In practice</span>
+<p>Investment questionnaires infer your RT the same way, from a sequence of hypothetical lotteries. Organizations have
+<b>different RTs at different levels</b>; lower-level managers tend to be more risk-averse than the firm as a whole.</p></div>
+<div class="callout amber"><span class="c-label amber">Don't reuse slide 19's number</span>
+<p>Encoding Risk p. 10 (slide 19) gives RT = 338,300 for indifference between paying $10K and facing a 10% chance of
+a $100K loss. The $10K premium <b>equals</b> the expected loss, so a strictly risk-averse decision-maker always prefers
+to pay. No finite RT makes them indifferent.</p></div>
+</div></div>
+      </div>
+
+      <div class="divider">Chapter 2 — advanced linear programming</div>
+
+      <div class="sc bl-accent" id="lp-refresher">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🪟</div>
+            <div>
+              <div class="sc-tag ">12 · LP Refresher</div>
+              <div class="sc-name">Wyndor Glass — formulate, graph, solve</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>LP (linear programming) allocates <b>scarce resources among competing activities</b>. Everything must be linear.
+It is still the most-used optimization tool in practice because it solves fast and bends to most problems.</p>
+<h4>Assumptions</h4>
+<ul>
+<li><b>Linearity</b>: no fixed costs, no economies of scale</li>
+<li><b>Certainty</b>: every parameter is known</li>
+<li><b>Divisibility</b>: fractional answers are allowed</li>
+</ul>
+<h4>The model</h4>
+<p>Doors <code>x1</code>, windows <code>x2</code> per week. Max <b>300x1 + 500x2</b> subject to:</p>
+<table class="dt">
+<tr><th>Constraint</th><th>Hours/week</th><th>At optimum</th></tr>
+<tr><td>Plant 1 · x1 ≤ 40</td><td>40</td><td>20 used — slack 20</td></tr>
+<tr><td>Plant 2 · 2x2 ≤ 120</td><td>120</td><td>binding</td></tr>
+<tr><td>Plant 3 · 3x1 + 2x2 ≤ 180</td><td>180</td><td>binding</td></tr>
+</table>
+<p><b>Optimum: 20 doors, 60 windows, $36,000.</b></p>
+<h4>Graphically (two variables)</h4>
+<p>Each constraint is a half-plane; the feasible region is where they all overlap. Push the objective line in the
+improving direction until it last touches the region. <b>The optimum is always at a corner point.</b></p>
+<h4>Excel Solver</h4>
+<ol>
+<li>Objective = profit cell; changing cells = x1, x2; add constraints LHS ≤ RHS</li>
+<li>Tick "Make unconstrained variables non-negative"; engine = <b>Simplex LP</b></li>
+<li>Ctrl+click to generate <b>both</b> the Answer Report and the Sensitivity Report</li>
+</ol>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="shadow-prices">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">💲</div>
+            <div>
+              <div class="sc-tag ">13 · Sensitivity</div>
+              <div class="sc-name">Shadow prices, allowable ranges, reduced costs</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>A <b>shadow price</b> is how much the objective improves per <b>one extra unit of a resource</b> (the constraint's
+RHS, right-hand side), with everything else held fixed.</p>
+<table class="dt">
+<tr><th>Constraint</th><th>Status</th><th>Shadow price</th></tr>
+<tr><td>Plant 1</td><td>Slack 20</td><td>$0, spare hours are worth nothing</td></tr>
+<tr><td>Plant 2</td><td>Binding</td><td><b>$150</b>/hour, valid for RHS 60 to 180</td></tr>
+<tr><td>Plant 3</td><td>Binding</td><td><b>$100</b>/hour</td></tr>
+</table>
+<ul>
+<li>The price only holds <b>within the allowable increase/decrease</b>. Beyond it, re-solve. Diminishing returns are
+guaranteed: past the range the shadow price can stay or fall, <b>never rise</b>.</li>
+<li><b>+50 Plant 2 hours</b>: 50 ≤ 60 allowable, so profit rises 50 × $150 = $7,500 to <b>$43,500</b>.</li>
+<li>The shadow price tells you the new <i>profit</i>, not the new <i>production plan</i>. For the plan, re-solve.</li>
+</ul>
+<h4>Should we add a product? — coffee tables</h4>
+<p>Each table uses 1 hour of Plant 2 and 2 hours of Plant 3. <b>Opportunity cost</b> = 1 × $150 + 2 × $100 = $350.
+It earns $250, so the <b>reduced cost is −$100</b>: don't make it unless its profit rises by at least $100.</p>
+<div class="callout amber"><span class="c-label amber">Pathological case</span>
+<p>A non-binding constraint always has a shadow price of 0, but <b>the converse isn't guaranteed</b>. A binding
+constraint can also show 0 if it's redundant.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="hundred-rule">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">💯</div>
+            <div>
+              <div class="sc-tag ">14 · Sensitivity</div>
+              <div class="sc-name">The 100% rule and objective-coefficient ranging</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Changing <b>several RHS values at once</b>: express each change as a % of its allowable increase or decrease
+(by direction), take absolute values, add them up.</p>
+<ul>
+<li><b>Sum ≤ 100%</b> → the shadow prices still hold</li>
+<li><b>Sum &gt; 100%</b> → inconclusive, so re-solve</li>
+</ul>
+<table class="dt">
+<tr><th>Change</th><th>% of allowable</th><th>Profit effect</th></tr>
+<tr><td>Plant 2 +30 hrs</td><td>30 / 60 = 50%</td><td>30 × $150 = $4,500</td></tr>
+<tr><td>Plant 3 +20 hrs</td><td>20 / 60 = 33%</td><td>20 × $100 = $2,000</td></tr>
+<tr><td>Total</td><td><b>83% ≤ 100% ✓</b></td><td>+$6,500 → <b>$42,500</b>, confirmed by re-solving</td></tr>
+</table>
+<h4>Objective-coefficient ranging</h4>
+<p>The other half of the Sensitivity Report. It's the allowable increase/decrease on each <b>profit coefficient</b>
+within which the <b>optimal mix doesn't change</b>. Total profit still moves; the mix doesn't. Door profit can rise
+from $300 to <b>$750</b> before (20, 60) stops being optimal. The 100% rule applies here too, for simultaneous coefficient changes.</p>
+<div class="callout"><span class="c-label">Keep the two apart</span>
+<p>RHS ranges → is the <b>shadow price</b> still valid? Coefficient ranges → is the <b>production mix</b> still optimal?</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="pyomo">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🐍</div>
+            <div>
+              <div class="sc-tag ">15 · AI-Assisted Modeling</div>
+              <div class="sc-name">Pyomo + GLPK with Claude — prompt, audit, run</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Pyomo</b> is a Python modeling language; <b>GLPK</b> (the GNU Linear Programming Kit) is the solver engine. Pyomo
+sits between Python and GLPK so the model reads like the math.</p>
+<h4>Workflow</h4>
+<ol>
+<li><b>Prompt Claude with a structured model</b>: variables with units and ≥ 0, the objective, one line per named
+constraint, and the output labels you want</li>
+<li><b>Audit the script before you run it</b></li>
+<li>Run it in <b>Spyder</b> (preferred: Pyomo and GLPK stay installed offline) or <b>Google Colab</b> (reinstall both every session)</li>
+<li><b>Check the output against Excel Solver</b>. Wyndor must come back 20 / 60 / $36,000</li>
+</ol>
+<h4>What to find in the script</h4>
+<table class="dt">
+<tr><th>Piece</th><th>Look for</th></tr>
+<tr><td>Variables</td><td>the declarations and their domain (non-negative)</td></tr>
+<tr><td>Objective</td><td>the maximize/minimize expression</td></tr>
+<tr><td>Constraints</td><td>named: <code>plant_one</code>, <code>plant_two</code>, <code>plant_three</code></td></tr>
+<tr><td>Solve</td><td>model build + GLPK call</td></tr>
+<tr><td>Results</td><td><code>.value()</code> on variables and the objective</td></tr>
+<tr><td>Duals</td><td><code>model.dual</code> → shadow prices · <code>model.rc</code> → reduced costs (declared as an import Suffix <i>before</i> solving)</td></tr>
+</table>
+<div class="callout amber"><span class="c-label amber">What Pyomo won't give you</span>
+<p><b>Allowable ranges.</b> Excel's Sensitivity Report has them; Pyomo's duals don't. Build them yourself with re-solves (card 16).</p></div>
+<h4>Spot the bug</h4>
+<p><code>Wyndor_Spot_the_Bug.py</code> on Brightspace runs cleanly and returns <b>$30,000</b> instead of $36,000. The groups
+found two modeling errors: Plant 2 written as <b>≥ 120</b>, and Plant 3's coefficients <b>swapped</b>
+(2x1 + 3x2 ≤ 180). Its answer was (0, 60).</p>
+<div class="callout green"><span class="c-label green">The lesson</span>
+<p>A script that runs without error isn't a validated model. You need to understand the model's structure to
+<b>audit AI-generated code</b>, even if you couldn't have written it from scratch.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="sweep">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📈</div>
+            <div>
+              <div class="sc-tag ">16 · AI-Assisted Modeling</div>
+              <div class="sc-name">The shadow-price sweep — beyond Excel's local range</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The prompt asked Claude to <b>loop Plant 2 capacity from 0 to 250</b>, re-solve at each step, record profit and the
+shadow price, and plot both. The plot shows three regimes:</p>
+<table class="dt">
+<tr><th>Plant 2 hours</th><th>Shadow price</th><th>What's happening</th></tr>
+<tr><td>0 – 60</td><td>$250</td><td>Profit climbs steepest</td></tr>
+<tr><td>60 – 180</td><td>$150</td><td>Exactly the Sensitivity Report's allowable range</td></tr>
+<tr><td>&gt; 180</td><td>$0</td><td>Profit flat; extra hours are worthless</td></tr>
+</table>
+<p>Excel only reports the <b>local</b> range around today's RHS. The sweep shows the <b>whole step function</b>, and
+the steps only go down, which is diminishing returns made visible.</p>
+<p>Claude also produced a <b>3D surface</b> of profit against simultaneous Plant 2 and Plant 3 changes. Inside the square
+the 100% rule holds; outside it the shadow prices are unreliable.</p>
+</div></div>
+      </div>
+
+      <div class="divider">Pre-module review and the in-class challenge</div>
+
+      <div class="sc bl-accent" id="nimbus-sens">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">☁️</div>
+            <div>
+              <div class="sc-tag ">17 · Nimbus Insights</div>
+              <div class="sc-name">Pre-module Q1–Q5 — when the shadow price is enough, and when to re-solve</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>R = reports, D = dashboards, C = code audits per week. Max <b>360R + 140D + 320C</b> subject to GPU-hours
+4R + 2D + 6C ≤ 460 · tokens (millions) 5R + 2D + 4C ≤ 420 · review hours 3R + D + 2C ≤ 220 · D ≤ 150 · C ≥ 10.</p>
+<p><b>Optimum: 20 reports, 100 dashboards, 30 audits = $30,800.</b> All three resources bind; the dashboard cap and the
+audit floor don't.</p>
+<table class="dt">
+<tr><th>Q</th><th>Offer</th><th>Check</th><th>Answer</th></tr>
+<tr><td>1 · GPU</td><td>+40 hrs for $600</td><td>Shadow $20, allowable +100 → 40 × $20 = $800</td><td><b>Accept</b> (+$200 net)</td></tr>
+<tr><td>2 · Analyst</td><td>+10 hrs at $75 = $750</td><td>Shadow $60, allowable +14.29 → 10 × $60 = $600</td><td><b>Don't hire</b></td></tr>
+<tr><td>3 · Tokens</td><td>10M blocks at $150</td><td>Shadow $20/M, allowable +10M → first block worth $200</td><td><b>Buy exactly one</b>. Re-solving at +20M adds nothing</td></tr>
+<tr><td>4 · Audits</td><td>Floor 10 → 40</td><td>Shadow $0 only up to 30 (allowable +20) → re-solve</td><td><b>Costs $200</b>/week ($30,600)</td></tr>
+<tr><td>5 · Dashboards</td><td>$140 → $160</td><td>+$20 &gt; allowable increase $8.57 → re-solve</td><td><b>Plan changes</b>: 5.71 / 150 / 22.86, $33,371.43 (re-solved)</td></tr>
+</table>
+<div class="callout"><span class="c-label">Vulcano's point on Q3</span>
+<p>The allowable increase doesn't <i>forbid</i> buying a second block. It only says the $20 shadow price isn't
+guaranteed past +10M. A complete answer <b>re-solves for the second block</b>, which turns out to be worthless. Beyond
+the range the shadow price can only stay the same or fall.</p></div>
+<div class="callout amber"><span class="c-label amber">Q5 — the classic slip</span>
+<p>Inside the coefficient range, the <b>mix</b> stays the same and only total profit moves. Outside it the
+<b>composition changes</b>, and only a re-solve tells you how.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="nimbus-q6">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📤</div>
+            <div>
+              <div class="sc-tag ">18 · In-Class Submission</div>
+              <div class="sc-name">Nimbus Q6 — price the extra audits</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The major client wants more audits per week, and the market is competitive. With an AI assistant:</p>
+<ol>
+<li><b>(a)</b> Generate a Python + Pyomo + GLPK script for the basic Nimbus problem</li>
+<li><b>(b)</b> Plot profit and the audit constraint's shadow price as the <b>minimum audits run 0 to 70</b> (today: 10),
+in the same style as the Plant 2 plots. Submit the <b>prompt</b> as a doc file alongside</li>
+<li><b>(c)</b> Propose a <b>fair pricing scheme</b>: the minimum charge per extra audit that keeps profit whole while staying
+competitive. It comes out as a <b>step function</b> of the number of audits</li>
+</ol>
+<h4>What the sweep shows</h4>
+<table class="dt">
+<tr><th>Audits / week</th><th>Shadow price</th><th>Minimum charge per extra audit</th></tr>
+<tr><td>up to 30</td><td>$0</td><td>$0, since Nimbus already makes 30</td></tr>
+<tr><td>31 – 50</td><td>$20</td><td>$20</td></tr>
+<tr><td>51 – 70</td><td>$220</td><td>$220</td></tr>
+</table>
+<p>At 70 audits profit is $26,000, down <b>$4,800</b> from $30,800. The tiered charge recovers exactly that.</p>
+<div class="callout amber"><span class="c-label amber">Same trap as the Plant 2 sweep</span>
+<p>Don't quote one marginal price across the whole range. The regimes change, and so does the price.</p></div>
+</div></div>
+      </div>
+
+      <div class="divider">Reference</div>
+
+      <div class="sc bl-green" id="hooks1">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">⭐</div>
+            <div>
+              <div class="sc-tag green">Reference</div>
+              <div class="sc-name">Day 1 exam hooks &mdash; the twelve things worth memorising</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+
+<ol>
+<li><b>Square = decision, circle = chance, leaf = payoff.</b> Roll back right to left: average at circles, best at squares.</li>
+<li><b>EMV assumes risk neutrality.</b> Fine for a portfolio of decisions, wrong for a one-off big bet.</li>
+<li><b>EVPI = EMV with perfect info − baseline EMV.</b> It's the ceiling on any information. HSM4: 10 − 2 = 8. Magnolia: 11.8 − 3.4 = 8.4.</li>
+<li><b>EVSI = EMV with sample info − baseline EMV.</b> HSM4: 2.84 − 2 = 0.84 → pay at most $840K for the study.</li>
+<li><b>Bayes flips time order:</b> joints → marginals (first chance node) → posteriors (after the decision).</li>
+<li><b>Information is never worth less than zero, and is worth something only if it changes a decision.</b></li>
+<li><b>Concave = risk-averse; CE &lt; EMV; risk premium = EMV − CE.</b> Log utility uses <i>final wealth</i>.</li>
+<li><b>U = A − B·e<sup>−x/RT</sup>:</b> smaller RT = more risk-averse; RT → ∞ = EMV. Calibrate RT with Goal Seek (Deal or No Deal ≈ $731,548).</li>
+<li><b>Shadow price = profit per extra unit of RHS, only inside the allowable range.</b> Past it, re-solve; it never goes up.</li>
+<li><b>100% rule:</b> sum the |change| ÷ allowable; ≤ 100% means the shadow prices still hold. Wyndor: 50% + 33% = 83% → $42,500.</li>
+<li><b>Reduced cost = profit − opportunity cost of the resources used.</b> Coffee table: 250 − (150 + 200) = −100 → don't make it.</li>
+<li><b>Pyomo gives duals and reduced costs, not ranges.</b> Audit the AI script against Excel Solver: the bug script's $30,000 vs the true $36,000.</li>
+</ol>
+
+<div class="callout green"><span class="c-label green">The one-line summary of Day 1</span>
+<p><b>Every tool today answers the same question: what is this option worth once you price in what you don't know?</b>
+Trees price uncertainty, information is priced by how many decisions it changes, utility prices your nerve, and
+shadow prices price a resource, but only locally. <i>When you leave the range, re-solve.</i></p></div>
+
+</div></div>
+      </div>
+    </div>
+    <div id="panel-assignments" class="day-panel">
+      <div class="divider">Decision Under Risk — graded components</div>
+
+      <div class="assign-card">
+        <div class="ac-ico">✅</div>
+        <div class="ac-b">
+          <div class="ac-label">Pre-module · 25%</div>
+          <div class="ac-title">Individual problem set<span class="done-badge">✓ Done</span></div>
+          <div class="ac-desc">Nimbus Insights, Sharon's procurement, Hastings Sportswear, process flexibility. Individual, no collaboration, <b>no AI assistance</b>. Bring the solution files to class.</div>
+          <div class="ac-due">Due <span>Sun Nov 1 · 11:55pm</span></div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">👥</div>
+        <div class="ac-b">
+          <div class="ac-label">In class · 15%</div>
+          <div class="ac-title">Group problems: one ZIP per group, per day</div>
+          <div class="ac-desc">Groups of up to 4. Names in cell A1 of the first sheet of each Excel file and at the top of each Word or Python file. Covers decision analysis (Millionaire, Morton Ward trees), advanced LP (Nimbus Q6, Sharon), advanced simulation (Hastings) and optimization + simulation (Smallville, flexible processes). <b>The Claude prompts are part of what's graded</b> for the LP, simulation and combined items.</div>
+          <div class="ac-due">Due <span>Mon Nov 2</span> and <span>Tue Nov 3</span> · 11:59pm</div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">🙋</div>
+        <div class="ac-b">
+          <div class="ac-label">In class · 10%</div>
+          <div class="ac-title">Attendance &amp; participation</div>
+          <div class="ac-desc">Across the in-person days.</div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">📝</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module · 25% + 25%</div>
+          <div class="ac-title">Group assignment + individual assignment</div>
+          <div class="ac-desc">AI rules aren't known yet. Check the post-module sheet when it lands; don't assume the in-class rules carry over.</div>
+          <div class="ac-due">Due <span>Sun Dec 20 · 11:55pm</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+const KEY = 'notes-unlocked', PWD = 'huncho';
+if (sessionStorage.getItem(KEY) === 'true') unlock();
+document.getElementById('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+function tryUnlock() {
+  if (document.getElementById('gate-input').value.trim().toLowerCase() === PWD) {
+    sessionStorage.setItem(KEY, 'true'); unlock();
+  } else {
+    document.getElementById('gate-err').textContent = 'wrong password';
+    document.getElementById('gate-input').value = '';
+  }
+}
+function unlock() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'block';
+  document.getElementById('main').style.display = 'block';
+}
+function toggle(hdr) { hdr.closest('.sc').classList.toggle('open'); }
+document.querySelectorAll('.day-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+const navLinks = document.querySelectorAll('.sb-nav a[href^="#"]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+  });
+}, { rootMargin: '-25% 0px -65% 0px' });
+document.querySelectorAll('.sc[id]').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

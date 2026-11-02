@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4 · NYU Stern MSBAi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --bg:          #0d0f18;
+  --surface:     #131627;
+  --card:        #161929;
+  --card-hover:  #1c2035;
+  --border:      rgba(255,255,255,.08);
+  --border-hover:rgba(255,255,255,.14);
+  --text:        #e8e9f3;
+  --muted:       #7b7fa8;
+  --faint:       #3d4060;
+
+  --indigo:      #6366f1;
+  --lavender:    #818cf8;
+
+  --sky:         #38bdf8;
+  --sky-dim:     #0ea5e9;
+  --sky-glow:    rgba(56,189,248,.18);
+  --sky-soft:    rgba(56,189,248,.1);
+
+  --orange:      #fb923c;
+  --orange-dim:  #f97316;
+  --orange-glow: rgba(251,146,60,.18);
+  --orange-soft: rgba(251,146,60,.1);
+
+  --violet:      #a78bfa;
+  --violet-dim:  #7c3aed;
+  --violet-glow: rgba(167,139,250,.18);
+  --violet-soft: rgba(167,139,250,.1);
+
+
+  --rose:        #fb7185;
+  --rose-dim:    #e11d48;
+  --rose-glow:   rgba(251,113,133,.18);
+  --rose-soft:   rgba(251,113,133,.1);
+
+  --amber:       #fbbf24;
+  --amber-dim:   #d97706;
+  --amber-glow:  rgba(251,191,36,.18);
+  --amber-soft:  rgba(251,191,36,.1);
+
+  --cyan:        #22d3ee;
+  --cyan-dim:    #0891b2;
+  --cyan-glow:   rgba(34,211,238,.18);
+  --cyan-soft:   rgba(34,211,238,.1);
+
+  --emerald:     #34d399;
+  --emerald-dim: #10b981;
+  --emerald-glow:rgba(52,211,153,.18);
+  --emerald-soft:rgba(52,211,153,.1);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(99,102,241,.05) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none; z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  top: -200px; left: 50%;
+  transform: translateX(-50%);
+  width: 1000px; height: 400px;
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(56,189,248,.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 70% 50%, rgba(167,139,250,.08) 0%, transparent 55%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── GATE ──────────────────────────────────── */
+#gate {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; flex-direction: column; gap: 20px;
+}
+
+.gate-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 44px;
+  max-width: 360px; width: 90%;
+  text-align: center;
+}
+
+.gate-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.gate-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px; color: var(--text);
+  margin-bottom: 24px; line-height: 1.3;
+}
+
+.gate-input {
+  width: 100%; padding: 10px 14px;
+  border-radius: 8px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; letter-spacing: .08em;
+  outline: none; text-align: center;
+  transition: border-color .2s;
+}
+.gate-input:focus { border-color: var(--lavender); }
+
+.gate-btn {
+  margin-top: 12px; width: 100%;
+  padding: 10px; border-radius: 8px;
+  border: none; cursor: pointer;
+  background: var(--lavender); color: #0d0f18;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  transition: opacity .2s;
+}
+.gate-btn:hover { opacity: .85; }
+.gate-err {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: #f87171;
+  margin-top: 10px; min-height: 16px;
+}
+
+/* ── WRAPPER ────────────────────────────────── */
+.wrapper {
+  width: 100%; max-width: 860px;
+  margin: 0 auto;
+  padding: 72px 28px 96px;
+  position: relative; z-index: 1;
+}
+
+/* ── HEADER ─────────────────────────────────── */
+.course-pill {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--lavender);
+  background: rgba(129,140,248,.1);
+  border: 1px solid rgba(129,140,248,.2);
+  border-radius: 20px; padding: 4px 14px;
+  display: inline-block; margin-bottom: 22px;
+}
+
+.page-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(36px,6vw,54px);
+  line-height: 1.15; color: var(--text);
+  margin-bottom: 10px; letter-spacing: -.01em;
+}
+.page-title em { font-style: italic; color: var(--lavender); }
+
+.page-sub {
+  font-size: 15px; color: var(--muted);
+  font-style: italic; margin-bottom: 28px;
+}
+
+.meta-row {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 56px;
+}
+
+.meta-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px; padding: 5px 12px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ── SECTION LABEL ───────────────────────────── */
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--faint);
+  margin-bottom: 16px; padding-left: 2px;
+}
+
+/* ── CARDS GRID ─────────────────────────────── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px; margin-bottom: 56px;
+}
+@media (max-width: 640px) { .cards-grid { grid-template-columns: 1fr; } }
+
+/* ── COURSE CARD ────────────────────────────── */
+.course-card {
+  display: block; text-decoration: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px; padding: 28px 26px 24px;
+  position: relative; overflow: hidden; cursor: pointer;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1),
+              box-shadow .22s ease, border-color .22s ease,
+              background .22s ease;
+  animation: cardIn .5s ease both;
+}
+.course-card:nth-child(1) { animation-delay: .05s; }
+.course-card:nth-child(2) { animation-delay: .15s; }
+.course-card:nth-child(3) { animation-delay: .25s; }
+.course-card:nth-child(4) { animation-delay: .35s; }
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.course-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 18px 18px 0 0;
+  transition: height .2s ease;
+}
+.course-card.sky::before     { background: linear-gradient(90deg, var(--sky-dim), var(--sky)); }
+.course-card.rose::before     { background: linear-gradient(90deg, var(--rose-dim), var(--rose)); }
+.course-card.orange::before  { background: linear-gradient(90deg, var(--orange-dim), var(--orange)); }
+.course-card.amber::before  { background: linear-gradient(90deg, var(--amber-dim), var(--amber)); }
+.course-card.violet::before  { background: linear-gradient(90deg, var(--violet-dim), var(--violet)); }
+.course-card.cyan::before  { background: linear-gradient(90deg, var(--cyan-dim), var(--cyan)); }
+.course-card.emerald::before { background: linear-gradient(90deg, var(--emerald-dim), var(--emerald)); }
+
+.course-card::after {
+  content: ''; position: absolute;
+  top: -60px; right: -60px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  transition: opacity .22s ease, transform .22s ease;
+  opacity: 0; pointer-events: none;
+}
+.course-card.sky::after     { background: radial-gradient(circle, var(--sky-glow),     transparent 70%); }
+.course-card.rose::after     { background: radial-gradient(circle, var(--rose-glow),     transparent 70%); }
+.course-card.orange::after  { background: radial-gradient(circle, var(--orange-glow),  transparent 70%); }
+.course-card.amber::after  { background: radial-gradient(circle, var(--amber-glow),  transparent 70%); }
+.course-card.violet::after  { background: radial-gradient(circle, var(--violet-glow),  transparent 70%); }
+.course-card.cyan::after  { background: radial-gradient(circle, var(--cyan-glow),  transparent 70%); }
+.course-card.emerald::after { background: radial-gradient(circle, var(--emerald-glow), transparent 70%); }
+
+.course-card:hover { transform: translateY(-5px); border-color: var(--border-hover); background: var(--card-hover); }
+.course-card.sky:hover     { box-shadow: 0 12px 40px var(--sky-glow);     }
+.course-card.rose:hover     { box-shadow: 0 12px 40px var(--rose-glow);     }
+.course-card.orange:hover  { box-shadow: 0 12px 40px var(--orange-glow);  }
+.course-card.amber:hover  { box-shadow: 0 12px 40px var(--amber-glow);  }
+.course-card.violet:hover  { box-shadow: 0 12px 40px var(--violet-glow);  }
+.course-card.cyan:hover  { box-shadow: 0 12px 40px var(--cyan-glow);  }
+.course-card.emerald:hover { box-shadow: 0 12px 40px var(--emerald-glow); }
+.course-card:hover::before { height: 4px; }
+.course-card:hover::after  { opacity: 1; transform: scale(1.1); }
+.course-card.locked { pointer-events: none; opacity: .55; }
+
+.card-icon-wrap {
+  width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; margin-bottom: 18px;
+  border: 1px solid var(--border);
+  transition: border-color .2s ease;
+}
+.sky .card-icon-wrap     { background: var(--sky-soft);     }
+.rose .card-icon-wrap     { background: var(--rose-soft);     }
+.orange .card-icon-wrap  { background: var(--orange-soft);  }
+.amber .card-icon-wrap  { background: var(--amber-soft);  }
+.violet .card-icon-wrap  { background: var(--violet-soft);  }
+.cyan .card-icon-wrap  { background: var(--cyan-soft);  }
+.emerald .card-icon-wrap { background: var(--emerald-soft); }
+.sky:hover .card-icon-wrap     { border-color: rgba(56,189,248,.3);    }
+.orange:hover .card-icon-wrap  { border-color: rgba(251,146,60,.3);    }
+.violet:hover .card-icon-wrap  { border-color: rgba(167,139,250,.3);   }
+.emerald:hover .card-icon-wrap { border-color: rgba(52,211,153,.3);    }
+
+.card-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px; letter-spacing: .15em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+.sky .card-tag     { color: var(--sky);     }
+.rose .card-tag     { color: var(--rose);     }
+.orange .card-tag  { color: var(--orange);  }
+.amber .card-tag  { color: var(--amber);  }
+.violet .card-tag  { color: var(--violet);  }
+.cyan .card-tag  { color: var(--cyan);  }
+.emerald .card-tag { color: var(--emerald); }
+
+.card-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px; color: var(--text);
+  line-height: 1.25; margin-bottom: 6px;
+}
+
+.card-prof {
+  font-size: 12.5px; color: var(--muted);
+  font-style: italic; margin-bottom: 20px;
+}
+
+.day-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
+.day-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; padding: 3px 10px;
+  border-radius: 20px; border: 1px solid var(--border);
+  background: rgba(255,255,255,.03); color: var(--muted);
+  transition: background .2s, color .2s, border-color .2s;
+}
+.sky:hover .day-chip     { background: var(--sky-soft);     color: var(--sky);     border-color: rgba(56,189,248,.25);   }
+.orange:hover .day-chip  { background: var(--orange-soft);  color: var(--orange);  border-color: rgba(251,146,60,.25);   }
+.violet:hover .day-chip  { background: var(--violet-soft);  color: var(--violet);  border-color: rgba(167,139,250,.25);  }
+.emerald:hover .day-chip { background: var(--emerald-soft); color: var(--emerald); border-color: rgba(52,211,153,.25);   }
+
+.card-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px; font-weight: 700;
+  letter-spacing: .04em; padding: 8px 16px;
+  border-radius: 8px; text-decoration: none;
+  transition: opacity .2s, transform .2s;
+}
+.course-card:hover .card-cta { transform: translateX(3px); }
+.sky .card-cta     { background: var(--sky-soft);     color: var(--sky);     }
+.rose .card-cta     { background: var(--rose-soft);     color: var(--rose);     }
+.orange .card-cta  { background: var(--orange-soft);  color: var(--orange);  }
+.amber .card-cta  { background: var(--amber-soft);  color: var(--amber);  }
+.violet .card-cta  { background: var(--violet-soft);  color: var(--violet);  }
+.cyan .card-cta  { background: var(--cyan-soft);  color: var(--cyan);  }
+.emerald .card-cta { background: var(--emerald-soft); color: var(--emerald); }
+
+/* ── PAGE HEADER (centered) ─────────────────── */
+.page-header {
+  text-align: center;
+  margin-bottom: 52px;
+}
+.page-header .course-pill  { margin-bottom: 22px; }
+.page-header .meta-row     { justify-content: center; margin-bottom: 0; }
+
+/* ── ENTRANCE ANIMATIONS ─────────────────────── */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-header .course-pill  { animation: heroFadeUp .55s cubic-bezier(.16,1,.3,1) both .05s; }
+.page-header .page-title   { animation: heroFadeUp .60s cubic-bezier(.16,1,.3,1) both .15s; }
+.page-header .page-sub     { animation: heroFadeUp .55s cubic-bezier(.16,1,.3,1) both .27s; }
+.page-header .meta-row     { animation: heroFadeUp .55s cubic-bezier(.16,1,.3,1) both .38s; }
+.section-label             { animation: heroFadeUp .50s cubic-bezier(.16,1,.3,1) both .48s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-header .course-pill,
+  .page-header .page-title,
+  .page-header .page-sub,
+  .page-header .meta-row,
+  .section-label,
+  .course-card { animation: none !important; }
+}
+
+/* ── CARD PRESS STATE ────────────────────────── */
+.course-card:active {
+  transform: translateY(-2px) scale(0.985);
+  transition-duration: .08s;
+}
+
+/* ── FOOTER ──────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding-top: 28px; margin-top: 12px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.footer-left {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--faint); letter-spacing: .06em;
+}
+.m1-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--muted);
+  text-decoration: none; letter-spacing: .04em;
+  opacity: .7; transition: opacity .2s;
+}
+.m1-link:hover { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ── GATE ──────────────────────────────────── -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-label">MSBAi · Module 4 · 2026</div>
+    <div class="gate-title">Daivik's Notes</div>
+    <input id="gate-input" class="gate-input" type="password" placeholder="password" autocomplete="off" />
+    <button class="gate-btn" onclick="tryUnlock()">Enter</button>
+    <div class="gate-err" id="gate-err"></div>
+  </div>
+</div>
+
+<!-- ── MAIN ───────────────────────────────────── -->
+<div id="main" style="display:none; width:100%;">
+<div class="wrapper">
+
+  <div class="page-header">
+    <div class="course-pill">NYU Stern · MSBAi · Module 4</div>
+    <h1 class="page-title">Module 4<br /><em>Notes & Resources</em></h1>
+    <p class="page-sub">November 2–7, 2026 · In-person week, NYC</p>
+    <div class="meta-row">
+      <span class="meta-chip">📅 Nov 2–7</span>
+      <span class="meta-chip">📚 4 courses</span>
+      <span class="meta-chip">🎓 Vulcano · Cohen · Sosulski · Sundararajan</span>
+      <span class="meta-chip">🗽 NYC</span>
+    </div>
+  </div>
+
+  <div class="section-label">Courses</div>
+
+  <div class="cards-grid">
+
+    <a class="course-card sky" href="dur/">
+      <div class="card-icon-wrap">🎲</div>
+      <div class="card-tag">DUR · 2 cr</div>
+      <div class="card-title">Decision Under Risk</div>
+      <div class="card-prof">Prof. Gustavo Vulcano</div>
+      <div class="day-chips">
+        <span class="day-chip">Nov 2–3</span>
+        <span class="day-chip">Decision Trees</span>
+        <span class="day-chip">Value of Information</span>
+        <span class="day-chip">Utility</span>
+        <span class="day-chip">Shadow Prices</span>
+        <span class="day-chip">Pyomo + GLPK</span>
+      </div>
+      <span class="card-cta">Open notes →</span>
+    </a>
+
+    <div class="course-card rose locked">
+      <div class="card-icon-wrap">📦</div>
+      <div class="card-tag">Ops Analytics · 2 cr</div>
+      <div class="card-title">Operations Analytics</div>
+      <div class="card-prof">Prof. Maxime Cohen</div>
+      <div class="day-chips">
+        <span class="day-chip">Upcoming</span>
+      </div>
+      <span class="card-cta">Notes coming →</span>
+    </div>
+
+    <div class="course-card emerald locked">
+      <div class="card-icon-wrap">📊</div>
+      <div class="card-tag">Data Viz · 1 cr</div>
+      <div class="card-title">Data Visualization</div>
+      <div class="card-prof">Prof. Kristen Sosulski</div>
+      <div class="day-chips">
+        <span class="day-chip">Upcoming</span>
+      </div>
+      <span class="card-cta">Notes coming →</span>
+    </div>
+
+    <div class="course-card violet locked">
+      <div class="card-icon-wrap">🕸️</div>
+      <div class="card-tag">Network Analytics · 1 cr</div>
+      <div class="card-title">Network Analytics</div>
+      <div class="card-prof">Prof. Arun Sundararajan</div>
+      <div class="day-chips">
+        <span class="day-chip">Upcoming</span>
+      </div>
+      <span class="card-cta">Notes coming →</span>
+    </div>
+
+  </div>
+
+  <div class="site-footer">
+    <span class="footer-left">module4-stern-notes · daivik suresh</span>
+    <a class="m1-link" href="https://daivikxsuresh.github.io/module3-stern-notes/" target="_blank">← Module 3 notes</a>
+  </div>
+
+</div>
+</div>
+
+<script>
+const KEY = 'notes-unlocked';
+const PWD = 'huncho';
+if (sessionStorage.getItem(KEY) === 'true') {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('main').style.display = 'block';
+}
+document.getElementById('gate-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') tryUnlock();
+});
+function tryUnlock() {
+  const val = document.getElementById('gate-input').value.trim().toLowerCase();
+  if (val === PWD) {
+    sessionStorage.setItem(KEY, 'true');
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('main').style.display = 'block';
+  } else {
+    document.getElementById('gate-err').textContent = 'wrong password';
+    document.getElementById('gate-input').value = '';
+  }
+}
+</script>
+</body>
+</html>
