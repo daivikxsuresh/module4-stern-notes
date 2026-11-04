@@ -229,9 +229,32 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
     <a href="#nimbus-sens"><span class="dot"></span>Nimbus — Q1 to Q5</a>
     <a href="#nimbus-q6"><span class="dot"></span>Nimbus Q6 — In-Class</a>
   </div>
+  <div class="sb-group">Day 2 — Tue Nov 3</div>
+  <div class="sb-nav">
+    <a href="#hastings"><span class="dot"></span>Hastings — One Trial vs 10K</a>
+    <a href="#flaw-averages"><span class="dot"></span>The Flaw of Averages</a>
+    <a href="#two-intervals"><span class="dot"></span>CI vs Range of Outcomes</a>
+    <a href="#precision"><span class="dot"></span>Precision Control</a>
+    <a href="#excel-claude"><span class="dot"></span>Excel + Claude</a>
+    <a href="#verify"><span class="dot"></span>Verify Claude's Output</a>
+    <a href="#data-table"><span class="dot"></span>Comparing Decisions — In-Class</a>
+    <a href="#risk-profiles"><span class="dot"></span>Risk Profiles</a>
+    <a href="#dominance"><span class="dot"></span>Dominance &amp; Risk vs Reward</a>
+    <a href="#demand-sales"><span class="dot"></span>Demand ≠ Sales</a>
+    <a href="#python-risk"><span class="dot"></span>Python &amp; Q* = 782 — In-Class</a>
+    <a href="#stoch-opt"><span class="dot"></span>Stochastic Optimization</a>
+    <a href="#optimizer-curse"><span class="dot"></span>Curse of Optimization</a>
+    <a href="#requirements"><span class="dot"></span>Chance Constraints</a>
+    <a href="#smallville"><span class="dot"></span>Smallville — In-Class</a>
+    <a href="#flexibility"><span class="dot"></span>Process Flexibility</a>
+    <a href="#long-chain-lp"><span class="dot"></span>Long Chain LP — In-Class</a>
+    <a href="#embedded-sim"><span class="dot"></span>LP Inside the Simulation</a>
+    <a href="#wrap-up"><span class="dot"></span>Wrap-Up</a>
+  </div>
   <div class="sb-group">Reference</div>
   <div class="sb-nav">
     <a href="#hooks1"><span class="dot"></span>Exam Hooks — Day 1</a>
+    <a href="#hooks2"><span class="dot"></span>Exam Hooks — Day 2</a>
   </div>
 </nav>
 
@@ -239,9 +262,10 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
   <div id="hdr">
     <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 4 · Decision Under Risk</div>
     <h1 class="hdr-title">Decision <span>Under Risk</span></h1>
-    <p class="hdr-sub">Prof. Gustavo Vulcano · decision trees · value of information · utility &amp; risk tolerance · LP sensitivity · Pyomo + GLPK with Claude</p>
+    <p class="hdr-sub">Prof. Gustavo Vulcano · decision trees · value of information · utility &amp; risk tolerance · LP sensitivity · Pyomo + GLPK with Claude · simulation &amp; risk profiles · stochastic optimization</p>
     <div class="day-tabs">
       <button class="day-tab active" data-panel="day1">Day 1 — Mon Nov 2</button>
+      <button class="day-tab" data-panel="day2">Day 2 — Tue Nov 3</button>
       <button class="day-tab" data-panel="assignments">Assignments</button>
     </div>
   </div>
@@ -935,6 +959,628 @@ competitive. It comes out as a <b>step function</b> of the number of audits</li>
 <p><b>Every tool today answers the same question: what is this option worth once you price in what you don't know?</b>
 Trees price uncertainty, information is priced by how many decisions it changes, utility prices your nerve, and
 shadow prices price a resource, but only locally. <i>When you leave the range, re-solve.</i></p></div>
+
+</div></div>
+      </div>
+    </div>
+
+    <div id="panel-day2" class="day-panel">
+      <div class="divider">Chapter 3 — advanced simulation</div>
+
+      <div class="sc bl-accent open" id="hastings">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎿</div>
+            <div>
+              <div class="sc-tag ">19 · Simulation Basics</div>
+              <div class="sc-name">Hastings Sportswear — one trial vs 10,000</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>A skiwear maker must commit to a parka order in November; demand shows up six months later. Six forecasters
+guess 900, 1,000, 900, 1,300, 800, 1,200: average <b>1,017</b>, SD 194. Experience says real demand varies about
+twice as much as the forecasts, so demand ~ <b>Normal(1,017, 388)</b>. Normal is an assumption, "pretty standard".</p>
+<table class="dt">
+<tr><th>Input</th><th>Value</th></tr>
+<tr><td>Wholesale price p</td><td>$110</td></tr>
+<tr><td>Cost c</td><td>75% of p = $82.50, paid on every unit ordered</td></tr>
+<tr><td>Salvage s</td><td>8% of p = $8.80, only on leftovers</td></tr>
+<tr><td>Profit</td><td>p·min(Q, D) − c·Q + s·max(Q − D, 0)</td></tr>
+</table>
+<h4>Optimization vs simulation</h4>
+<ul>
+<li><b>Optimization is one-to-one</b>: set the decision cells, get one answer. No randomness.</li>
+<li><b>Simulation is one-to-many</b>: fix Q = 1,017, draw a demand, get a profit (one <b>trial</b>). Draw again, get another.
+10,000 trials give a <i>distribution</i> of profit for that single decision.</li>
+<li>Crystal Ball vocabulary: the random input is the <b>assumption</b> cell (demand), the outputs you track are <b>forecast</b>
+cells (profit, leftovers). Set the <b>seed</b> so everyone gets the same numbers.</li>
+</ul>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="flaw-averages">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">⚠️</div>
+            <div>
+              <div class="sc-tag ">20 · The 101 of Simulation</div>
+              <div class="sc-name">The flaw of averages — E[profit(D)] ≠ profit(E[D])</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The one-trial spreadsheet shows demand at its mean, 1,017, so it reports the profit <i>at the average demand</i>.
+The simulation reports the <i>average profit</i>. They look alike and are fundamentally different.</p>
+<table class="dt">
+<tr><th>Q = 1,017</th><th>One trial (D = 1,017)</th><th>10,000 trials</th></tr>
+<tr><td>Profit</td><td>$27,968</td><td><b>Mean $12,362</b> · SD $22,824</td></tr>
+<tr><td>Leftovers</td><td>0</td><td><b>Mean 154.2</b> units</td></tr>
+<tr><td>P(profit &gt; 0)</td><td>—</td><td>76.2%</td></tr>
+</table>
+<ul>
+<li>The one-trial number <b>kills the uncertainty</b>: it assumes demand lands exactly on 1,017, "lucky you". It is the
+best case, not the expected case.</li>
+<li>The profit distribution is <b>not normal</b> even though demand is: over 50% of the mass piles up at the sell-out
+profit (Q × $27.50), with a long tail of losses.</li>
+<li>The sample mean is only an <b>estimate</b> of the expected profit, which you never know. More trials, closer estimate.</li>
+</ul>
+<div class="callout amber"><span class="c-label amber">The common mistake in practice</span>
+<p>Replacing every random input with its mean and reading the output. With big money at stake, model the uncertainty explicitly.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="two-intervals">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">↔️</div>
+            <div>
+              <div class="sc-tag ">21 · Two Intervals</div>
+              <div class="sc-name">CI for the mean vs the range of outcomes</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Interval</th><th>Q = 1,017</th><th>What it bounds</th></tr>
+<tr><td>95% CI for the mean</td><td>$12,362 ± 1.96 × $228 = <b>($11,915, $12,810)</b></td><td>The <b>expected profit</b></td></tr>
+<tr><td>95% of outcomes</td><td>2.5th to 97.5th percentile = <b>(−$49,253, $27,968)</b></td><td>The profit you will actually <b>realize</b></td></tr>
+</table>
+<ul>
+<li>CI = mean ± 1.96 × standard error, with standard error = SD / √n.</li>
+<li>Crystal Ball's <b>certainty level</b> is the outcome range, not the CI. With Claude, ask for percentiles, and say which interval you want.</li>
+</ul>
+<div class="callout amber"><span class="c-label amber">The wrong reading (corrected in class)</span>
+<p>"Profit will fall between $11,915 and $12,810 95% of the time" is <b>wrong</b>. That interval is about the expected
+profit. Realized profit ranges from about −$49K to $28K.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="precision">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎯</div>
+            <div>
+              <div class="sc-tag ">22 · Precision Control</div>
+              <div class="sc-name">How many trials? Choose n first</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Goal: a 95% CI for mean profit with half-width <b>under $300</b>. The 10,000-trial pilot gives s = $22,824 and h = $447.</p>
+<p style="text-align:center"><code>h = z·s/√n  ⇒  n = (z·s / h)²</code></p>
+<ul>
+<li>n = (1.96 × 22,824 / 300)² ≈ 22,236 → run <b>22,300</b>, extending the same seed-1000 stream.</li>
+<li>Result: mean $12,441, s = $22,677, half-width = 1.96 × 22,677 / √22,300 = <b>$298 ✓</b></li>
+<li>In Crystal Ball: Run Preferences → stop when the precision is reached. With Claude: compute n, then ask for n trials.</li>
+</ul>
+<div class="callout"><span class="c-label">Why not always demand a tiny half-width?</span>
+<p>Computation. This model is tiny; real models are not. Precision is a trade-off against run time.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="excel-claude">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🤝</div>
+            <div>
+              <div class="sc-tag ">23 · Excel + Claude</div>
+              <div class="sc-name">Replacing Crystal Ball — build, specify, run, verify, decide</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Crystal Ball is an expensive license. The replacement: <b>you build the model in Excel, Claude runs the trials in
+Python, and you use Excel to verify Claude's results.</b> The concepts don't change; you must now state every choice explicitly.</p>
+<ol>
+<li><b>Build</b> a one-trial model in Excel. Demand in C16 is just a number, not a distribution. Check it works before asking for 10,000.</li>
+<li><b>Specify</b> it to Claude: assumption cell + distribution, decision cell, forecast cells, trials, seed</li>
+<li><b>Run</b>: Claude simulates in Python and returns statistics, charts and an .xlsx of every trial</li>
+<li><b>Verify</b> in Excel (card 24)</li>
+<li><b>Decide</b>: compare order quantities and write the recommendation</li>
+</ol>
+<h4>The prompt on the slide</h4>
+<p><i>"I attached my Excel model to use as basis for a Monte Carlo simulation model. The sheet 'Hastings' describes the
+model for a single trial. Assumption: demand in C16 ~ Normal(mean C8, SD C9 × C10), rounded and clipped at 0. Decision:
+order quantity Q in C13 (= 1,017). Forecasts: profit (C22) and leftover units (C20). Run 10,000 trials. Use
+numpy.random.default_rng(1000).random(10000) as the uniform draws. Report mean, median, SD, standard error, P(profit &gt; 0),
+and a 95% CI for each forecast (with a frequency chart of each). Return an .xlsx with every trial. List every assumption you added."</i></p>
+<div class="callout green"><span class="c-label green">Three habits from the prompt</span>
+<p><b>The seed</b>: same numbers for everyone. <b>The .xlsx of trials</b>: evidence to recompute every statistic.
+<b>"List every assumption you added"</b>: brings Claude's silent modeling choices into the open. Vulcano called that table good practice.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="verify">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔍</div>
+            <div>
+              <div class="sc-tag ">24 · Verify</div>
+              <div class="sc-name">A clean-looking answer is not a checked answer</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ol>
+<li><b>Recompute one trial by hand.</b> Trial 4: D = 695, Q = 1,017 → 695 × 110 + 322 × 8.80 − 1,017 × 82.50 = <b>−$4,618.90</b></li>
+<li><code>=COUNT(profit range)</code> returns 10,000</li>
+<li><code>=AVERAGE</code> and <code>=STDEV.S</code> match Claude's mean and SD</li>
+<li>Build the CI yourself: mean ± 1.96 × s/√n, with <code>=STDEV(range)/SQRT(COUNT(range))</code> for the standard error</li>
+<li>Judge every assumption Claude made that the case doesn't state</li>
+</ol>
+<h4>Silent choices to look for</h4>
+<div class="anom-list">
+  <div class="anom"><span class="anom-b ok">Check</span><div class="anom-text">Negative demand clipped at 0 (or not) · demand rounded to whole units</div></div>
+  <div class="anom"><span class="anom-b bad">Error</span><div class="anom-text">SD of the forecasts (194) used instead of 2 × 194</div></div>
+  <div class="anom"><span class="anom-b bad">Error</span><div class="anom-text">z = 1.645 (a 90% CI) instead of 1.96</div></div>
+  <div class="anom"><span class="anom-b bad">Error</span><div class="anom-text">Statistics computed on only part of the trials · salvage credited on units that sold</div></div>
+</div>
+<div class="callout"><span class="c-label">When Claude's mean ≠ Crystal Ball's</span>
+<p>Same 10,000 trials and seed, but a different random-number algorithm behind the scenes, so the sample means differ
+slightly. The check: <b>do the two 95% CIs for the mean overlap?</b> In class they did, which signals the model is right.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="data-table">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📋</div>
+            <div>
+              <div class="sc-tag ">25 · In-Class Submission</div>
+              <div class="sc-name">Comparing decisions — eight order quantities, same draws</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Like an Excel Data Table: every Q faces the <b>same 10,000 simulated demands</b> (seed 1000). Asking for that
+explicitly means differences between rows reflect the decision, not sampling noise.</p>
+<table class="dt">
+<tr><th>Q</th><th>Mean profit</th><th>SD</th><th>95% CI for mean</th><th>P(loss)</th><th>Mean leftovers</th></tr>
+<tr><td>300</td><td>$7,799</td><td>$3,034</td><td>$7,739 – $7,858</td><td>2.0%</td><td>4.5</td></tr>
+<tr><td>600</td><td>$13,670</td><td>$9,187</td><td>$13,490 – $13,850</td><td>6.8%</td><td>28.0</td></tr>
+<tr><td>900</td><td><b>$14,316</b></td><td>$18,711</td><td>$13,950 – $14,683</td><td>17.8%</td><td>103.1</td></tr>
+<tr><td>1,200</td><td>$6,376</td><td>$28,759</td><td>$5,813 – $6,940</td><td>35.4%</td><td>263.1</td></tr>
+<tr><td>1,500</td><td>−$9,714</td><td>$35,519</td><td>−$10,410 – −$9,017</td><td>58.1%</td><td>503.6</td></tr>
+<tr><td>1,800</td><td>−$30,112</td><td>$38,376</td><td>−$30,864 – −$29,360</td><td>77.9%</td><td>786.7</td></tr>
+<tr><td>2,100</td><td>−$51,910</td><td>$39,097</td><td>−$52,676 – −$51,144</td><td>90.7%</td><td>1,083.6</td></tr>
+<tr><td>2,400</td><td>−$73,986</td><td>$39,201</td><td>−$74,754 – −$73,217</td><td>96.9%</td><td>1,383.3</td></tr>
+</table>
+<h4>The class discussion</h4>
+<ul>
+<li>900 has the highest mean but a big SD; 600 gives up a little mean for half the SD.</li>
+<li>The two CIs don't overlap, so 900's expected profit is very likely higher, but the ends are only about <b>$100 apart</b>
+($13,850 vs $13,950). 600 is a slightly worse performer in expected terms and much safer: less than half the chance of a loss.</li>
+<li>Deciding across many SKUs (stock-keeping units)? Going for the maximum expected profit is reasonable.</li>
+<li>Extremely risk-averse → 300. Risk-seeking → a bigger order. <b>No correct answer unless one option is clearly dominated.</b></li>
+</ul>
+<div class="callout amber"><span class="c-label amber">Submitted (Part B d)</span>
+<p>Excel "data table" for Q = 300 … 2,400 with mean profit and 95% CI, the overlay chart (card 26), and a comment on
+which quantity to order and why, plus the prompts.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="risk-profiles">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📈</div>
+            <div>
+              <div class="sc-tag ">26 · Risk Profiles</div>
+              <div class="sc-name">Overlay charts — cumulative distributions on one plot</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>An <b>overlay chart</b> stacks the cumulative distribution of profit, P(Profit ≤ x), for each order quantity. Each
+curve is that decision's <b>risk profile</b>, a more informative version of the summary table.</p>
+<ul>
+<li>Read a point: pick a profit x on the horizontal axis; the curve's height is the probability of making x <i>or less</i>.</li>
+<li>Each curve jumps to 100% at <b>Q × $27.50</b>, the sell-out profit at the unit margin. You can't make more.</li>
+<li><b>Density view vs cumulative view</b>: the shaded area under the density up to x becomes a single point on the
+cumulative curve. The last value is always 1, the total area. The bars of a frequency chart sum to 1 the same way.</li>
+<li>The density view is friendlier to the eye, but the <b>cumulative view is more informative</b> for comparing risk profiles.</li>
+</ul>
+<div class="callout amber"><span class="c-label amber">Submitted (with Part B d)</span>
+<p>The overlay chart of the eight risk profiles.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dominance">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🏆</div>
+            <div>
+              <div class="sc-tag ">27 · Comparing Distributions</div>
+              <div class="sc-name">Stochastic dominance vs risk vs reward</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Concept</th><th>On the chart</th><th>Decision</th></tr>
+<tr><td>Stochastic dominance</td><td>A's cumulative curve lies <b>entirely below/right of</b> B's</td><td>Pick A. A <b>no-brainer</b>, whatever your attitude to risk</td></tr>
+<tr><td>Less risky</td><td>C <b>starts below, crosses once, finishes above</b> B: steeper, more concentrated around the median</td><td>Says nothing about the mean on its own</td></tr>
+<tr><td>Risk vs reward</td><td>C less risky <b>and</b> higher expected profit (CIs not overlapping = strong signal)</td><td>Every <b>risk-averse</b> decision maker picks C. Depends on preferences</td></tr>
+</table>
+<ul>
+<li>Dominance means for every threshold t: <b>less downside</b>, P(A ≤ t) ≤ P(B ≤ t), and <b>more upside</b>,
+P(A ≥ t) ≥ P(B ≥ t). For costs, "better" means to the left.</li>
+<li>It does <b>not</b> mean A is better in every scenario. Die example: B pays 5 less than A on every face except one,
+where it pays 65. B's curve sits below A's, so B dominates.</li>
+<li><b>Variance is not risk.</b> A high variance that comes from upside is fine; the full curve shows where the spread comes from.
+Same mean, more spread: a risk-averse person picks the steeper curve, a risk seeker the flatter one.</li>
+</ul>
+<h4>Hastings, eight quantities</h4>
+<ul>
+<li><b>No curve lies below all the others</b>, so no overall dominance. Pairwise, 2,100 dominates 2,400.</li>
+<li>300 is the <b>least risky</b>: it crosses every other curve once and is the steepest. But its mean isn't the highest, so it's not a risk-vs-reward case.</li>
+</ul>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="demand-sales">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧾</div>
+            <div>
+              <div class="sc-tag ">28 · Practice Note</div>
+              <div class="sc-name">Demand, order quantity and sales are three different things</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>A student with a merchandising background raised forecasting what will sell and the heavy discount on leftovers.
+Vulcano's point:</p>
+<ul>
+<li>If you forecast demand from <b>sales</b>, the forecast is wrong. Sales are <b>capped by the quantity on the shelf</b>,
+so you never see the demand beyond it.</li>
+<li>What you need is an <b>unconstrained view of demand</b>: what you would have sold with unlimited inventory.</li>
+<li>Base the order on the demand forecast, then weigh the <b>cost of being short against the cost of being long</b>. That's
+Prof. Cohen's material in Operations Analytics, Nov 4–5.</li>
+</ul>
+<p>For a brand-new product with no history: assign it to a <b>cluster of similar products</b> and use that cluster's
+history as a proxy for its demand.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="python-risk">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🐍</div>
+            <div>
+              <div class="sc-tag ">29 · In-Class Submission</div>
+              <div class="sc-name">Risk evaluation in Python — and adding Q* = 782</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The course script <code>Hastings Sportswear with Risk Evaluation.py</code> (10,000 trials, seed 1000, the same demand
+samples for every q) reports the CI, P(Profit ≥ 0), P(Profit &lt; −$10,000) and a smoothed cumulative overlay chart.</p>
+<table class="dt">
+<tr><th>q</th><th>95% CI for mean profit</th><th>P(Profit ≥ 0)</th><th>P(Profit &lt; −$10K)</th></tr>
+<tr><td>782 (Q*)</td><td>($14,369, $14,957)</td><td>0.868</td><td>0.085</td></tr>
+<tr><td>814</td><td>($14,276, $14,906)</td><td>0.857</td><td>0.094</td></tr>
+<tr><td>1,017</td><td>($11,441, $12,349)</td><td>0.751</td><td>0.172</td></tr>
+<tr><td>1,220</td><td>($4,540, $5,708)</td><td>0.626</td><td>0.286</td></tr>
+</table>
+<ul>
+<li>Among the original three, <b>814 is the lowest risk and the highest reward</b>: a risk-vs-reward example.</li>
+<li>Would everyone pick 814? Not clearly. 1,017 has a bigger upside, so a risk seeker may prefer it.</li>
+<li>Add the newsvendor <b>Q* = 782</b>: less risky than the other three, with the highest or at least comparable reward.
+<b>A risk-averse decision maker takes 782.</b></li>
+<li>Where 782 comes from: the critical fractile (p − c)/(p − s) = 27.50 / 101.20 ≈ 0.27, the 27th percentile of demand.
+A lost sale costs $27.50, an unsold parka $73.70, so the order sits well below the mean.</li>
+</ul>
+<div class="callout amber"><span class="c-label amber">Submitted (Part C d)</span>
+<p>The Python script and the overlay chart with Q = 782, 814, 1,017 and 1,220, plus the prompts.</p></div>
+</div></div>
+      </div>
+
+      <div class="divider">Chapter 4 — combining optimization and simulation</div>
+
+      <div class="sc bl-accent" id="stoch-opt">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔁</div>
+            <div>
+              <div class="sc-tag ">30 · Stochastic Optimization</div>
+              <div class="sc-name">Search outside, simulate inside</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>In deterministic optimization one plan gives one objective value. Under simulation one plan gives 10,000 profits,
+so <b>"maximize profit" means nothing</b> until you name the statistic: usually the <b>mean</b>, sometimes the median.
+Maximizing the maximum is only for the extremely risk-seeking.</p>
+<ul>
+<li><b>Exhaustive search</b> over a grid of decisions is the optimization part; scoring each decision on the trials is the simulation part.</li>
+<li>Key: draw the 10,000 trials <b>once</b> and evaluate every candidate on the same draws. Don't regenerate per candidate.</li>
+</ul>
+<h4>Hastings, Q from 100 to 1,500</h4>
+<p><i>"Decision: order quantity Q, integer, 100 to 1,500. Uncertainty: demand D ~ Normal(1017, 388), floored at 0. Model:
+sales = min(Q, D); leftovers = max(Q − D, 0); contribution = 110·sales − 82.5·Q + 8.8·leftovers. Draw 10,000 demand values
+ONCE (seed 1000) and evaluate every Q on the same draws. Objective: maximize mean contribution. Report: best Q, mean
+contribution, P(contribution &gt; 0), mean leftovers; plot mean contribution vs. Q."</i></p>
+<p>Vulcano's run: <b>best Q = 777</b>, a little off the theoretical 782 because of sampling. The top of the curve is flat:
+on our run 777 and 782 differ by under $1 of mean contribution.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="optimizer-curse">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🪤</div>
+            <div>
+              <div class="sc-tag ">31 · The Curse of Optimization</div>
+              <div class="sc-name">The in-sample best is overfit — re-test on fresh draws</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>777 was the best for <i>those</i> 10,000 trials, so its in-sample performance is flattered. It's the same idea as
+<b>overfitting</b> in statistics and machine learning.</p>
+<ul>
+<li>For a clean assessment, <b>generate a new set of trials and test the chosen decision there</b>. Pick on one set, report on another.</li>
+<li>On Vulcano's run the out-of-sample mean came in slightly lower, around $14.8K.</li>
+<li>Most important when the answer must meet a <b>requirement</b> (card 32): an in-sample "pass" can fail out of sample.</li>
+</ul>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="requirements">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🚧</div>
+            <div>
+              <div class="sc-tag ">32 · Requirements</div>
+              <div class="sc-name">Chance constraints — conditions on the output, not the decision</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>A constraint limits a decision directly ("Q can't exceed a threshold"). A <b>requirement</b> limits the
+<b>simulated output</b>, which you only know after running the trials.</p>
+<ul>
+<li>On the expected value: <b>mean leftovers ≤ 20</b> (say, warehouse space).</li>
+<li>On a probability (a <b>chance constraint</b>): <b>P(contribution &gt; 0) ≥ 99%</b>, at most a 1% chance of a negative
+cash flow, estimated as the fraction of the 10,000 draws.</li>
+<li>Objective among the feasible Q: maximize mean contribution. Also report the <b>unconstrained best Q</b> for comparison.</li>
+</ul>
+<div class="callout"><span class="c-label">Prompting note</span>
+<p>Vulcano told Claude to <b>regenerate the script from scratch</b>. Otherwise it just bolts the new requirement onto the previous script.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="smallville">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📮</div>
+            <div>
+              <div class="sc-tag ">33 · In-Class Submission</div>
+              <div class="sc-name">Smallville Post Office — fewest workers, P(shortage) &lt; 10%</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Daily need ~ Poisson with means Sun 16, Mon 10, Tue 14, Wed 12, Thu 16, Fri 9, Sat 11. Each employee works
+<b>five consecutive days</b>, wrapping into next week. Minimize total employees so the chance of a shortage <b>on any day
+of the week</b> is under 10%.</p>
+<ul>
+<li><b>Seven decisions</b> (how many start each day) and <b>seven random events</b> (each day's need). An event is out of your control; a decision isn't.</li>
+<li>An LP that staffs to the <b>mean</b> need is "totally off": it assumes every day needs exactly its mean.</li>
+<li>Coverage matrix: A[d, j] = 1 if a worker starting on day j is on duty on day d. Row sums × starts = on duty each day.</li>
+</ul>
+<table class="dt">
+<tr><th>Schedule</th><th>Total</th><th>P(shortage in a week)</th></tr>
+<tr><td>Staff to the mean</td><td>19</td><td>94.4%</td></tr>
+<tr><td>[4, 2, 4, 2, 4, 2, 2]</td><td>20</td><td>93.1%</td></tr>
+<tr><td>[5, 3, 5, 3, 5, 3, 3]</td><td>27</td><td>33.8%</td></tr>
+<tr><td>[11, 0, 5, 5, 3, 4, 1]</td><td><b>29</b></td><td>9.64% on the 10,000 trials · 9.90% on 100,000 fresh draws</td></tr>
+</table>
+<p>Vulcano's answer was also <b>29</b> (24 on duty Sunday), followed by the out-of-sample check on 100,000 new trials.
+Ours: exhaustive search by total from a lower bound of 24, so 29 is the true minimum on those trials.</p>
+<div class="callout amber"><span class="c-label amber">The audit</span>
+<p>Out of sample the 29-worker schedule's CI is 9.71% – 10.09%, touching the limit, and only 3 of the 15 schedules
+that passed in sample stay under 10%. The curse of optimization, live. 30 workers gives margin (6.76%).</p></div>
+<div class="callout"><span class="c-label">Slide 15 — what to submit</span>
+<p>Specify (decisions, Poisson uncertainty, weekly shortage flag, objective, requirement) · Generate (evaluator with
+common random numbers, 10,000 trials, seed 1000, plus a justified search method) · Audit (coverage matrix, fresh draws,
+compare with the mean-only schedule). <b>Submit: the prompt, the code and output, a short audit memo.</b></p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="flexibility">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🏭</div>
+            <div>
+              <div class="sc-tag ">34 · Process Flexibility</div>
+              <div class="sc-name">Six plants, six products — how much flexibility?</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Balancing limited resources (plant capacity, inventory, call-center agents) against <b>uncertain, heterogeneous demand</b>.
+Flexible processes allocate capacity dynamically. Examples: staffing IVR (interactive voice response) channels with agent pools,
+last-mile delivery staff across city areas. <b>Big question: what degree of flexibility should you provide?</b></p>
+<p>Setup: 6 plants with capacity 100 each; 6 regions with demand ~ Normal(100, 40), independent, truncated at 0. An arc
+plant → region means that plant can make that product. <b>No backlog</b>: excess demand is lost.</p>
+<table class="dt">
+<tr><th>Configuration</th><th>Arcs</th><th>Sales in a trial</th></tr>
+<tr><td>Dedicated</td><td>6</td><td>Σ min(D<sub>i</sub>, 100). Cheapest, most restricted</td></tr>
+<tr><td>Short chain</td><td>12</td><td>Fully flexible within pairs: Σ min(D<sub>a</sub> + D<sub>b</sub>, 200)</td></tr>
+<tr><td>Fully flexible</td><td>36</td><td>min(ΣD, 600): one big plant of capacity 600. The upper bound</td></tr>
+</table>
+<ul>
+<li>The number of arcs is a <b>proxy for cost</b>.</li>
+<li>Full flexibility averages about <b>561, not 600</b>: total demand is below 600 about half the time, so P(Sales = 600) ≈ 50%.</li>
+<li>Prompting tip from his demo: "<b>before running, show me the formula you used to compute sales</b> in each configuration".</li>
+</ul>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="long-chain-lp">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">⛓️</div>
+            <div>
+              <div class="sc-tag ">35 · In-Class Submission</div>
+              <div class="sc-name">The long chain as an LP — Claude + Pyomo</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Long chain: plant i serves regions i and i + 1, and P6 also serves D1. Still <b>12 arcs</b>: two out of each plant, two
+into each region. But there's no closed-form sales formula, so <b>every set of demands needs an LP</b>, a transportation problem.</p>
+<h4>The deterministic formulation</h4>
+<p>x<sub>pd</sub> = volume of demand d served from plant p, for arcs (p, d) in A. Max Σ x<sub>pd</sub> subject to
+Σ<sub>d</sub> x<sub>pd</sub> ≤ C<sub>p</sub> (plant capacity), Σ<sub>p</sub> x<sub>pd</sub> ≤ D<sub>d</sub> (demand), x ≥ 0.
+The arcs come from an <b>incidence matrix</b> uploaded as an Excel file (1 = that plant serves that product).</p>
+<h4>Using Claude</h4>
+<ol>
+<li>Give Claude the formulation: sets P and D, the arc matrix in Excel, objective and constraints. <b>State the model, not the code.</b></li>
+<li>Tell it in advance that the demand <b>RHS will be changed</b> for different demand realizations</li>
+<li>Ask for a Pyomo model solved with GLPK</li>
+<li>Review the code against the formulation, especially the demand and capacity constraints</li>
+<li>Test a case you can verify: demands [100, 80, 130, 90, 70, 100] → optimal sales <b>570</b></li>
+</ol>
+<div class="callout amber"><span class="c-label amber">Submitted (parts b–d)</span>
+<p>The prompts, the LP script and its 570 result, a bipartite graph labelled with each arc's flow, the four-way comparison, and the intuition.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="embedded-sim">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧩</div>
+            <div>
+              <div class="sc-tag ">36 · Optimization-Embedded Simulation</div>
+              <div class="sc-name">Simulate outside, solve an LP inside every trial</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The reverse of card 30. A simulation loop draws the six demands; inside each trial, the long-chain LP is solved with
+only the demand RHS replaced, so all four configurations face the same 10,000 demand sets (seed 1000).</p>
+<table class="dt">
+<tr><th>Configuration</th><th>Arcs</th><th>Mean sales</th><th>95% CI</th><th>P(Sales = 600)</th></tr>
+<tr><td>Dedicated</td><td>6</td><td>504.7</td><td>(503.6, 505.8)</td><td>1.5%</td></tr>
+<tr><td>Short chain</td><td>12</td><td>532.9</td><td>(531.8, 534.0)</td><td>12.4%</td></tr>
+<tr><td>Long chain</td><td>12</td><td><b>560.1</b></td><td>(559.0, 561.2)</td><td>47.5%</td></tr>
+<tr><td>Fully flexible</td><td>36</td><td>561.0</td><td>(559.8, 562.1)</td><td>50.2%</td></tr>
+</table>
+<p>Vulcano's numbers: about 504, 532, 560 and 561.</p>
+<h4>Why the long chain wins with the same 12 arcs</h4>
+<ul>
+<li>In the short chain, a pair of plants reaches <b>2</b> demands. In the long chain, every pair reaches <b>3</b> (P1 and P2
+serve D1, D2, D3), and the loop links everything. Spare capacity can travel along the chain to a shortage anywhere.</li>
+<li>Short chain: about half the gain of full flexibility at a third of the arcs. Long chain: almost all of it at the same third.</li>
+</ul>
+<div class="callout green"><span class="c-label green">In practice</span>
+<p>You don't need to train everyone in everything. <b>Cross-train each person in two tasks, arranged as a chain</b>, and you
+get almost full flexibility at a fraction of the cost, even when it isn't perfectly balanced. This comes from a seminal
+<b>1995</b> paper that opened the process-flexibility research stream (on Brightspace; read the story in section 1 and skip the math).</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="wrap-up">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎬</div>
+            <div>
+              <div class="sc-tag ">37 · Wrap-Up</div>
+              <div class="sc-name">Two intensive days, in Vulcano's words</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>Decision analysis</b>: trees, event vs decision nodes, value of perfect and imperfect information, utility to encode risk
+aversion. The key takeaway is knowing <b>what you control (decisions) from what you don't (random events)</b>.</li>
+<li><b>Advanced LP</b>: sensitivity, shadow prices, reduced costs, Pyomo scripts from Claude. Industry-standard solvers handle
+big problems; you swap the solver and the model stays the same.</li>
+<li><b>Simulation</b>: not just the mean, but the <b>risk profile</b> beside it. Stochastic dominance and risk vs reward.</li>
+<li><b>Optimization + simulation</b>: stochastic optimization (try values, simulate each: Hastings, Smallville) and
+optimization-embedded simulation (simulate, solve an LP per trial: the long chain).</li>
+</ul>
+<div class="callout"><span class="c-label">On using Claude</span>
+<p>Set the number of trials and the seed, mind the usage, and avoid unnecessary prompting. Vulcano said many of the
+submitted prompts could teach a class on this.</p></div>
+</div></div>
+      </div>
+
+      <div class="divider">Reference</div>
+
+      <div class="sc bl-green" id="hooks2">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">⭐</div>
+            <div>
+              <div class="sc-tag green">Reference</div>
+              <div class="sc-name">Day 2 exam hooks &mdash; the twelve things worth memorising</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+
+<ol>
+<li><b>Optimization is one-to-one; simulation is one-to-many.</b> One decision, 10,000 trials, a distribution of outcomes.</li>
+<li><b>Flaw of averages:</b> profit at mean demand ($27,968) ≠ mean profit ($12,362). Never plug in the mean and read the output.</li>
+<li><b>CI for the mean ≠ range of outcomes.</b> ($11,915, $12,810) bounds expected profit; (−$49,253, $27,968) bounds realized profit.</li>
+<li><b>Precision control:</b> n = (z·s/h)². Half-width $300 → 22,300 trials.</li>
+<li><b>Excel + Claude:</b> build the one-trial model → specify → run → verify in Excel → decide. Always "list every assumption you added".</li>
+<li><b>Verify:</b> recompute trial 4 (−$4,618.90), COUNT = 10,000, AVERAGE/STDEV match, rebuild the CI. Different RNG → check the CIs overlap.</li>
+<li><b>Compare decisions on the same draws</b>, so the differences reflect the decision, not noise.</li>
+<li><b>Risk profile = cumulative curve.</b> Each Hastings curve jumps to 100% at Q × $27.50.</li>
+<li><b>Dominance = curve entirely below/right: no-brainer.</b> Less risky = starts below, crosses once, ends above. Add a higher mean → risk vs reward: every risk-averse person picks it.</li>
+<li><b>Q* = 782</b> from (p − c)/(p − s) = 27.5/101.2 ≈ 0.27. Among 782/814/1,017/1,220, the risk-averse pick is 782.</li>
+<li><b>Stochastic optimization:</b> name the statistic, draw once, score every candidate on the same draws, then <b>re-test the winner on fresh draws</b> (curse of optimization).</li>
+<li><b>Long chain:</b> 12 arcs ≈ full flexibility's 36 (560 vs 561), short chain 533, dedicated 505. Each pair of plants reaches 3 demands. Cross-train in a chain.</li>
+</ol>
+
+<div class="callout green"><span class="c-label green">The one-line summary of Day 2</span>
+<p><b>A decision under uncertainty has a distribution, not a number.</b> Simulate it on common draws, read the whole risk profile
+beside the CI for the mean, and when you optimize over simulated trials, test the winner on draws it hasn't seen.</p></div>
 
 </div></div>
       </div>
