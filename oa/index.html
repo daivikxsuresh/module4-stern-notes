@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operations Analytics · Module 4 · NYU Stern MSBAi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0a0d12;
+  --surface: #10141b;
+  --card:    #141a22;
+  --border:  #1c2a38;
+  --accent:  #fb7185;
+  --accent-soft: rgba(251,113,133,.08);
+  --amber:   #fbbf24;
+  --green:   #34d399;
+  --red:     #f87171;
+  --text:    #f2ede6;
+  --muted:   #7f98a9;
+  --faint:   #26384a;
+  --sidebar-w: 256px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 16px; line-height: 1.75;
+  display: flex; min-height: 100vh; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(251,113,133,.04) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(251,113,133,.07) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── GATE ── */
+#gate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.gate-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
+.gate-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; }
+.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
+.gate-input:focus { border-color: var(--accent); }
+.gate-btn { margin-top: 12px; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #0a0d12; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .2s; }
+.gate-btn:hover { opacity: .85; }
+.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); margin-top: 10px; min-height: 16px; }
+
+/* ── SIDEBAR ── */
+#sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: rgba(10,13,18,.97); border-right: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  overflow-y: auto; overflow-x: hidden;
+  z-index: 100; padding: 24px 0 40px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.sb-brand { padding: 0 18px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sb-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(251,113,133,.25); border-radius: 4px; padding: 3px 8px; margin-bottom: 8px; }
+.sb-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); line-height: 1.3; }
+.sb-sub { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+.sb-group { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); padding: 14px 18px 5px; }
+.sb-nav a { display: flex; align-items: center; gap: 9px; padding: 7px 18px; text-decoration: none; font-size: 13px; color: var(--muted); transition: color .15s, background .15s; border-left: 2px solid transparent; }
+.sb-nav a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.sb-nav a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+.sb-nav .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); flex-shrink: 0; transition: background .15s; }
+.sb-nav a.active .dot { background: var(--accent); }
+.sb-back-row { border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.sb-back-row a { display: flex; align-items: center; gap: 8px; padding: 12px 18px; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .05em; color: var(--muted); transition: color .15s, background .15s; }
+.sb-back-row a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+
+/* ── MAIN ── */
+#main { margin-left: var(--sidebar-w); flex: 1; position: relative; z-index: 1; }
+
+/* ── HEADER ── */
+#hdr { padding: 48px 56px 32px; border-bottom: 1px solid var(--border); }
+.hdr-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.hdr-title { font-family: 'DM Serif Display', serif; font-size: 42px; color: var(--text); line-height: 1.15; margin-bottom: 6px; }
+.hdr-title span { color: var(--accent); }
+.hdr-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; font-style: italic; }
+.day-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.day-tab { padding: 8px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .07em; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all .2s; }
+.day-tab:hover { color: var(--text); border-color: var(--accent); }
+.day-tab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+/* ── CONTENT ── */
+#content { padding: 36px 56px 80px; }
+.day-panel { display: none; }
+.day-panel.active { display: block; }
+
+/* ── SECTION CARD ── */
+.sc {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+  transition: box-shadow .2s, transform .18s;
+  animation: fadeUp .45s cubic-bezier(.16,1,.3,1) both;
+}
+.sc:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.35); }
+.sc.bl-accent { border-left: 3px solid var(--accent); }
+.sc.bl-amber  { border-left: 3px solid var(--amber); }
+.sc.bl-green  { border-left: 3px solid var(--green); }
+
+.sc-hdr { padding: 20px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; user-select: none; transition: background .15s; }
+.sc-hdr:hover { background: rgba(255,255,255,.02); }
+.sc-hdr-l { display: flex; align-items: center; gap: 14px; }
+.sc-ico { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: var(--accent-soft); border: 1px solid rgba(251,113,133,.2); }
+.sc-ico.amber { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.2); }
+.sc-ico.green { background: rgba(52,211,153,.1); border-color: rgba(52,211,153,.2); }
+.sc-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; }
+.sc-tag.amber { color: var(--amber); }
+.sc-tag.green { color: var(--green); }
+.sc-name { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); line-height: 1.25; }
+.chevron { color: var(--muted); transition: transform .25s; font-size: 14px; flex-shrink: 0; opacity: .7; }
+.sc.open .chevron { transform: rotate(180deg); }
+
+.sc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease, opacity .3s ease; opacity: 0; }
+.sc.open .sc-body { max-height: 4000px; opacity: 1; }
+.sc-in { padding: 4px 28px 28px 80px; border-top: 1px solid var(--border); }
+
+/* ── PROSE ── */
+.sc-in p { margin-bottom: 14px; color: rgba(242,237,230,.88); }
+.sc-in p:last-child { margin-bottom: 0; }
+.sc-in strong, .sc-in b { color: var(--text); font-weight: 600; }
+.sc-in em { color: var(--accent); font-style: italic; }
+.sc-in ul { padding-left: 20px; margin-bottom: 14px; color: rgba(242,237,230,.85); }
+.sc-in li { margin-bottom: 7px; }
+.sc-in li::marker { color: var(--accent); }
+.sc-in ol { list-style: none; padding-left: 0; margin-bottom: 14px; counter-reset: step; }
+.sc-in ol li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; color: rgba(242,237,230,.85); }
+.sc-in ol li::before { content: counter(step); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(251,113,133,.2); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.sc-in h4 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin: 22px 0 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+
+/* ── CALLOUT ── */
+.callout { background: var(--accent-soft); border: 1px solid rgba(251,113,133,.2); border-radius: 9px; padding: 15px 18px; margin: 16px 0; }
+.callout.amber { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.22); }
+.callout.green { background: rgba(52,211,153,.07); border-color: rgba(52,211,153,.22); }
+.c-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 7px; }
+.callout.amber .c-label { color: var(--amber); }
+.callout.green .c-label { color: var(--green); }
+.callout p { color: rgba(242,237,230,.88); margin: 0; font-size: 14.5px; line-height: 1.65; }
+
+/* ── ANOMALY LIST (good/bad badges) ── */
+.anom-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.anom { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+.anom-b { flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; border-radius: 5px; padding: 3px 8px; margin-top: 2px; white-space: nowrap; }
+.anom-b.bad { color: var(--red); background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); }
+.anom-b.ok  { color: var(--green); background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.2); }
+.anom-text { font-size: 14.5px; color: rgba(242,237,230,.82); line-height: 1.65; }
+.anom-text strong { color: var(--text); }
+
+/* ── TABLE ── */
+.dt { width: 100%; border-collapse: collapse; font-size: 14px; margin: 14px 0; }
+.dt th { background: var(--accent-soft); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.dt td { padding: 10px 14px; border-bottom: 1px solid rgba(28,42,56,.7); color: rgba(242,237,230,.82); vertical-align: top; line-height: 1.55; }
+.dt td:first-child { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.dt td strong { color: var(--text); }
+.dt tr:last-child td { border-bottom: 0; }
+.dt tr:hover td { background: rgba(251,113,133,.03); }
+
+code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(251,113,133,.09); color: var(--accent); border-radius: 4px; padding: 1px 6px; }
+
+/* ── ASSIGNMENTS ── */
+.assign-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
+.ac-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(251,113,133,.2); display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.ac-b { flex: 1; }
+.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.ac-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+.ac-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+.ac-due { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
+.ac-due span { color: var(--accent); }
+.done-badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: rgba(52,211,153,.1); color: #34d399; border: 1px solid rgba(52,211,153,.2); border-radius: 20px; padding: 2px 8px; margin-left: 8px; }
+
+.divider { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 32px 0 14px; padding-left: 2px; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+</head>
+
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-label">Operations Analytics · Module 4</div>
+    <div class="gate-title">Daivik's Notes</div>
+    <input id="gate-input" class="gate-input" type="password" placeholder="password" autocomplete="off" />
+    <button class="gate-btn" onclick="tryUnlock()">Enter</button>
+    <div class="gate-err" id="gate-err"></div>
+  </div>
+</div>
+
+<nav id="sidebar" style="display:none">
+  <div class="sb-back-row"><a href="../">← Module 4 hub</a></div>
+  <div class="sb-brand">
+    <div class="sb-badge">OA · Module 4</div>
+    <div class="sb-title">Operations Analytics</div>
+    <div class="sb-sub">Prof. Maxime Cohen</div>
+  </div>
+  <div class="sb-group">Day 3 — Wed Nov 4</div>
+  <div class="sb-nav">
+    <a href="#orientation"><span class="dot"></span>Orientation</a>
+    <a href="#ai-types"><span class="dot"></span>Descriptive to Prescriptive AI</a>
+    <a href="#markdown-why"><span class="dot"></span>Why Markdowns</a>
+    <a href="#markdown-game"><span class="dot"></span>The Retailer Game</a>
+    <a href="#lift-factors"><span class="dot"></span>Lift Factors</a>
+    <a href="#heuristics"><span class="dot"></span>Fixed / Two-Price / Run-Out</a>
+    <a href="#markdown-lp"><span class="dot"></span>The Markdown LP</a>
+    <a href="#my-game"><span class="dot"></span>My Game — In-Class</a>
+    <a href="#why-inventory"><span class="dot"></span>Why Hold Inventory</a>
+    <a href="#newsvendor"><span class="dot"></span>Newsvendor — Pumpkins</a>
+    <a href="#critical-fractile"><span class="dot"></span>Critical Fractile</a>
+    <a href="#champagne"><span class="dot"></span>Champagne Case</a>
+    <a href="#champagne-sim"><span class="dot"></span>Champagne Simulation — In-Class</a>
+    <a href="#order-up-to"><span class="dot"></span>Order-Up-To Policy</a>
+    <a href="#dp-setup"><span class="dot"></span>Guest Lecture Setup</a>
+    <a href="#dp-eda"><span class="dot"></span>Exploration</a>
+    <a href="#dp-split"><span class="dot"></span>Time-Series Split</a>
+    <a href="#dp-missing"><span class="dot"></span>Missing Data</a>
+    <a href="#dp-outliers"><span class="dot"></span>Outliers</a>
+    <a href="#dp-features"><span class="dot"></span>Feature Engineering</a>
+    <a href="#dp-linear"><span class="dot"></span>Linear Methods — In-Class</a>
+    <a href="#dp-trees"><span class="dot"></span>Trees &amp; Clusters — In-Class</a>
+    <a href="#not-captured-3"><span class="dot"></span>Not Captured</a>
+  </div>
+  <div class="sb-group">Reference</div>
+  <div class="sb-nav">
+    <a href="#hooks3"><span class="dot"></span>Exam Hooks — Day 3</a>
+  </div>
+</nav>
+
+<div id="main" style="display:none">
+  <div id="hdr">
+    <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 4 · Operations Analytics</div>
+    <h1 class="hdr-title">Operations <span>Analytics</span></h1>
+    <p class="hdr-sub">Prof. Maxime Cohen · markdown optimization · newsvendor · order-up-to inventory · demand prediction (guest lecture)</p>
+    <div class="day-tabs">
+      <button class="day-tab active" data-panel="day3">Day 3 — Wed Nov 4</button>
+      <button class="day-tab" data-panel="assignments">Assignments</button>
+    </div>
+  </div>
+
+  <div id="content">
+    <div id="panel-day3" class="day-panel active">
+      <div class="divider">Framing — what Operations Analytics is</div>
+
+      <div class="sc bl-accent open" id="orientation">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧭</div>
+            <div>
+              <div class="sc-tag ">01 · Orientation</div>
+              <div class="sc-name">Who's teaching this, and what the two days cover</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Maxime Cohen</b>: Scale AI Chair Professor of Retail and Operations at McGill, and Chief AI Scientist at CIUSSS
+West-Central Montreal (the Jewish General Hospital network). Previously NYU, Google AI and ELNA Medical. PhD in Operations
+Research from MIT; MS and BS from the Technion. Research: operational decisions, data science and AI, revenue management and
+pricing, online platforms, A/B testing, and the impact of generative AI. Has consulted or collaborated with Google/Waze,
+Microsoft, Meta, Uber, OpenAI, Amazon, Expedia, Oracle Retail, IBM Research, Spotify, Loblaws, Canadian Tire and Staples.</p>
+<h4>The course map (Brightspace "In-Class" page)</h4>
+<table class="dt">
+<tr><th>#</th><th>Topic</th><th>Time</th></tr>
+<tr><td>1</td><td>Introduction to Operations Analytics</td><td>0.5 h</td></tr>
+<tr><td>2</td><td>Markdown optimization at a fashion retailer: formulating the problem, several ways to solve it</td><td>1.5 h</td></tr>
+<tr><td>3</td><td>Inventory management: newsvendor; dynamic inventory from the case <i>Managing Champagne Inventory in a Liquor Store</i></td><td>1.5 h</td></tr>
+<tr><td>4</td><td>Promotion optimization: the case <i>Optimizing Promotions for Supermarkets using Data Analytics</i></td><td>1 h</td></tr>
+<tr><td>5</td><td>Demand prediction: machine learning for demand, a real-world case</td><td>2.5 h</td></tr>
+<tr><td>6</td><td>A/B testing and frustration-based promotions (ride-sharing case)</td><td>2 h</td></tr>
+<tr><td>7</td><td>Generative AI for pricing: LLMs for pricing, three case studies</td><td>1.5 h</td></tr>
+</table>
+<p>One topic may be skipped, the hours are estimates and the order can change. Each lecture is built around a real problem,
+a dataset and a measured business impact.</p>
+<div class="callout amber"><span class="c-label amber">How it's graded</span>
+<p>Pre-module 0% (read the cases). <b>Post-module 100%</b>, individual: Assignment 1 = markdown optimization (20%),
+Assignment 2 = the inventory problem from class (30%), Assignment 3 = every question on the supermarket promotions case (50%).
+Due Sun Dec 20, 11:55pm. Nothing done in class is graded, so today's game and simulation are practice for A1 and A2.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="ai-types">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧠</div>
+            <div>
+              <div class="sc-tag ">02 · Framing</div>
+              <div class="sc-name">Descriptive → predictive → prescriptive (and where GenAI sits)</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Layer</th><th>Question</th><th>Examples</th></tr>
+<tr><td>Descriptive</td><td>What happened?</td><td>New patterns, customer segments, trends. Usual output: a dashboard</td></tr>
+<tr><td>Predictive</td><td>What is likely to happen?</td><td>Demand prediction, classification, anomaly detection, customer lifetime value, predictive maintenance, loan default, spam</td></tr>
+<tr><td>Prescriptive</td><td>What should I do?</td><td>Price optimization, inventory, supply chain, staffing, fleet, matching, procurement, A/B testing</td></tr>
+</table>
+<p><b>Generative AI</b> is treated as a (very powerful) subset of prescriptive AI: it generates text, images, audio, video
+and code from a prompt. Pitfalls: privacy, deepfakes, hallucination, plagiarism, bias, and a different answer to the same
+question. Working projects he names: clinician documentation, pricing decisions, web scraping, product pages, marketing.</p>
+<h4>Operational decisions this course touches</h4>
+<p>Inventory · pricing, markdowns and promotions · supply chain · assortment and planogram · resource allocation ·
+fulfillment and procurement · strategic choices like opening a store · hiring and staffing · targeted offers.</p>
+<h4>Where the data comes from</h4>
+<p>Transactions and point of sale (including returns), personal attributes, surveys and reviews, browsing (cookies, clicks,
+dwell time), market and competitor indicators, A/B tests, sensors and IoT, and outside sources such as social media, news and
+Google Trends. "Many data challenges" in all of them.</p>
+<div class="callout"><span class="c-label">His two running cases</span>
+<p><b>Promotion optimization</b> with a large supermarket chain: descriptive → predictive → prescriptive, 3 US patents,
+5 papers, profits up 2–5%. A decision where AI beats humans. <b>A/B tests for pricing</b> with Intelligems: online
+retailers struggle to set prices; testing helps if done carefully (charm pricing tested, several caveats).</p></div>
+</div></div>
+      </div>
+      <div class="divider">Markdown optimization — the retailer game</div>
+
+      <div class="sc bl-accent" id="markdown-why">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🏷️</div>
+            <div>
+              <div class="sc-tag ">03 · Markdowns</div>
+              <div class="sc-name">Why fashion retailers mark down: price skimming</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Econ 101 with zero marginal cost: one price p* earns revenue only from customers willing to pay at least p*.
+<b>Two prices</b> earn more: customers willing to pay p<sub>hi</sub> or higher pay p<sub>hi</sub>, and those between
+p<sub>lo</sub> and p<sub>hi</sub> buy at p<sub>lo</sub>.</p>
+<p>Fashion has the conditions for revenue management: a <b>long lead time</b> (you're stuck with inventory ordered months
+ahead) and a <b>very mixed population</b>. Trend-driven customers are inelastic and pay full price early; elastic customers
+care about trend less and have less money. Selling to both over a season means starting high and marking down:
+<b>price markdowns, a.k.a. price skimming</b>.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="markdown-game">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎮</div>
+            <div>
+              <div class="sc-tag ">04 · The Game</div>
+              <div class="sc-name">Retailer markdown game: 2,000 units, 15 weeks, prices only go down</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Rule</th><th>Value</th></tr>
+<tr><td>Stock</td><td>2,000 units, no restocking, demand hard to predict</td></tr>
+<tr><td>Prices</td><td>$60 full price; markdowns to $54 (10%), $48 (20%), $36 (40%)</td></tr>
+<tr><td>Season</td><td>15 weeks; week 1 is fixed at $60, so <b>14 decisions</b></td></tr>
+<tr><td>Moves</td><td>Each week: hold or lower. Never raise. Choosing 40% ends the game (nothing lower)</td></tr>
+<tr><td>End</td><td>Leftover stock is worth $0. Production cost is sunk, so the goal is total revenue</td></tr>
+</table>
+<p>The screen shows week, price, <b>sales (not demand)</b> and remaining inventory. Sales are capped by stock: in a
+stock-out week you never see how much you could have sold. The game is at
+<code>randhawa.us/games/retailer/nyu.html</code>; <code>Sales-Data.xlsx</code> holds 15 past runs to analyse.</p>
+<p>A good strategy has two parts: <b>estimate demand</b> (historical lift factors + real-time sales), then <b>optimize</b>
+the markdown path (fixed-price heuristic, then an LP), re-solving as weeks pass.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="lift-factors">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📈</div>
+            <div>
+              <div class="sc-tag ">05 · Demand Estimation</div>
+              <div class="sc-name">Lift factors: absolute demand varies, the relative lift doesn't</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Every run is a different item with its own demand curve, and demand is random week to week even at one price. The hint:
+<b>the lift from a price drop is similar across items</b>. If $60 → $54 lifts one item's sales 25%, it lifts others about
+25% too.</p>
+<p>From <code>Sales-Data.xlsx</code>: average weekly sales at each price per item, ignoring stock-out weeks, then the ratio
+to the $60 weeks.</p>
+<table class="dt">
+<tr><th>Items</th><th>Markdown tried</th><th>Average lift vs $60</th></tr>
+<tr><td>1–5</td><td>$54 (10% off)</td><td><b>1.31×</b></td></tr>
+<tr><td>6–10</td><td>$48 (20% off)</td><td><b>1.73×</b></td></tr>
+<tr><td>11–15</td><td>$36 (40% off)</td><td><b>2.81×</b></td></tr>
+</table>
+<p>I recomputed these from the spreadsheet and they match slide 22 to two decimals.</p>
+<p><b>Real-time data</b> pins down the item. Sell 59 at $60 in week 1, and assume 59/week at $60, 59 × 1.31 = 77 at $54,
+59 × 1.73 = 102 at $48, 59 × 2.81 = 166 at $36. Lots of time to sell 2,000 units → $60; very little time → $36.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="heuristics">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧮</div>
+            <div>
+              <div class="sc-tag ">06 · Heuristics</div>
+              <div class="sc-name">Fixed price → two prices → run-out rate</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The running example: 59 sold in week 1 at $60 ($3,540), so 1,941 units and 14 weeks are left.</p>
+<h4>Fixed-price heuristic</h4>
+<table class="dt">
+<tr><th>Price</th><th>Weekly demand</th><th>Sold in 14 weeks (max 1,941)</th><th>Revenue</th></tr>
+<tr><td>$60</td><td>59</td><td>826</td><td>$49,560</td></tr>
+<tr><td>$54</td><td>77</td><td>1,078</td><td>$58,212</td></tr>
+<tr><td>$48</td><td>102</td><td>1,428</td><td>$68,544</td></tr>
+<tr><td>$36</td><td>166</td><td>1,941</td><td><b>$69,876</b></td></tr>
+</table>
+<p>Best single price is $36 for weeks 2–15: total $3,540 + $69,876 = <b>$73,416</b>.</p>
+<h4>Two-price heuristic</h4>
+<p>1 week at $48, then 13 at $36: sales = min(102 + 13 × 166, 1,941) = 1,941, revenue $3,540 + 48 × 102 + 36 × 1,839 =
+<b>$74,640</b>. Better, because a few units now go at $48.</p>
+<h4>Run-out rate heuristic</h4>
+<p>Ideally inventory hits zero exactly in the last week. Pick the mix of $48 and $36 weeks whose demand just covers stock:</p>
+<table class="dt">
+<tr><th>Weeks at $48</th><th>Weeks at $36</th><th>Total demand</th><th>vs 1,941 available</th></tr>
+<tr><td>2</td><td>12</td><td>2,196</td><td>too fast</td></tr>
+<tr><td>4</td><td>10</td><td>2,068</td><td>too fast</td></tr>
+<tr><td>5</td><td>9</td><td>2,004</td><td>still over</td></tr>
+<tr><td><b>6</b></td><td><b>8</b></td><td><b>1,940</b></td><td><b>just in time</b></td></tr>
+</table>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="markdown-lp">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📐</div>
+            <div>
+              <div class="sc-tag ">07 · LP Heuristic</div>
+              <div class="sc-name">The LP: weeks at each price, under time and inventory</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Decision variables: x<sub>60</sub>, x<sub>54</sub>, x<sub>48</sub>, x<sub>36</sub> = number of weeks sold at each price.</p>
+<table class="dt">
+<tr><th>Part</th><th>Formula</th></tr>
+<tr><td>Max revenue</td><td>60·59·x<sub>60</sub> + 54·77·x<sub>54</sub> + 48·102·x<sub>48</sub> + 36·166·x<sub>36</sub></td></tr>
+<tr><td>Limited time</td><td>x<sub>60</sub> + x<sub>54</sub> + x<sub>48</sub> + x<sub>36</sub> ≤ 14 (remaining weeks)</td></tr>
+<tr><td>Limited inventory</td><td>59x<sub>60</sub> + 77x<sub>54</sub> + 102x<sub>48</sub> + 166x<sub>36</sub> ≤ 1,941 (= 2,000 − 59)</td></tr>
+</table>
+<p>Excel Solver's answer: <b>weeks 2–7 at 20% off ($48), weeks 8–15 at 40% off ($36)</b>. Revenue $3,540 + $77,182 =
+<b>$80,772</b>. Same plan as the run-out rate heuristic.</p>
+<div class="callout green"><span class="c-label green">Doing better: re-optimization</span>
+<p>Here the LP is close to the best possible, but you can often beat it: <b>re-solve every week</b> with the updated demand
+estimate (one more week of sales) and the actual remaining inventory. Extensions: richer demand models, multiple items
+(cannibalization), limits on the number of markdowns, choosing the price points themselves. Zara is the practice example.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="my-game">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🕹️</div>
+            <div>
+              <div class="sc-tag ">08 · Worked — In-Class</div>
+              <div class="sc-name">My first game: $104,226 vs $118,584 perfect foresight</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>This item sold about <b>132/week at $60</b>, more than twice the slide example. After week 1, with 1,868 units left and
+14 weeks to go, the run-out logic says sell almost everything at full price.</p>
+<table class="dt">
+<tr><th>After week</th><th>Left / weeks to go</th><th>I did</th><th>Planner (lifts + re-optimization)</th></tr>
+<tr><td>1 (sold 132)</td><td>1,868 / 14</td><td>held $60</td><td>13 weeks at $60, 1 at $54</td></tr>
+<tr><td>6</td><td>1,214 / 9</td><td>→ $54</td><td>hold $60</td></tr>
+<tr><td>9</td><td>719 / 6</td><td>→ $48</td><td>hold $54</td></tr>
+<tr><td>11</td><td>348 / 4</td><td>→ $36</td><td>hold $48</td></tr>
+</table>
+<p>I sold out in week 12, sold nothing in weeks 13–15, and the last 348 units went at $36. That's most of the 12.1% gap.</p>
+<div class="callout"><span class="c-label">The weekly rule</span>
+<p>Weeks left × expected weekly sales at the current price ≥ units left → <b>hold</b>. Only mark down one step when the plan
+says you'd be left with stock. Don't react to one slow week: my $60 weeks ranged 107–148 on pure noise.</p></div>
+</div></div>
+      </div>
+      <div class="divider">Inventory management — newsvendor</div>
+
+      <div class="sc bl-accent" id="why-inventory">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📦</div>
+            <div>
+              <div class="sc-tag ">09 · Inventory</div>
+              <div class="sc-name">Why hold inventory, and why it's called evil</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Reasons to hold it</th><th>Reasons not to</th></tr>
+<tr><td>Demand, supply and process uncertainty</td><td>Holding cost, insurance</td></tr>
+<tr><td>Quantity discounts, ordering/setup cost</td><td>Decisions made in advance; limited space</td></tr>
+<tr><td>Price swings and inflation; peak demand coming</td><td>Risk that preferences change; quality deteriorates</td></tr>
+<tr><td>Protection against stock-outs</td><td></td></tr>
+</table>
+<p>Inventory is a huge commitment: about <b>30–60% of total assets</b> in many retailers. It touches every part of daily
+operations, and managing it well is a real edge (Apple, Zara, Walmart).</p>
+<ul>
+<li><b>Apple:</b> Tim Cook nearly eliminated stockpiled inventory and called it "fundamentally evil". Stock sitting in a
+warehouse costs money instead of making it.</li>
+<li><b>Zara:</b> most apparel retailers lock in 40–60% of a season's line six months ahead and ~80% by season start. Zara
+commits only 15–25% six months out and 50–60% by season start, designing and making the rest mid-season.</li>
+<li><b>Walmart:</b> turns its inventory about 8 times a year (Target 6.4). Turn faster than your 30-day payment terms and
+your vendors finance your inventory.</li>
+</ul>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="newsvendor">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎃</div>
+            <div>
+              <div class="sc-tag ">10 · Newsvendor</div>
+              <div class="sc-name">Marginal analysis: the pumpkin example</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The newsvendor buys papers each morning: too few loses sales, too many leaves unsold copies. The problem has three traits:
+<b>uncertain demand</b>, a <b>perishable or seasonal product</b> with no replenishment, and an <b>order placed before demand
+is known</b>. Christmas trees, Halloween pumpkins, skiwear, flu vaccines, seats held back for last-minute bookings.</p>
+<p><b>Pumpkins:</b> P(D ≤ 200) = 0.5, P(D ≤ 250) = 0.75, P(D ≤ 300) = 0.9. Buy at $2, sell at $5, salvage $1.</p>
+<table class="dt">
+<tr><th>Extra unit</th><th>Expected value of that unit</th><th>Buy it?</th></tr>
+<tr><td>201st</td><td>0.5 × ($1 − $2) + 0.5 × ($5 − $2) = <b>+$1</b></td><td>Yes</td></tr>
+<tr><td>301st</td><td>0.9 × ($1 − $2) + 0.1 × ($5 − $2) = <b>−$0.60</b></td><td>No</td></tr>
+<tr><td>251st</td><td>0.75 × (−$1) + 0.25 × ($3) = <b>$0</b></td><td>Indifferent</td></tr>
+</table>
+<p>Order <b>250</b> (or 251). The profit curve rises ("too little"), peaks ("just right"), then falls ("too much").</p>
+<div class="callout green"><span class="c-label green">Key idea</span>
+<p>At the optimal order quantity, the expected profit of ordering <b>one more unit is zero</b>.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="critical-fractile">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎯</div>
+            <div>
+              <div class="sc-tag ">11 · Critical Fractile</div>
+              <div class="sc-name">P(D ≤ X) = cu / (cu + co)</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ol>
+<li><b>Forecast</b> the distribution: P(D ≤ X) for each X.</li>
+<li><b>Costs:</b> overstocking c<sub>o</sub> = cost of a unit nobody buys; understocking c<sub>u</sub> = cost of a sale you
+missed. Pumpkins: c<sub>o</sub> = 2 − 1 = 1, c<sub>u</sub> = 5 − 2 = 3.</li>
+<li><b>Marginal unit X+1</b> is worth −c<sub>o</sub>·P(D ≤ X) + c<sub>u</sub>·P(D &gt; X).</li>
+<li><b>Set it to zero:</b> P(D ≤ X) = c<sub>u</sub> / (c<sub>u</sub> + c<sub>o</sub>).</li>
+</ol>
+<p>The ratio is the <b>critical fractile</b>, and it is also the <b>service level</b> (the chance you don't run out).
+Then read X off the demand distribution. For normal demand: <b>X = μ + zσ</b>, with z the standard-normal value at the
+critical fractile (z-table, or <code>NORMINV(fractile, μ, σ)</code> in Excel).</p>
+<h4>T-shirts</h4>
+<p>Demand N(1,000, 200); cost $10, price $15, salvage $8 → c<sub>u</sub> = 5, c<sub>o</sub> = 2, fractile 5/7 = 0.714,
+z = 0.57 → <b>1,114 shirts</b> (<code>NORMINV(5/7, 1000, 200)</code>).</p>
+<p><b>Slide question, "price drops to $12?"</b> c<sub>u</sub> = 2 and c<sub>o</sub> = 2 → fractile 0.5 → z = 0 → order
+<b>1,000</b>, just the mean. (My working; the slide leaves it as a question.)</p>
+</div></div>
+      </div>
+      <div class="divider">Inventory management — Champagne, many periods</div>
+
+      <div class="sc bl-accent" id="champagne">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🍾</div>
+            <div>
+              <div class="sc-tag ">12 · Champagne Case</div>
+              <div class="sc-name">A liquor store's Champagne: hold vs backlog, every week</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>A liquor store wants a better ordering policy for Champagne. Shelf space is tight (a quarter shelf per brand) and holding
+bottles is costly (temperature, humidity). Under its loyalty program, a customer whose bottle isn't in stock gets a
+<b>$3 discount per bottle for each week late</b>, so unmet demand is <b>back-ordered</b>, not lost.</p>
+<table class="dt">
+<tr><th>Input</th><th>Value</th></tr>
+<tr><td>Demand per period</td><td>Normal, μ = 100, σ = 20 (unknown when you order)</td></tr>
+<tr><td>Lead time</td><td>Ordered at the end of a period → arrives at the start of the next</td></tr>
+<tr><td>Holding cost</td><td>$1.5 per unit per period</td></tr>
+<tr><td>Backlog cost</td><td>$3 per unit per period</td></tr>
+<tr><td>Current policy</td><td>If ending inventory ≤ 20, order 100; otherwise don't. Two numbers, safety stock 20</td></tr>
+</table>
+<p>Too much → holding cost; too little → backlog cost. Objective 1: the average cost per period of the current policy.
+Objective 2: beat it.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="champagne-sim">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧪</div>
+            <div>
+              <div class="sc-tag ">13 · Worked — Simulation</div>
+              <div class="sc-name">Steps 5–8: the spreadsheet, and why the current policy blows up</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Step 5, demand:</b> inverse transform. Draw X ~ U(0,1) with <code>RAND()</code>, return F⁻¹(X):
+<code>=NORMINV(RAND(),100,20)</code>.</p>
+<h4>Step 6, the relationships (slide 28)</h4>
+<table class="dt">
+<tr><th>Column</th><th>Period 1</th><th>Period t</th></tr>
+<tr><td>B Beginning inv.</td><td>100</td><td>= D<sub>t−1</sub> + E<sub>t−1</sub></td></tr>
+<tr><td>C Demand</td><td colspan="2"><code>NORMINV(RAND(),100,20)</code></td></tr>
+<tr><td>D Ending inv.</td><td colspan="2">= B − C (negative = backlog)</td></tr>
+<tr><td>E Order qty</td><td colspan="2">0 if D &gt; 20, else 100 → <code>=IF(D1&lt;=20,100,0)</code> (D is ending inventory, not demand)</td></tr>
+<tr><td>F Cost</td><td colspan="2">$1.5 × D if D ≥ 0; $3 × |D| if D &lt; 0</td></tr>
+</table>
+<h4>Steps 7–8, 2,000 periods (slides 29–30)</h4>
+<table class="dt">
+<tr><th>Policy (reorder point, order qty)</th><th>Cohen's slide</th><th>My simulation (20 runs × 2,000)</th></tr>
+<tr><td>Current (20, 100)</td><td>Doesn't converge; ~$600–$3,200 per period</td><td>$358–$2,901 by run; inventory starts negative in ~82% of periods</td></tr>
+<tr><td>His example (30, 135)</td><td>$83–$87</td><td>$82.74–$87.07 ✓</td></tr>
+<tr><td>Best I found (70, 115)</td><td>"What did you find?"</td><td>≈ $67.55</td></tr>
+</table>
+<p>The current policy is intuitive and simple, but it performs badly. Ordering exactly the mean (100) only when stock is low
+means it never catches up, so the backlog wanders like a random walk. Ordering a bit more than the mean (115) from a higher
+trigger (70) fixes the drift.</p>
+<div class="callout amber"><span class="c-label amber">Slide 31: what's wrong with any constant policy</span>
+<p>Beginning inventory is often negative. The order size should depend on how much is left. And since demand has the same
+distribution every period, you'd ideally <b>start every period at the same inventory level</b>.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="order-up-to">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔁</div>
+            <div>
+              <div class="sc-tag ">14 · Optimal Policy</div>
+              <div class="sc-name">Order-up-to 108.614: the newsvendor, every period</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Slide 32 (blank in the students' copy; from my photo):</p>
+<ul>
+<li>Use the <b>newsvendor formula</b>: understocking = backlog $3, overstocking = holding $1.5 →
+<code>=NORMINV(3/4.5, 100, 20)</code> = <b>108.614</b>.</li>
+<li>Each period, order exactly enough to bring inventory back up to 108.614:
+<code>=IF(108.614 - D2 &gt; 0, 108.614 - D2, 0)</code>.</li>
+<li>This is the <b>order-up-to policy</b>, and it is <b>optimal</b>. Average cost ≈ <b>$32</b> (my simulation: $32.64).</li>
+</ul>
+<div class="callout"><span class="c-label">Which cell</span>
+<p>It's the <b>order quantity, column E</b>. The slide says "E1" but points at D2: in Cohen's sheet row 1 holds the headers,
+so period 1 is row 2. Put it in E2 and fill down. Column F stays the cost.</p></div>
+<p><b>Where it's used:</b> hospitals keep an order-up-to level for each blood type and refill daily (shortages vs outdated
+red cells); Tesco refills high-volume non-perishables up to three times a day; car dealers, electronics.</p>
+<div class="callout green"><span class="c-label green">Summary</span>
+<p>Simulation lets you test and compare policies and their robustness (e.g., change the demand distribution). The constant
+policy is easy but performs badly; <b>order-up-to is optimal</b> and widely used.</p></div>
+</div></div>
+      </div>
+      <div class="divider">Demand prediction — guest lecture (Pentecoste & Gras)</div>
+
+      <div class="sc bl-accent" id="dp-setup">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🛰️</div>
+            <div>
+              <div class="sc-tag ">15 · Guest Lecture</div>
+              <div class="sc-name">Predicting demand for a tech e-commerce retailer</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Arthur Pentecoste</b> (CEO and co-founder, Zenyt.ai, New York) and <b>Paul-Emile Gras</b> (consultant, McKinsey,
+Paris), with Cohen, teaching from their book (demandpredictionbook.com). The goal: help a store manager predict future weekly
+sales for a tech gadgets e-commerce retailer.</p>
+<table class="dt">
+<tr><th>Material</th><th>What it is</th></tr>
+<tr><td>data_raw.csv</td><td>week, sku, weekly_sales, feat_main_page, color, price, vendor, functionality</td></tr>
+<tr><td>data_processed.csv</td><td>After cleaning + features: 44 SKUs × 98 weeks = 4,312 rows, 45 features</td></tr>
+<tr><td>Notebook Part 1</td><td>Preprocessing, then linear methods (centralized, decentralized, Lasso, fixed effects)</td></tr>
+<tr><td>Notebook Part 2</td><td>Decision trees with tuning, then k-means clustering</td></tr>
+</table>
+<p>Run in Google Colab (<code>!pip install scikit-learn</code> if a package is missing). The speaker's framing: less time on
+coding, more on concepts. Coding is getting easy with AI agents; the skill is knowing what to ask for and checking it.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-eda">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔎</div>
+            <div>
+              <div class="sc-tag ">16 · Exploration</div>
+              <div class="sc-name">First look: types, ranges, and two plots</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><code>dtypes</code> and <code>describe()</code> for types and ranges; <code>describe(include=['boolean','object'])</code>
+for categoricals. A boolean like <code>feat_main_page</code> is just 0/1, so look at value counts, not ranges.</li>
+<li><b>Price</b> runs $2 to $427, average $44. <b>Sales</b> run from 0 (no stock or no interest) to big spikes.</li>
+<li>Plot the target (weekly sales) and the main driver (price) over time, averaged across SKUs:
+<ul>
+<li><b>Price down → sales up</b>: price-sensitive customers.</li>
+<li><b>Spikes around November–December</b>: tech gadgets around the holidays.</li>
+<li><b>2018 prices above 2016</b>: a trend (inflation, or the brand changing).</li>
+<li>A September spike: maybe back-to-school. Flag it for someone who knows the business.</li>
+</ul></li>
+</ul>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-split">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">✂️</div>
+            <div>
+              <div class="sc-tag ">17 · Train / Test</div>
+              <div class="sc-name">Never split a time series at random</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>A random 70/30 split puts, say, December 2018 in training and November 2018 in testing. December teaches the model things
+that make November too easy, and in real life you never have December's data before November's. So <b>cut
+chronologically</b>: everything before a date (around Feb 2018 here) trains, everything after tests. The notebooks take the
+first 70% of each SKU's 98 weeks (68) as training and the last 30 as test.</p>
+<h4>Sliding-window cross-validation</h4>
+<p>The time-series version of k-fold: train on weeks 1–8, test on 9; slide one step and repeat. Always predict
+<b>forward</b>. Score each window and average.</p>
+<div class="callout amber"><span class="c-label amber">Window size</span>
+<p>At least <b>a year</b>, so every window contains all twelve months. Windows shorter than the seasonality (summer,
+December) can't learn it, which is a red flag.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-missing">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🕳️</div>
+            <div>
+              <div class="sc-tag ">18 · Missing Data</div>
+              <div class="sc-name">Assume the data is bad</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Color</b> is missing for a few products, which is physically impossible. The options:</p>
+<ol>
+<li><b>Drop</b> the rows: you lose information.</li>
+<li><b>Frequency imputation</b>: fill with the SKU's most common value. Better, but still a guess.</li>
+<li><b>Model-based imputation</b>: train a model to predict color, then forecast on the improved data.</li>
+<li><b>Use a model that handles missing values natively</b>, such as XGBoost.</li>
+<li><b>Keep missingness as a signal</b>: maybe it's a different product type, or a color the site never set.</li>
+</ol>
+<p>Missing data is usually <b>not random</b> (a sensor that breaks in harsh conditions is a pattern). Here it clusters on a
+few SKUs (43, 44, 42, 9), mostly mid-to-high-price products, with no strong pattern. The notebook fixes it two ways:
+<b>manual</b> (<code>sales.at[row,'color'] = 'black'</code>) and scikit-learn's <code>SimpleImputer(strategy=
+'most_frequent')</code> fitted per SKU. With colors there's no average color, only the most frequent one.</p>
+<div class="callout green"><span class="c-label green">How he does it at work</span>
+<p>Write down your assumption, put screenshots of the bad data on simple slides, and run a one-hour workshop with the
+engineers or product experts so they can confirm or refute it. One or two rounds gets you far. Keep the code
+<b>modular</b> (preprocessing, method 1, method 2 in separate blocks) so you can rerun after learning something.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-outliers">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📍</div>
+            <div>
+              <div class="sc-tag ">19 · Outliers</div>
+              <div class="sc-name">Find them per SKU; think hard before dropping them</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>An outlier is a statistically abnormal point. The notebook's <code>check_outliers</code> flags values beyond
+<b>mean ± k·σ within each SKU</b> (<code>groupby('sku').transform</code>). At k = 3: about 50 of ~4,000 rows (~1%).
+At k = 5: a handful, such as a product priced $1,130 against its usual level. Mean ± kσ suits roughly normal data; for
+long-tailed data use the interquartile range or absolute cut-offs.</p>
+<div class="callout amber"><span class="c-label amber">Dropping is risky</span>
+<p>If the "outlier" is the best sales week of the year and you drop it, that is exactly the week your model will miss
+worst in production, and you'll badly under-order. Check with a domain expert first. Alternatives: regularization
+(Lasso/Ridge), or models that cope with outliers.</p></div>
+<p>Explore on raw values, not normalized ones. "$100 against a usual $40 ± 10" is easy to reason about; "0.78" is not.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-features">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧱</div>
+            <div>
+              <div class="sc-tag ">20 · Features</div>
+              <div class="sc-name">Trend, month dummies, lagged prices</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Trend vs seasonality:</b> the trend is the long-term movement (the sea level rising: inflation, a brand getting
+cooler); seasonality is the recurring movement (the tide). Paydays and pension days are seasonality too.</p>
+<ul>
+<li><b>Trend</b> = year − 2016, so the first week (Oct 31 2016) is 0 and it counts up.</li>
+<li><b>Month as dummies</b>, not 1–12. As an integer, December "beats" January, but the year is cyclical. <code>
+pd.get_dummies(..., drop_first=True)</code> drops January: it's the baseline, and keeping every dummy adds collinear, redundant
+columns that confuse the model.</li>
+<li><b>Lagged prices</b>: <code>groupby('sku')['price'].shift(1)</code> and <code>shift(2)</code> give price-1 and price-2
+within the same SKU. That gives the model price history (deal-seeking customers). The first two rows per SKU become NaN and
+are dropped; losing two rows is cheap.</li>
+<li><b>Other candidates:</b> cost of goods, <b>competitor prices</b> (retailers pay for software to monitor them; one
+competitor move can kill your sales), relative price on the listing page, marketing spend, product launches. Plus
+<code>feat_main_page</code> → int and dummies for functionality, color and vendor.</li>
+</ul>
+<p>Save <b>versioned checkpoints</b> of the processed data and note what you did. Caveat: steps with randomness (e.g.
+random imputation) can give different results on each rerun unless you fix the seed.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-linear">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📊</div>
+            <div>
+              <div class="sc-tag ">21 · Linear Methods</div>
+              <div class="sc-name">Centralized vs decentralized vs Lasso vs fixed effects</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Out-of-sample R² on the last 30% of weeks. These match the outputs saved in the instructors' notebook.</p>
+<table class="dt">
+<tr><th>Model</th><th>What it is</th><th>OOS R²</th></tr>
+<tr><td>Primer: SKU 11</td><td>OLS on one product</td><td>0.309</td></tr>
+<tr><td>Centralized</td><td>One regression on all 44 SKUs stacked</td><td>0.114</td></tr>
+<tr><td>Decentralized</td><td>One OLS per SKU</td><td><b>0.517</b></td></tr>
+<tr><td>Lasso, SKU 11 (α = 0.5)</td><td>Keeps 9 non-zero coefficients</td><td>0.334</td></tr>
+<tr><td>Decentralized + Lasso (α = 0.5)</td><td>Exercise 6a</td><td>0.533</td></tr>
+<tr><td>… α sweep</td><td>Exercise 6b: 0.01 → 0.518, 1 → 0.537, 5 → 0.588</td><td><b>0.602 at α = 10</b></td></tr>
+<tr><td>Centralized + SKU fixed effects</td><td>Exercise 7: one model, a dummy per SKU, log prices</td><td>0.351</td></tr>
+</table>
+<div class="callout green"><span class="c-label green">The lesson</span>
+<p>One model for every product ignores that products differ: R² 0.114. A model per product fits each one (0.517). Lasso
+shrinks the noisy coefficients and helps further. SKU fixed effects are the middle ground: one model, but each product gets
+its own baseline (0.351).</p></div>
+<p>Caveat: the α sweep picks the best value on the test set, as the notebook does. Strictly, tune on a validation split.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-trees">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🌳</div>
+            <div>
+              <div class="sc-tag ">22 · Trees & Clusters</div>
+              <div class="sc-name">Decision trees, tuning, and k-means groups of SKUs</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Tuning done right:</b> split the 68 training weeks again: the first 48 (sub-train) and the next 20 (validation).
+Random search over 50 combinations (max_features 2–44, max_depth 2–9, <code>random.seed(5)</code>), pick the best on
+validation, refit on all training weeks, report on test.</p>
+<table class="dt">
+<tr><th>Model</th><th>Best parameters</th><th>OOS R²</th></tr>
+<tr><td>Centralized tree</td><td>max_features 17, max_depth 4 (validation R² 0.570)</td><td>0.159</td></tr>
+<tr><td>Decentralized trees</td><td>max_features 14, max_depth 4 (validation R² 0.685)</td><td><b>0.399</b></td></tr>
+<tr><td>Clusters, z = 4</td><td>k-means on each SKU's average features, one regression per cluster</td><td>0.164</td></tr>
+<tr><td>Clusters, best z</td><td>z = 5 (z = 2…14 tried)</td><td><b>0.206</b></td></tr>
+</table>
+<div class="callout amber"><span class="c-label amber">Bugs in the handout notebook</span>
+<p>Part 2 cell 3 splits at <code>int(70*98)</code> (everything in training); cell 9 redoes it correctly with
+<code>int(0.70*98)</code>. The decentralized-tree cell fits <code>DT_i</code> but predicts with the centralized tree (saved
+output 0.03); use <code>DT_i.predict</code>. Add <code>random_state=0</code> for repeatable trees.</p></div>
+<p>Same story as the linear models: per-product models win, and the per-SKU Lasso (0.602) is the best of the day.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-amber" id="not-captured-3">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico amber">⚠️</div>
+            <div>
+              <div class="sc-tag amber">23 · Not Captured</div>
+              <div class="sc-name">What the recording missed</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Granola recorded only <b>~1:59–2:51pm</b>: the guest lecture's exploration, split, missing data, outliers and feature
+engineering (cards 16–20 come from it).</p>
+<ul>
+<li><b>Cohen's morning (8:30–12:30)</b>, cards 01–14: written from the slides, my photos of slides 28, 30 and 32 and of his
+solution spreadsheet, and my verified runs. What he said out loud isn't here.</li>
+<li><b>The rest of the guest lecture after ~2:51pm</b>, cards 21–22: written from the two notebooks, their saved outputs and
+my runs.</li>
+<li>Whether <b>Promotion Optimization</b> (Part 4, the lecture behind Assignment 3) was covered on Day 3 is unknown.</li>
+</ul>
+<p>To be filled from the full-day transcript.</p>
+</div></div>
+      </div>
+
+      <div class="divider">Reference</div>
+
+      <div class="sc bl-green" id="hooks3">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">🪝</div>
+            <div>
+              <div class="sc-tag green">Reference · Day 3</div>
+              <div class="sc-name">Exam hooks — Day 3</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>Markdown = price skimming</b>: long lead time + mixed customers. Week 1 at full price tells you the item's level;
+historical <b>lift factors</b> (1.31 / 1.73 / 2.81) give the other prices.</li>
+<li><b>Run-out rate</b>: pick the price mix that sells out exactly in the last week. The <b>LP</b> (weeks at each price, ≤ weeks
+left, demand ≤ stock) gives the same plan; <b>re-optimize weekly</b> to beat it.</li>
+<li><b>Newsvendor</b>: P(D ≤ X) = c<sub>u</sub>/(c<sub>u</sub>+c<sub>o</sub>) = critical fractile = service level. Normal:
+X = μ + zσ = <code>NORMINV(cf, μ, σ)</code>. At the optimum, one more unit is worth $0.</li>
+<li>c<sub>u</sub> = price − cost; c<sub>o</sub> = cost − salvage. Pumpkins 250 · T-shirts 1,114 (1,000 if price falls to $12).</li>
+<li><b>Champagne</b>: backlog $3 = c<sub>u</sub>, holding $1.5 = c<sub>o</sub> → order-up-to <b>108.614</b>, ~$32/period.
+(20, 100) doesn't converge ($600–$3,200); (30, 135) → $83–$87.</li>
+<li><b>Time series</b>: split chronologically, never randomly; sliding-window CV with windows ≥ 1 year.</li>
+<li><b>Missing data</b>: drop / mode-impute / model-impute / native handling / keep as a signal. Missingness is rarely random.</li>
+<li><b>Outliers</b>: mean ± kσ within SKU; dropping the best week can make the model fail exactly when it matters.</li>
+<li><b>Features</b>: trend, month dummies with drop_first, lagged prices via groupby-shift.</li>
+<li><b>Per-product beats pooled</b>: centralized 0.114 → decentralized 0.517 → + Lasso 0.533 (0.602 at α = 10).</li>
+</ul>
+</div></div>
+      </div>
+
+    </div>
+
+    <div id="panel-assignments" class="day-panel">
+      <div class="divider">Operations Analytics — graded components</div>
+
+      <div class="assign-card">
+        <div class="ac-ico">✅</div>
+        <div class="ac-b">
+          <div class="ac-label">Pre-module · 0%</div>
+          <div class="ac-title">Read the case studies<span class="done-badge">✓ Done</span></div>
+          <div class="ac-desc">Read the cases and be prepared to discuss. No submission.</div>
+          <div class="ac-due">Due <span>Sun Nov 1</span></div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">🏷️</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module · 20%</div>
+          <div class="ac-title">Assignment 1 — Markdown optimization</div>
+          <div class="ac-desc">Individual. Builds on the retailer game, <code>Sales-Data.xlsx</code> and the LP from class.</div>
+          <div class="ac-due">Due <span>Sun Dec 20 · 11:55pm</span></div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">🍾</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module · 30%</div>
+          <div class="ac-title">Assignment 2 — The inventory problem from class</div>
+          <div class="ac-desc">Individual. The Champagne simulation (<code>Inventory_Simulation_Inclass.xls</code>).</div>
+          <div class="ac-due">Due <span>Sun Dec 20 · 11:55pm</span></div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">🛒</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module · 50%</div>
+          <div class="ac-title">Assignment 3 — Optimizing Promotions for Supermarkets</div>
+          <div class="ac-desc">Individual. All 15 questions on the case: log-log demand models in R for SKU88
+          (<code>singleitemSKU88.csv</code>, <code>Studentspart1.R</code>), five-brand cross-price models
+          (<code>multipleitempart1/2.csv</code>, <code>Studentspart2.R</code>), then the promotion optimization formulation
+          (binary price-ladder variables, at most 4 promotions, robustness).</div>
+          <div class="ac-due">Due <span>Sun Dec 20 · 11:55pm</span></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<script>
+const KEY = 'notes-unlocked', PWD = 'huncho';
+if (sessionStorage.getItem(KEY) === 'true') unlock();
+document.getElementById('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+function tryUnlock() {
+  if (document.getElementById('gate-input').value.trim().toLowerCase() === PWD) {
+    sessionStorage.setItem(KEY, 'true'); unlock();
+  } else {
+    document.getElementById('gate-err').textContent = 'wrong password';
+    document.getElementById('gate-input').value = '';
+  }
+}
+function unlock() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'block';
+  document.getElementById('main').style.display = 'block';
+}
+function toggle(hdr) { hdr.closest('.sc').classList.toggle('open'); }
+document.querySelectorAll('.day-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+const navLinks = document.querySelectorAll('.sb-nav a[href^="#"]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+  });
+}, { rootMargin: '-25% 0px -65% 0px' });
+document.querySelectorAll('.sc[id]').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
