@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Visualization · Module 4 · NYU Stern MSBAi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0a0d12;
+  --surface: #10141b;
+  --card:    #141a22;
+  --border:  #1c2a38;
+  --accent:  #34d399;
+  --accent-soft: rgba(52,211,153,.08);
+  --amber:   #fbbf24;
+  --green:   #38bdf8;
+  --red:     #f87171;
+  --text:    #f2ede6;
+  --muted:   #7f98a9;
+  --faint:   #26384a;
+  --sidebar-w: 256px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 16px; line-height: 1.75;
+  display: flex; min-height: 100vh; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(52,211,153,.04) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(52,211,153,.07) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── GATE ── */
+#gate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.gate-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
+.gate-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; }
+.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
+.gate-input:focus { border-color: var(--accent); }
+.gate-btn { margin-top: 12px; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #0a0d12; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .2s; }
+.gate-btn:hover { opacity: .85; }
+.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); margin-top: 10px; min-height: 16px; }
+
+/* ── SIDEBAR ── */
+#sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: rgba(10,13,18,.97); border-right: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  overflow-y: auto; overflow-x: hidden;
+  z-index: 100; padding: 24px 0 40px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.sb-brand { padding: 0 18px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sb-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(52,211,153,.25); border-radius: 4px; padding: 3px 8px; margin-bottom: 8px; }
+.sb-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); line-height: 1.3; }
+.sb-sub { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+.sb-group { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); padding: 14px 18px 5px; }
+.sb-nav a { display: flex; align-items: center; gap: 9px; padding: 7px 18px; text-decoration: none; font-size: 13px; color: var(--muted); transition: color .15s, background .15s; border-left: 2px solid transparent; }
+.sb-nav a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.sb-nav a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+.sb-nav .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); flex-shrink: 0; transition: background .15s; }
+.sb-nav a.active .dot { background: var(--accent); }
+.sb-back-row { border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.sb-back-row a { display: flex; align-items: center; gap: 8px; padding: 12px 18px; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .05em; color: var(--muted); transition: color .15s, background .15s; }
+.sb-back-row a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+
+/* ── MAIN ── */
+#main { margin-left: var(--sidebar-w); flex: 1; position: relative; z-index: 1; }
+
+/* ── HEADER ── */
+#hdr { padding: 48px 56px 32px; border-bottom: 1px solid var(--border); }
+.hdr-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.hdr-title { font-family: 'DM Serif Display', serif; font-size: 42px; color: var(--text); line-height: 1.15; margin-bottom: 6px; }
+.hdr-title span { color: var(--accent); }
+.hdr-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; font-style: italic; }
+.day-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.day-tab { padding: 8px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .07em; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all .2s; }
+.day-tab:hover { color: var(--text); border-color: var(--accent); }
+.day-tab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+/* ── CONTENT ── */
+#content { padding: 36px 56px 80px; }
+.day-panel { display: none; }
+.day-panel.active { display: block; }
+
+/* ── SECTION CARD ── */
+.sc {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+  transition: box-shadow .2s, transform .18s;
+  animation: fadeUp .45s cubic-bezier(.16,1,.3,1) both;
+}
+.sc:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.35); }
+.sc.bl-accent { border-left: 3px solid var(--accent); }
+.sc.bl-amber  { border-left: 3px solid var(--amber); }
+.sc.bl-green  { border-left: 3px solid var(--green); }
+
+.sc-hdr { padding: 20px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; user-select: none; transition: background .15s; }
+.sc-hdr:hover { background: rgba(255,255,255,.02); }
+.sc-hdr-l { display: flex; align-items: center; gap: 14px; }
+.sc-ico { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: var(--accent-soft); border: 1px solid rgba(52,211,153,.2); }
+.sc-ico.amber { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.2); }
+.sc-ico.green { background: rgba(56,189,248,.1); border-color: rgba(56,189,248,.2); }
+.sc-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; }
+.sc-tag.amber { color: var(--amber); }
+.sc-tag.green { color: var(--green); }
+.sc-name { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); line-height: 1.25; }
+.chevron { color: var(--muted); transition: transform .25s; font-size: 14px; flex-shrink: 0; opacity: .7; }
+.sc.open .chevron { transform: rotate(180deg); }
+
+.sc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease, opacity .3s ease; opacity: 0; }
+.sc.open .sc-body { max-height: 4000px; opacity: 1; }
+.sc-in { padding: 4px 28px 28px 80px; border-top: 1px solid var(--border); }
+
+/* ── PROSE ── */
+.sc-in p { margin-bottom: 14px; color: rgba(242,237,230,.88); }
+.sc-in p:last-child { margin-bottom: 0; }
+.sc-in strong, .sc-in b { color: var(--text); font-weight: 600; }
+.sc-in em { color: var(--accent); font-style: italic; }
+.sc-in ul { padding-left: 20px; margin-bottom: 14px; color: rgba(242,237,230,.85); }
+.sc-in li { margin-bottom: 7px; }
+.sc-in li::marker { color: var(--accent); }
+.sc-in ol { list-style: none; padding-left: 0; margin-bottom: 14px; counter-reset: step; }
+.sc-in ol li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; color: rgba(242,237,230,.85); }
+.sc-in ol li::before { content: counter(step); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(52,211,153,.2); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.sc-in h4 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin: 22px 0 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+
+/* ── CALLOUT ── */
+.callout { background: var(--accent-soft); border: 1px solid rgba(52,211,153,.2); border-radius: 9px; padding: 15px 18px; margin: 16px 0; }
+.callout.amber { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.22); }
+.callout.green { background: rgba(56,189,248,.07); border-color: rgba(56,189,248,.22); }
+.c-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 7px; }
+.callout.amber .c-label { color: var(--amber); }
+.callout.green .c-label { color: var(--green); }
+.callout p { color: rgba(242,237,230,.88); margin: 0; font-size: 14.5px; line-height: 1.65; }
+
+/* ── ANOMALY LIST (good/bad badges) ── */
+.anom-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.anom { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+.anom-b { flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; border-radius: 5px; padding: 3px 8px; margin-top: 2px; white-space: nowrap; }
+.anom-b.bad { color: var(--red); background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); }
+.anom-b.ok  { color: var(--green); background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.2); }
+.anom-text { font-size: 14.5px; color: rgba(242,237,230,.82); line-height: 1.65; }
+.anom-text strong { color: var(--text); }
+
+/* ── TABLE ── */
+.dt { width: 100%; border-collapse: collapse; font-size: 14px; margin: 14px 0; }
+.dt th { background: var(--accent-soft); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.dt td { padding: 10px 14px; border-bottom: 1px solid rgba(28,42,56,.7); color: rgba(242,237,230,.82); vertical-align: top; line-height: 1.55; }
+.dt td:first-child { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.dt td strong { color: var(--text); }
+.dt tr:last-child td { border-bottom: 0; }
+.dt tr:hover td { background: rgba(52,211,153,.03); }
+
+code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(52,211,153,.09); color: var(--accent); border-radius: 4px; padding: 1px 6px; }
+
+/* ── ASSIGNMENTS ── */
+.assign-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
+.ac-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(52,211,153,.2); display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.ac-b { flex: 1; }
+.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.ac-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+.ac-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+.ac-due { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
+.ac-due span { color: var(--accent); }
+.done-badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: rgba(56,189,248,.1); color: #38bdf8; border: 1px solid rgba(56,189,248,.2); border-radius: 20px; padding: 2px 8px; margin-left: 8px; }
+
+.divider { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 32px 0 14px; padding-left: 2px; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+</head>
+
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-label">Data Visualization · Module 4</div>
+    <div class="gate-title">Daivik's Notes</div>
+    <input id="gate-input" class="gate-input" type="password" placeholder="password" autocomplete="off" />
+    <button class="gate-btn" onclick="tryUnlock()">Enter</button>
+    <div class="gate-err" id="gate-err"></div>
+  </div>
+</div>
+
+<nav id="sidebar" style="display:none">
+  <div class="sb-back-row"><a href="../">← Module 4 hub</a></div>
+  <div class="sb-brand">
+    <div class="sb-badge">DV · Module 4</div>
+    <div class="sb-title">Data Visualization</div>
+    <div class="sb-sub">Prof. Kristen Sosulski</div>
+  </div>
+  <div class="sb-group">Day 4 — Thu Nov 5</div>
+  <div class="sb-nav">
+    <a href="#orientation"><span class="dot"></span>Orientation</a>
+    <a href="#stories"><span class="dot"></span>Serena &amp; MBA Pay</a>
+    <a href="#process"><span class="dot"></span>Audience, Data, Question</a>
+    <a href="#formats"><span class="dot"></span>Paper, Screen, Projector</a>
+    <a href="#who-builds"><span class="dot"></span>Who Builds Them</a>
+    <a href="#act1"><span class="dot"></span>Activity 1 — Williamsburg</a>
+    <a href="#act2"><span class="dot"></span>Activity 2 — Gapminder</a>
+    <a href="#chooser"><span class="dot"></span>Chart Chooser</a>
+    <a href="#anim"><span class="dot"></span>Animation &amp; Interaction</a>
+    <a href="#tableau"><span class="dot"></span>Tableau Vocabulary</a>
+    <a href="#cheese-review"><span class="dot"></span>Cheesemakers Pitfalls</a>
+    <a href="#act3"><span class="dot"></span>Activity 3 — Highlighting</a>
+    <a href="#bars-pies"><span class="dot"></span>Bars, Pies, Doughnuts</a>
+    <a href="#act4"><span class="dot"></span>Activity 4 — Pitfalls</a>
+    <a href="#standards"><span class="dot"></span>Ten Design Standards</a>
+    <a href="#apply"><span class="dot"></span>Applying in Tableau</a>
+    <a href="#act5"><span class="dot"></span>Activity 5 — Doughnut</a>
+    <a href="#time-design"><span class="dot"></span>Time Series Design</a>
+    <a href="#act6"><span class="dot"></span>Activity 6 — Fox + Animation</a>
+    <a href="#next"><span class="dot"></span>REST API Prep</a>
+    <a href="#not-captured-4"><span class="dot"></span>Not Captured</a>
+  </div>
+  <div class="sb-group">Reference</div>
+  <div class="sb-nav">
+    <a href="#hooks4"><span class="dot"></span>Exam Hooks — Day 4</a>
+  </div>
+</nav>
+
+<div id="main" style="display:none">
+  <div id="hdr">
+    <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 4 · Data Visualization</div>
+    <h1 class="hdr-title">Data <span>Visualization</span></h1>
+    <p class="hdr-sub">Prof. Kristen Sosulski · audience, data, question · chart chooser · ten design standards · Tableau</p>
+    <div class="day-tabs">
+      <button class="day-tab active" data-panel="day4">Day 4 — Thu Nov 5</button>
+      <button class="day-tab" data-panel="assignments">Assignments</button>
+    </div>
+  </div>
+
+  <div id="content">
+    <div id="panel-day4" class="day-panel active">
+      <div class="divider">Why visualize — the process and the formats</div>
+      <div class="sc bl-accent open" id="orientation">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧭</div>
+            <div>
+              <div class="sc-tag ">01 · Orientation</div>
+              <div class="sc-name">Why learn this if AI can build the chart?</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Kristen Sosulski</b>, author of <i>Data Visualization Made Simple</i>. Day 4 was meant to be Operations Analytics in the morning; Cohen was out sick, so Data Viz moved up.</p>
+<p>She opened by asking why we need the class when AI can build a dashboard. The class's answers: you still have to check the data is right, and you have to speak the language to prompt for what you want. Her minimum bar is that you can <b>instruct AI</b> to build these graphics with a purpose for your audience. Generating the chart is the easy part. Knowing the audience, how much to show and whether you have the right data is the hard part.</p>
+<ul>
+<li>Visualization used to be a nice-to-have tech skill you might hand an intern. It's now the lens we expect over data, one that surfaces an actionable insight. She cited Fortune projecting the industry at $34B by 2034.</li>
+<li><b>We are the brokers between the data and the decision.</b> A real-world phenomenon gets translated into data, then the data gets translated into a graphic. Mistakes can enter at both steps. Bad data she can't help with; the second translation she can.</li>
+<li>Every graphic tells you what happened, what's happening or what might happen: a report on the past, a live view, or a pitch for the future.</li>
+<li>We're spoiled by good interfaces already: an Apple Watch, the WHO pandemic dashboard, the Robinhood app.</li>
+</ul>
+<div class="callout amber"><span class="c-label amber">The worksheet</span>
+<p>The in-class worksheet is what you turn in by Dec 20, as evidence of participation. Download it as a Word doc and fill it in. It isn't meant to be a finished product, and skipped exercises or an incomplete one are okay.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="stories">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎾</div>
+            <div>
+              <div class="sc-tag ">02 · Storytelling</div>
+              <div class="sc-name">Two graphics walked through: Serena and MBA pay</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Serena Williams heat map.</b> X is her career over time, Y is the four majors. Cells show the finals she played, those she didn't (red) and those she won (green). She has 23 majors but never a calendar-year Grand Slam, which would be a full green column. She did win four straight twice, 2002–03 and 2014–15. Sosulski prepped the story first and revealed the chart in stages rather than showing it all at once.</p>
+<p><b>MBA pay equity (Wall Street Journal, 2022).</b> A scatter plot with one dot per MBA program. The yellow line is equal pay; left of it women are paid more, right of it men are. Most dots sit to the right, so you see the point before anyone says it. At one school female graduates were paid almost 30% less.</p>
+<div class="callout"><span class="c-label">The technique</span>
+<p>Capture attention, lead toward the conclusion, and let the data reveal it. The graphic is your evidence.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="process">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧱</div>
+            <div>
+              <div class="sc-tag ">03 · The Process</div>
+              <div class="sc-name">Audience → data → question, and the chart picks itself</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Stage</th><th>What to ask</th></tr>
+<tr><td>Audience</td><td>Prior knowledge of the subject. Data and chart literacy (histogram ≠ bar chart; a box plot's center line is the median, not the average; outliers; correlation). Why they care. Level of expertise, manager vs entry level. <b>Are they in the room?</b> A report has to explain itself; a dashboard has to anticipate what they'll ask.</td></tr>
+<tr><td>Data</td><td>Relevant, and how much: too much confuses, too little loses context. What missing values mean (zero, none, an entry error, a left join). Can you trust it: source, how and when collected, why it was collected, sampling. Level of detail: keep the micro data, since you can roll up but not back down. Time series or spatial? Permission for human-subjects data.</td></tr>
+<tr><td>Question</td><td>Can this data answer it? Put the question in the chart's title. If the answer isn't visible in the chart, it's still a draft.</td></tr>
+</table>
+<p>Once those three are settled, the chart is an easy decision: time series and change over time leaves a line, a sparkline or an animation. The goal is impact: influence stakeholders, guide decisions, surface insight.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="formats">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🖨️</div>
+            <div>
+              <div class="sc-tag ">04 · Three Formats</div>
+              <div class="sc-name">Paper, screen, projector</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th></th><th>Paper</th><th>Screen / dashboard</th><th>Projector</th></tr>
+<tr><td>Use</td><td>Consulting report, PDF</td><td>A user interface you design</td><td>A slide you narrate</td></tr>
+<tr><td>Interaction</td><td>None: direct labels, high contrast. Small multiples instead of animation</td><td>Hover, filters, KPI + breakdown, refreshed data</td><td>Animation yes, interactive no. One chart per slide, minimal text</td></tr>
+<tr><td>Tableau size</td><td>A3 portrait (1169 × 1654), then shrink in Word to keep resolution</td><td>At least 1000 × 800, built with containers; test on devices</td><td>1600 × 900. File › Export as PowerPoint gives one full slide</td></tr>
+<tr><td>Font</td><td>Arial 12 minimum</td><td>16–18 on screen; 10 is fine on a dashboard</td><td>Readable from the back row</td></tr>
+</table>
+<p>Start large and shrink: stretching a small graphic stretches pixels and loses resolution. Even paper grade makes a visible difference to a printed chart.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="who-builds">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">👩‍💻</div>
+            <div>
+              <div class="sc-tag ">05 · Who Builds Them</div>
+              <div class="sc-name">Vignettes from the book, and what the class already uses</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Good data graphics blend</b> data, design and storytelling, which is why they're hard to hire for.</p>
+<table class="dt">
+<tr><th>Who</th><th>Started from</th><th>Graphic and insight</th></tr>
+<tr><td>Samantha Feldman, Gray Scalable</td><td>How is this client paying employees relative to market?</td><td>Salary vs job level with pay bands, one dot per employee. A table of data couldn't start that conversation: who's outside the band, and does gender show below it?</td></tr>
+<tr><td>Christian Theodore, for Nissan</td><td>Do devices drive conversion after someone sees an ad?</td><td>A Sankey from last touch to conversion device. A significant minority converts on a different device</td></tr>
+<tr><td>Jack Hanlon, Jet.com</td><td>Which categories get bought together?</td><td>A network diagram of categories (consumables vs durables), hundreds of thousands of carts. Some "durables" such as printer toner get bought like consumables, which changes merchandising and inventory. It's the book's cover</td></tr>
+</table>
+<p>All three start with the question, not the data. <b>The class's go-to charts:</b> pies for requirement status, filled maps for store-location adoption, stacked area for budget over time, timelines for construction status, size curves for merchandising, bullet graphs for spend pacing within a quarter, density plots, waterfalls.</p>
+</div></div>
+      </div>
+      <div class="divider">Activities 1–2 — from a prompt, and from a chart</div>
+      <div class="sc bl-accent" id="act1">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🖍️</div>
+            <div>
+              <div class="sc-tag ">06 · Activity 1</div>
+              <div class="sc-name">Williamsburg household income, on the whiteboard</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Capstone teams had about 15 minutes to sketch how they'd show household income for Williamsburg, Brooklyn, choosing their own audience. Take a picture of the board for the worksheet. Her critique of the boards:</p>
+<ul>
+<li><b>Name your unit of geography.</b> What gets filled with color? Borough → ZIP → census tract → block. Three ZIP codes means only three shaded areas, and data may not exist at block level.</li>
+<li><b>How is income enumerated?</b> Sum, average or median. <b>Median</b>, because an average gets skewed by outliers.</li>
+<li><b>A histogram isn't divided.</b> Split bars by a category and it's a bar chart. Decide which you have.</li>
+<li><b>A doughnut needs a KPI in the middle.</b></li>
+<li><b>MLiQ's board</b> (average income by marital status, age bands inside each): clustered bars were smarter than stacks, but five bars per category is dense. Also, "heat map" on geography is a <b>filled map</b>; in Tableau a heat map is a table of data.</li>
+</ul>
+<div class="callout green"><span class="c-label green">The twist</span>
+<p>You could have answered the literal question in a second: look up the median household income. Nobody wrote that number down, and rightly. Everyone instinctively put it in context. Sometimes the question isn't the right one. <b>Find the whole number, break it down, then choose how to enumerate it by geography.</b> Her example: census tracts shaded by median income, with a hover showing population, households, race breakdown and condo value.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="act2">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🌍</div>
+            <div>
+              <div class="sc-tag ">07 · Activity 2</div>
+              <div class="sc-name">One graphic, three formats: the Gapminder lesson</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Fertility vs life expectancy. Four variables: life expectancy, children per woman, region (color), population (bubble size).</p>
+<table class="dt">
+<tr><th>Version</th><th>What you get</th></tr>
+<tr><td>Static</td><td>The relationship, by region. No country, no change over time, no narrative. Like paper</td></tr>
+<tr><td>Interactive</td><td>A slider and country hover. Maybe too much data for the message, and you write your own story: user-driven storytelling</td></tr>
+<tr><td>Presenter (Hans Rosling)</td><td>The same graphic with a crafted narrative. By far the most powerful</td></tr>
+</table>
+<h4>What Rosling does</h4>
+<ol>
+<li><b>Explains the axes first.</b></li>
+<li><b>Points out the encodings by name</b>: the big red bubble is China, the book's "big red bubble" rule (p. 249). He doesn't narrate 200 countries.</li>
+<li><b>Picks the window that carries the message</b>: 1950 → 2050, not 1800.</li>
+<li><b>Annotates history</b> on the timeline, such as the HIV epidemic.</li>
+<li><b>Runs into the future, stops, and pulls back</b> to where we are, using a prediction to raise a question: will it happen?</li>
+</ol>
+<p>She gave no title on purpose, and the class read it differently, which shows how much we each bring to a chart.</p>
+</div></div>
+      </div>
+      <div class="divider">Choosing the chart</div>
+      <div class="sc bl-accent" id="chooser">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🗂️</div>
+            <div>
+              <div class="sc-tag ">08 · Chart Chooser</div>
+              <div class="sc-name">Pick by purpose: every option she walked through</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Purpose</th><th>Options</th></tr>
+<tr><td>Compare categories</td><td><b>Horizontal bar, sorted descending</b>, her favorite: instant max and min, label the ends. Vertical bar when you can't reorder (years). Clustered for two categories. <b>Bullet graph</b> for performance vs target</td></tr>
+<tr><td>Part of a whole</td><td><b>Doughnut with a KPI in the center</b>, her other favorite. Stacked bar only with interaction, since static forces subtraction. Sankey for flows. Treemap for hierarchy. A pie should represent 100%</td></tr>
+<tr><td>Change over time</td><td>Line (4 or fewer series). <b>Sparkline</b>: bare-bones, doesn't start at zero, like a Robinhood intraday chart. Stacked area only with interaction</td></tr>
+<tr><td>Distribution</td><td>Box plot (center line = median), violin, histogram (equal bins), density. Good for exploring or a technical audience</td></tr>
+<tr><td>Multivariate</td><td>Scatter, bubble (size = third variable), scatter matrix, heat map (a table of numbers shaded by value, as in election tables), radar, parallel coordinates, small multiples</td></tr>
+<tr><td>Geography</td><td>Filled (choropleth) map by region. Point map from latitude and longitude; sizing the points as bubbles can skew the geography. Connection maps; isopleth maps not bound by borders, such as temperature</td></tr>
+</table>
+<div class="callout"><span class="c-label">Reading the harder ones</span>
+<p><b>Radar:</b> think of a bicycle wheel. Each spoke is a column scaled min to max, each polygon is one row (Djokovic at the French Open: first-serve %, double faults, winners, errors). It can't hold much data, and you must explain it first. <b>Parallel coordinates:</b> same idea with horizontal lines, each an observation (an electric car across range, price and so on). Powerful, but check it on someone outside the field. <b>Small multiples:</b> nine little line charts instead of nine lines on one.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="anim">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎞️</div>
+            <div>
+              <div class="sc-tag ">09 · Animation + Interaction</div>
+              <div class="sc-name">Three animation types, and what interaction buys</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Animation</th><th>What it does</th></tr>
+<tr><td>Trend</td><td>The data changes year to year, no history retained (fertility vs length of life)</td></tr>
+<tr><td>Trace</td><td>History stays on screen</td></tr>
+<tr><td>Transition</td><td>One highlighted entity, say a country, moves as time changes</td></tr>
+</table>
+<p>Animation is for time series and presentations, never print. Dashboards usually filter instead.</p>
+<p><b>Interaction:</b> select, or a mouse-over that reveals more or even another chart, explore and search, filter (drop-down, checkbox, slider; keep drop-downs short, not 45 items), reconfigure axes. Her examples: tuition vs graduate debt by school, with slider and filters; the American Time Use Survey from the New York Times. You have to design for this, and your data must support the slicing.</p>
+</div></div>
+      </div>
+      <div class="divider">Tableau — vocabulary, then Activity 3</div>
+      <div class="sc bl-accent" id="tableau">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧰</div>
+            <div>
+              <div class="sc-tag ">10 · Tableau Basics</div>
+              <div class="sc-name">The words she wants everyone using</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td>Worksheet vs dashboard</td><td>Build on the worksheet, finish on the dashboard (title, annotation, filters)</td></tr>
+<tr><td>Discrete vs continuous</td><td>Blue vs green, a faint difference if you're color blind. ABC icon = discrete or categorical; # = something you can do math on</td></tr>
+<tr><td>Dimensions / measures</td><td>Above the line / below it</td></tr>
+<tr><td>Italic field</td><td>Tableau-generated, not in your data: Number of Records, Measure Names, Measure Values. Latitude and longitude show up this way too</td></tr>
+<tr><td>Columns / Rows</td><td>Think alphabetically: C and R map to X and Y</td></tr>
+<tr><td>Marks card</td><td>Where you work: mark type, color, size, label, detail, tooltip. A sheet can have several (the doughnut has three)</td></tr>
+<tr><td>Show Me</td><td>Avoid it. It places variables for you, hides how the chart is built and limits your chart types</td></tr>
+</table>
+<p><b>Tableau vs R vs Excel?</b> Use what fits: three bars with known values, just use Excel. It depends on your data source, whether you need interaction, whether you can publish it, and whether colleagues have the software. Students added that it's a canvas without much code, and that self-service puts dashboards in the hands of people like social media managers, who need to act on the data. PowerPoint and think-cell need a summary table first; Tableau works off native data, sometimes pivoted.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="cheese-review">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧀</div>
+            <div>
+              <div class="sc-tag ">11 · Cheesemakers Review</div>
+              <div class="sc-name">The dashboard pitfalls she sees most</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<div class="anom-list">
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>Two years aggregated.</strong> Bullet graphs then mix targets for 2012 and 2013 and the chart is simply wrong. You might have met the gold cheddar target in 2012 and not see it combined. <strong>Fix:</strong> a year filter with the All option removed.</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>No coherent color scheme.</strong> Gradients plus extra colors are hard to decode. <strong>Fix:</strong> pick one light and one dark high-contrast color, or brand color + light gray, and stop deciding.</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>Missing legend or labels.</strong> <strong>Fix:</strong> worksheet down arrow on the dashboard › Legend; Label on the Marks card. With direct labels you don't need a y-axis or grid lines.</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>Doesn't fit one screen.</strong> <strong>Fix:</strong> plan ahead. Start at 1000 × 800 and use layout containers (horizontal and vertical objects): set up the boxes first, then drop in worksheets, filters, logos. Set every worksheet to Entire View.</div></div>
+</div>
+<p>Formatting and analysis are separate activities, and in many organizations separate roles. Design decisions shouldn't be made while you're wrestling the data.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="act3">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎯</div>
+            <div>
+              <div class="sc-tag ">12 · Activity 3</div>
+              <div class="sc-name">Filters, a set, and dynamic highlighting</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<h4>Year filter</h4>
+<ol>
+<li>Drag Date to Detail on one worksheet. It must say YEAR, as a blue discrete pill.</li>
+<li>On the dashboard, that worksheet's down arrow › Filters › Year of Date. If the variable isn't on a worksheet, you can't reach it.</li>
+<li>The filter's arrow › Single Value (dropdown), then Customize › uncheck Show "All" Value.</li>
+<li>Arrow › Apply to Worksheets › All Using This Data Source. Make it floating to place it.</li>
+</ol>
+<h4>Chart as a quick filter</h4>
+<p>Click a worksheet on the dashboard and click the funnel icon. Clicking "both" now filters everything. Users need telling how this works.</p>
+<h4>Set: manual, permanent highlight</h4>
+<p>You can't click a bar and color it. Down arrow on State › Create › Set, check the state, then drag the set to Color and edit In and Out. For a hex code, it's the second option under color. A set is true/false; a group has categories.</p>
+<h4>Dynamic highlight: a calculated field</h4>
+<p>Right-click in the data pane › Create Calculated Field. Square-bracket orange = your variables; blue = functions.</p>
+<p><code>IF SUM([Sale amount]) = WINDOW_MAX(SUM([Sale amount])) THEN "Max State" ELSEIF SUM([Sale amount]) = WINDOW_MIN(SUM([Sale amount])) THEN "Min State" ELSE "Neither" END</code></p>
+<div class="callout amber"><span class="c-label amber">The trap</span>
+<p>Drag it to Color and nothing happens until you click the delta on the pill and choose <b>Compute Using › State</b>. The max is whatever's in the window, so filters change it: she got Washington and Rhode Island, then Texas with a contact-method filter on. The manual's Fig 1.21: "Neither" gives Texas at $300,928. My Q2 bars are split by year, so click the "Neither" label, not a bar.</p></div>
+<p>Screenshot the dashboard showing the filter and a highlight for the worksheet. Full code and steps: manual 1.1.5, pp 16–25.</p>
+</div></div>
+      </div>
+      <div class="divider">Design — pitfalls, then the ten standards</div>
+      <div class="sc bl-accent" id="bars-pies">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🥧</div>
+            <div>
+              <div class="sc-tag ">13 · Bars + Pies</div>
+              <div class="sc-name">The rules for bars, bullet graphs, pies, treemaps, doughnuts</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Chart</th><th>Rules</th></tr>
+<tr><td>Bars</td><td>One color; orange adds nothing if the value is labeled (Dona Wong's rule). Shade one bar lighter only to show a projection. Bar about twice the width of the gap, since the eye is drawn to white space; use Size. <b>Baseline zero</b>. No shadows, no 3D (a value of 79 read as 72 on the axis). Negatives needn't be red</td></tr>
+<tr><td>Stacked bars</td><td>Label directly if you can; put the most important category on the bottom in its own color; else keep a y-axis</td></tr>
+<tr><td>Horizontal bars</td><td>Same data looks chaotic unsorted and clear sorted: hospice admissions by diagnosis, cancer at the top, HIV/AIDS at the bottom</td></tr>
+<tr><td>Bullet graph</td><td>Text label, measure bar, target marker, quantitative scale, plus gray bands for poor / satisfactory / great. Lets you scan down a column rather than read a variance table</td></tr>
+<tr><td>Pie</td><td>No color needed: direct labels plus white space, no legend. Biggest wedge at 12:00 going clockwise, second biggest counterclockwise, like a fan, because the eye starts at the top. Small slices → make it a bar. Every pie can be a bar. Must add to 100%</td></tr>
+<tr><td>Treemap</td><td>Hierarchy and proportion (region → country, by revenue). Boxes get unreadable, so not for print or presenting; nice on a dashboard. Algorithm by Ben Shneiderman</td></tr>
+<tr><td>Doughnut</td><td>KPI in the center. One or two colors. Consulting reports use them a lot. Her critique: the center number should be the main KPI, and the title must say which wedge it refers to</td></tr>
+</table>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="act4">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🚩</div>
+            <div>
+              <div class="sc-tag ">14 · Activity 4</div>
+              <div class="sc-name">Pitfalls the class named</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The worksheet asks for five. What went on the board:</p>
+<ul>
+<li>Poor, irrelevant or missing title</li>
+<li>Color overuse, or primary colors that turn the same shade of gray in black and white</li>
+<li>Chart junk: unnecessary decoration and animation</li>
+<li>Unformatted numbers, such as 1,500k</li>
+<li>Missing legends, undefined encodings</li>
+<li>No attribution: where's the data from?</li>
+<li>Bad aspect ratio, too wide or squished</li>
+<li>Data density: too many categories</li>
+<li>Wrong chart type, such as a line chart across categories instead of time</li>
+<li>A misplaced midpoint on a diverging scale</li>
+</ul>
+<p>And charts not driven by data at all: triangles and trapezoids drawn in a design tool, where you can't compare the areas and color means nothing. A bubble chart with gray bubbles, cut-off labels and tiny font should have been a sorted horizontal bar. <b>Tufte: above all else, show the data.</b></p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="standards">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📏</div>
+            <div>
+              <div class="sc-tag ">15 · Ten Standards</div>
+              <div class="sc-name">The ten design standards (book pp 124–125)</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>#</th><th>Standard</th><th>What she stressed</th></tr>
+<tr><td>1</td><td>Chart format</td><td>Decide print, projected or web first</td></tr>
+<tr><td>2</td><td>Color</td><td>Only where it marks a real difference; a yellow background and traffic lights make everything feel urgent. Avoid red + green: opposite on the wheel, identical in grayscale, culturally loaded. 8% of males and 0.5% of females have some color blindness. Pick a light and a dark</td></tr>
+<tr><td>3</td><td>Text and labels</td><td>Label directly; add a description for print</td></tr>
+<tr><td>4</td><td>Readability</td><td>No decorative fonts. Horizontal text; if a label won't fit, reorient or show less</td></tr>
+<tr><td>5</td><td>Scales</td><td>Natural increments (1, 2, 5, 10, 25). Axis max just above the data. Over 999k, use millions: nobody should have to say "1,200k"</td></tr>
+<tr><td>6</td><td>Data integrity</td><td>Lie factor = 1 (below)</td></tr>
+<tr><td>7</td><td>Chart junk</td><td>Tufte's term. Remove borders, effects and grid lines, especially once you've labeled directly. Maximize data-ink</td></tr>
+<tr><td>8</td><td>Data density</td><td>A blob of dots: color and filter the clusters. Ten series on a line chart: small multiples with the same scale, or a filter to compare two or three</td></tr>
+<tr><td>9</td><td>Data richness</td><td>Show enough for the story</td></tr>
+<tr><td>10</td><td>Attribution</td><td>Credit the data source and yourself. You don't want someone interrupting to ask where it came from</td></tr>
+</table>
+<div class="callout green"><span class="c-label green">Lie factor (Tufte)</span>
+<p><b>Size of effect shown ÷ size of effect in the data</b>; you want 1. New York Times 1978, fuel economy standards from 18 to 27.5 mpg: the data rose 53%, the drawn lines 783%, so the lie factor is 14.8. Bars must start at zero. A Fox News bar chart of 35% vs 39.6% with a non-zero base is the same pitfall.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="apply">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🛠️</div>
+            <div>
+              <div class="sc-tag ">16 · In Tableau</div>
+              <div class="sc-name">Applying the standards, plus the style guide and her AI test</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>Numbers:</b> right-click the axis › Format › choose units, currency, decimals. Almost anything you can click, you can right-click.</li>
+<li><b>Annotate:</b> right-click a mark › Annotate › Mark. Anything in angle brackets is a variable from the Insert menu, and Insert only holds what's on the Marks card.</li>
+<li><b>Horizontal y-axis title (her hack):</b> erase the axis title and use the sheet name to write it horizontally.</li>
+<li><b>Hide clutter:</b> Format › Lines for grid and zero lines, axis ticks to none; right-click › Hide Field Labels; uncheck Show Header.</li>
+<li><b>Copy formatting:</b> right-click the sheet tab › Copy Formatting, paste on another tab, even in another workbook. You get about 80% of it.</li>
+<li><b>Workbook-wide:</b> Format › Workbook. Defaults are 9pt light gray; change to black Arial and turn grid lines off.</li>
+<li><b>Custom palette:</b> Color › Edit › create custom palette from hex codes. The old way was editing an XML file.</li>
+</ul>
+<h4>Style guide</h4>
+<p>Decide font, size, weight, color and highlight color before analyzing, as organizations do (she showed the NYU Stern guide with its exact purples). Then the choice is already made.</p>
+<h4>Her AI experiment</h4>
+<p>She prompted Claude for a Tableau workbook following all her rules, with hex codes. The first files threw errors; the next used Tableau's default colors and ignored her hex codes; the data was made up, with a column named after the chart. It took about two hours of redirecting to reach real data and a usable <b>categorical style guide for print</b>, in Lesson 7. AI editing a workbook is a heavy task.</p>
+<h4>Critique of Lab 1.1.1</h4>
+<p>"How many customers purchased in the promo?" alone is just 162, no chart needed, so ask a broader question. Traps: a y-axis running to 1,500 means the chart used <b>number of records, not purchases</b>. Age came in as a measure, so change the data type and group it (20s–50s) to fix bad density. Rename a filter as a call to action. Show the y-axis or the bar labels, not both. Put source and your name on the dashboard.</p>
+</div></div>
+      </div>
+      <div class="divider">Build — doughnut and time series</div>
+      <div class="sc bl-accent" id="act5">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🍩</div>
+            <div>
+              <div class="sc-tag ">17 · Activity 5</div>
+              <div class="sc-name">The doughnut: two pies merged</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ol>
+<li>New worksheet on the <b>pivoted</b> survey data. Marks › Pie. Count (Number of Records or migrated count) → Angle. Answer → Color. Question → Filters, pick one.</li>
+<li>Double-click Columns and type <code>AVG(0)</code>. Do it again for a second pill.</li>
+<li>Second pill's arrow › <b>Dual Axis</b>. Set Entire View. There are now three marks cards: All, and one per AVG(0).</li>
+<li>First AVG(0): increase Size, the outer ring. Second AVG(0): drag everything off Color and set it to <b>white</b>, the center.</li>
+<li>First AVG(0): Color › border white. Edit Colors: one color for all, one highlight.</li>
+<li>Reorder slices by dragging values in the legend, biggest at 12:00. Only Answer should be on Color.</li>
+<li>AVG(0) › Synchronize Axis, then uncheck Show Header top and bottom.</li>
+<li><b>Labels:</b> first AVG(0): Answer and count → Label. Second: count → Label, then click the ellipsis and type "responses" after it (e.g. 68 responses).</li>
+</ol>
+<p>Then a dashboard with title and attribution. Tutorial: manual 2.5.1, pp 40–41. Strategy over clicks: two pies, outer ring, inner ring, value + category labels, one color. A screenshot goes on the worksheet; it doesn't have to be perfect. <code>Lab 2/data/</code> has the survey data.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="time-design">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📈</div>
+            <div>
+              <div class="sc-tag ">18 · Time Series</div>
+              <div class="sc-name">Designing line, sparkline and area charts</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>Line charts:</b> 4 or fewer series, line weight 3–4 points so the back row can see it, simple symbols. Use about two-thirds of the chart area. Label each series at its endpoint and you can drop the legend; lines that don't cross can share a color.</li>
+<li><b>Baseline:</b> a line needn't start at zero. Start a couple of intervals below the minimum and end a couple above the maximum. A stock that never was at zero looks flat on a zero axis, and then why show it?</li>
+<li><b>Biased comparison (Dona Wong):</b> two line charts side by side can make both stocks look like they doubled when one didn't. Keep the actual values but scale the axes proportionally: one runs 20→40, the other 100→200, each a doubling, so the slopes compare fairly.</li>
+<li><b>Projections:</b> dashed line, via a dual-axis chart with one regular series and one projected.</li>
+<li><b>Static report:</b> a vertical grid line can replace tick mark plus grid line and guide the eye.</li>
+<li><b>Sparklines:</b> no shown axes, not for precision. BBC's TV minutes by age, endpoints labeled. Dashboards use them and bullet charts a lot.</li>
+<li><b>Area:</b> one series or several, absolute or 100%. Works best interactive, since one series hides what's behind it.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="act6">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎬</div>
+            <div>
+              <div class="sc-tag ">19 · Activity 6</div>
+              <div class="sc-name">Fox News critique, then animate unemployment</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<h4>Part 1: the class's critique of the Fox News unemployment chart</h4>
+<table class="dt">
+<tr><th>Standard</th><th>Verdict</th><th>Why</th></tr>
+<tr><td>Chart format</td><td>Mostly okay</td><td>Time series fits a line, but it's a line and an area stacked. Pick the line</td></tr>
+<tr><td>Color</td><td>Hinder</td><td>Overuse; red and blue look alike in grayscale</td></tr>
+<tr><td>Text and labels</td><td>Hinder</td><td>Labels and percentages duplicated; keep one</td></tr>
+<tr><td>Readability</td><td>Okay</td><td>She moved on with a yes</td></tr>
+<tr><td>Scales</td><td>Okay</td><td>8–10% is fine; lines needn't start at zero. Could be 9.5</td></tr>
+<tr><td>Data integrity</td><td>Hinder</td><td><b>8.9 is plotted lower than 8.6</b></td></tr>
+<tr><td>Chart junk</td><td>Hinder</td><td>Grid lines despite direct labels; heavy bolding and underlining</td></tr>
+<tr><td>Data density</td><td>Okay</td><td>About 11 values</td></tr>
+<tr><td>Data richness</td><td>Hinder</td><td>Needs context, hard to assess given the integrity issue</td></tr>
+</table>
+<h4>Part 2: build it</h4>
+<ol>
+<li>Connect to the Excel file. Month comes in as ABC, so change its data type to <b>Date</b>. Now you can pick month formats without editing aliases.</li>
+<li>Month → Columns, choose Month from the <b>first set</b> (discrete, blue). Rate → Rows. Entire View, thicker line.</li>
+<li>Double-click the Rate axis › Custom range <b>8 to 10</b>, delete the axis title. It now fills two-thirds of the chart.</li>
+<li>Set fonts in Format. Right-click › Hide Field Labels for Columns. Grid lines off.</li>
+<li>Month → <b>Pages</b>, level Month. Marks › <b>Circle</b>. A player appears.</li>
+<li>Check <b>Show History</b>, then its arrow: All, Length All, <b>Trails</b>. Trails draw the connecting line.</li>
+<li>Press play, choosing slow, medium or fast. Add Page Name to the title for the changing month. Labels › Show Mark Labels › All, and format Sum of Rate's numbers so the trailing decimals go.</li>
+</ol>
+<p>The file runs through October (hers had November). Animation didn't work on some operating systems two versions ago. Tutorial: manual 3.1.2, pp 47–48. Principles here: encode the time variable right, set the axis range, and animate only time series.</p>
+</div></div>
+      </div>
+      <div class="divider">Where the day ended</div>
+      <div class="sc bl-accent" id="next">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔌</div>
+            <div>
+              <div class="sc-tag ">20 · What Was Next</div>
+              <div class="sc-name">The end of Day 4: REST API prep for Day 5</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Class ended around 5:30 with Lab 7 dashboards as the next thing to start. Day 5's plan: a live Tesla vs Rivian dashboard, what $1,000 in each from the start of the period would be worth, with KPIs, brand colors and a parameter showing the selection.</p>
+<p><b>Setup asked for:</b> an API key for stock data, the REST API connector (a .taco file), the JDBC driver (a .jar file in the right Tableau folder), then quit and reopen Tableau. Connected data refreshes each time you open it, where a downloaded file goes stale. REST = representational state transfer. Worksheet Activity 9, manual ch 7.</p>
+</div></div>
+      </div>
+      <div class="sc bl-amber" id="not-captured-4">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico amber">⚠️</div>
+            <div>
+              <div class="sc-tag amber">21 · Not Captured</div>
+              <div class="sc-name">What the recording missed</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Source: Granola "Day 4 Module 4", read end to end (0–533 minutes), plus the worksheet, the book and the practice manual. Microphone only, so wording is rough and I've paraphrased.</p>
+<ul>
+<li><b>The first ~2h09m is silent.</b> Words start around 10:45am, and they sound like the start of her lecture. Whether anything happened before that isn't in the material.</li>
+<li><b>Whiteboard time</b> (~minutes 178–203), <b>lunch</b> (~250–301) and the <b>break</b> (~415–450) have nothing.</li>
+<li><b>Slides aren't on disk.</b> She said they'd be posted, so examples are described from what she said, and some chart details can't be checked.</li>
+<li><b>Cell colors on the Serena chart</b> and a few names are from a rough recording. Feldman, Theodore, Hanlon and Dona Wong are corrected against the book.</li>
+<li>The Granola summary says A4 for print size; she said A3, and 1169 × 1654 is what I used.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="divider">Reference</div>
+      <div class="sc bl-green" id="hooks4">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">🪝</div>
+            <div>
+              <div class="sc-tag green">Reference · Day 4</div>
+              <div class="sc-name">Exam hooks — Day 4</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>Process:</b> audience → data → question. Title each chart with its question; no visible answer = draft.</li>
+<li><b>Two translations:</b> phenomenon → data → graphic. We're the brokers between data and decision.</li>
+<li><b>Three formats:</b> paper (direct labels, no hover), screen (filters, KPI + breakdown), projector (one chart, minimal text).</li>
+<li><b>Same graphic, three experiences:</b> static gives no story, interactive is user-driven, a presenter crafts the narrative. Rosling: axes first, name the encodings, choose the window, annotate, pull back.</li>
+<li><b>Heat map = shaded table; filled map = shaded geography.</b> Name the unit, and use the median, not the average.</li>
+<li><b>Defaults:</b> horizontal sorted bar; doughnut with a KPI center; line with 4 or fewer series; sparkline; bullet graph for targets. Stacked only with interaction.</li>
+<li><b>Lie factor</b> = effect shown ÷ effect in data = 1. NYT 1978: 783% ÷ 53% = 14.8. Bars start at zero, lines needn't.</li>
+<li><b>Ten standards:</b> format, color, text and labels, readability, scales, data integrity, chart junk, density, richness, attribution.</li>
+<li><b>Color:</b> one light + one dark. No red and green. 8% of males, 0.5% of females.</li>
+<li><b>Tableau:</b> blue discrete, green continuous, italic = Tableau-generated, Columns = X, Rows = Y, no Show Me. Dynamic highlight needs <code>WINDOW_MAX</code> + Compute Using. Doughnut = two pies on <code>AVG(0)</code> dual axis. Animation = Pages + Show History + Trails.</li>
+<li><b>Never aggregate two years under a bullet graph:</b> the targets mix.</li>
+</ul>
+</div></div>
+      </div>
+
+    </div>
+
+    <div id="panel-assignments" class="day-panel">
+      <div class="divider">Data Visualization — graded components</div>
+
+      <div class="assign-card">
+        <div class="ac-ico">✅</div>
+        <div class="ac-b">
+          <div class="ac-label">Pre-module · 50%</div>
+          <div class="ac-title">Lesson 1–5 exercises<span class="done-badge">✓ Done</span></div>
+          <div class="ac-desc">Five separate submissions. Syllabus: −10 points per exercise after Nov 1.</div>
+          <div class="ac-due">Due <span>Sun Nov 1 · 11:59pm ET</span></div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">🖨️</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module · 10%</div>
+          <div class="ac-title">Individual Project</div>
+          <div class="ac-desc">A dataset unrelated to the capstone. Three data graphics for a printed "paper" report with a clear message. Word doc: page 1 = name, report title, target audience, data description; pages 2–4 = one visual per page with an explanation and key insight. Plus the .twbx or RMarkdown files with the data.</div>
+          <div class="ac-due">Due <span>Sun Dec 20 · 11:59pm ET</span></div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">👥</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module · 30% · Group (MLiQ)</div>
+          <div class="ac-title">Capstone Team Project</div>
+          <div class="ac-desc">A dashboard prototype of the capstone KPIs plus 5 visual displays, as .twbx. Word doc with team names and the video presentation URL. Peer evaluation form too.</div>
+          <div class="ac-due">Due <span>Sun Dec 20 · 11:59pm ET</span></div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">📝</div>
+        <div class="ac-b">
+          <div class="ac-label">Syllabus: meetup participation · 10%</div>
+          <div class="ac-title">In-Class Worksheet</div>
+          <div class="ac-desc">The Day 1 + Day 2 worksheet, submitted to Brightspace › Assignments › In-Class Exercises. Sosulski called it evidence of participation. AI is allowed in this course and must be cited.</div>
+          <div class="ac-due">Due <span>Sun Dec 20 · 11:59pm ET</span></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<script>
+const KEY = 'notes-unlocked', PWD = 'huncho';
+if (sessionStorage.getItem(KEY) === 'true') unlock();
+document.getElementById('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+function tryUnlock() {
+  if (document.getElementById('gate-input').value.trim().toLowerCase() === PWD) {
+    sessionStorage.setItem(KEY, 'true'); unlock();
+  } else {
+    document.getElementById('gate-err').textContent = 'wrong password';
+    document.getElementById('gate-input').value = '';
+  }
+}
+function unlock() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'block';
+  document.getElementById('main').style.display = 'block';
+}
+function toggle(hdr) { hdr.closest('.sc').classList.toggle('open'); }
+document.querySelectorAll('.day-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+const navLinks = document.querySelectorAll('.sb-nav a[href^="#"]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+  });
+}, { rootMargin: '-25% 0px -65% 0px' });
+document.querySelectorAll('.sc[id]').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
