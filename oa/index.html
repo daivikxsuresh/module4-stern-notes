@@ -213,11 +213,14 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
   <div class="sb-nav">
     <a href="#orientation"><span class="dot"></span>Orientation</a>
     <a href="#ai-types"><span class="dot"></span>Descriptive to Prescriptive AI</a>
+    <a href="#variation"><span class="dot"></span>Variation &amp; A/B Tests</a>
     <a href="#markdown-why"><span class="dot"></span>Why Markdowns</a>
     <a href="#markdown-game"><span class="dot"></span>The Retailer Game</a>
+    <a href="#game-demos"><span class="dot"></span>The Room's Games</a>
     <a href="#lift-factors"><span class="dot"></span>Lift Factors</a>
     <a href="#heuristics"><span class="dot"></span>Fixed / Two-Price / Run-Out</a>
     <a href="#markdown-lp"><span class="dot"></span>The Markdown LP</a>
+    <a href="#reoptimize"><span class="dot"></span>Re-Optimize &amp; Robustness</a>
     <a href="#my-game"><span class="dot"></span>My Game — In-Class</a>
     <a href="#why-inventory"><span class="dot"></span>Why Hold Inventory</a>
     <a href="#newsvendor"><span class="dot"></span>Newsvendor — Pumpkins</a>
@@ -231,9 +234,16 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
     <a href="#dp-missing"><span class="dot"></span>Missing Data</a>
     <a href="#dp-outliers"><span class="dot"></span>Outliers</a>
     <a href="#dp-features"><span class="dot"></span>Feature Engineering</a>
+    <a href="#dp-sparse"><span class="dot"></span>Sparse Data &amp; Interactions</a>
+    <a href="#dp-shocks"><span class="dot"></span>COVID-Era Shocks</a>
+    <a href="#dp-metrics"><span class="dot"></span>Cost of Errors</a>
     <a href="#dp-linear"><span class="dot"></span>Linear Methods — In-Class</a>
+    <a href="#dp-regularization"><span class="dot"></span>Regularization</a>
     <a href="#dp-trees"><span class="dot"></span>Trees &amp; Clusters — In-Class</a>
-    <a href="#not-captured-3"><span class="dot"></span>Not Captured</a>
+    <a href="#dp-validation"><span class="dot"></span>Validation &amp; Drift</a>
+    <a href="#dp-interpret"><span class="dot"></span>Choosing a Model</a>
+    <a href="#dp-clusters"><span class="dot"></span>Clustering</a>
+    <a href="#not-captured-3"><span class="dot"></span>Gaps &amp; Conflicts</a>
   </div>
   <div class="sb-group">Reference</div>
   <div class="sb-nav">
@@ -245,7 +255,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
   <div id="hdr">
     <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 4 · Operations Analytics</div>
     <h1 class="hdr-title">Operations <span>Analytics</span></h1>
-    <p class="hdr-sub">Prof. Maxime Cohen · markdown optimization · newsvendor · order-up-to inventory · demand prediction (guest lecture)</p>
+    <p class="hdr-sub">Prof. Maxime Cohen · markdown optimization · newsvendor · order-up-to inventory · demand prediction, regularization, trees, clustering (guest lecture)</p>
     <div class="day-tabs">
       <button class="day-tab active" data-panel="day3">Day 3 — Wed Nov 4</button>
       <button class="day-tab" data-panel="assignments">Assignments</button>
@@ -285,7 +295,13 @@ Microsoft, Meta, Uber, OpenAI, Amazon, Expedia, Oracle Retail, IBM Research, Spo
 <tr><td>7</td><td>Generative AI for pricing: LLMs for pricing, three case studies</td><td>1.5 h</td></tr>
 </table>
 <p>One topic may be skipped, the hours are estimates and the order can change. Each lecture is built around a real problem,
-a dataset and a measured business impact.</p>
+a dataset and a measured business impact. In the room he framed it as business problems, cases and data rather than theory
+and models, and as the follow-on to Vulcano's decisions-under-risk days. He said topics 4, 5 and 6 shouldn't get cut, and topic 3
+needs its time because a post-module assignment hangs off it. His book <i>Pricing in the Age of AI</i> came out last month.</p>
+<div class="callout"><span class="c-label">What actually got taught</span>
+<p><b>Only Wed Nov 4.</b> Thu Nov 5 he was out sick and the class switched to Data Viz. So <b>Promotion Optimization (Part 4),
+A/B Testing (6a), Frustration-Based Promotions (6b) and GenAI Pricing (7) were not taught</b>. When they will be: unknown.
+Part 4 is the lecture behind Assignment 3 (50%).</p></div>
 <div class="callout amber"><span class="c-label amber">How it's graded</span>
 <p>Pre-module 0% (read the cases). <b>Post-module 100%</b>, individual: Assignment 1 = markdown optimization (20%),
 Assignment 2 = the inventory problem from class (30%), Assignment 3 = every question on the supermarket promotions case (50%).
@@ -306,14 +322,25 @@ Due Sun Dec 20, 11:55pm. Nothing done in class is graded, so today's game and si
         </div>
         <div class="sc-body"><div class="sc-in">
 <table class="dt">
-<tr><th>Layer</th><th>Question</th><th>Examples</th></tr>
-<tr><td>Descriptive</td><td>What happened?</td><td>New patterns, customer segments, trends. Usual output: a dashboard</td></tr>
-<tr><td>Predictive</td><td>What is likely to happen?</td><td>Demand prediction, classification, anomaly detection, customer lifetime value, predictive maintenance, loan default, spam</td></tr>
-<tr><td>Prescriptive</td><td>What should I do?</td><td>Price optimization, inventory, supply chain, staffing, fleet, matching, procurement, A/B testing</td></tr>
+<tr><th>Layer</th><th>Question</th><th>Examples</th><th>Project length</th></tr>
+<tr><td>Descriptive</td><td>What happened?</td><td>New patterns, customer segments, trends. Usual output: a dashboard</td><td>2 weeks – 2 months</td></tr>
+<tr><td>Predictive</td><td>What is likely to happen?</td><td>Demand prediction, classification, anomaly detection, customer lifetime value, predictive maintenance, loan default, spam</td><td>3–6 months</td></tr>
+<tr><td>Prescriptive</td><td>What should I do?</td><td>Price optimization, inventory, supply chain, staffing, fleet, matching, procurement, A/B testing</td><td>Months to years</td></tr>
 </table>
 <p><b>Generative AI</b> is treated as a (very powerful) subset of prescriptive AI: it generates text, images, audio, video
 and code from a prompt. Pitfalls: privacy, deepfakes, hallucination, plagiarism, bias, and a different answer to the same
 question. Working projects he names: clinician documentation, pricing decisions, web scraping, product pages, marketing.</p>
+<ul>
+<li><b>Dashboards</b> are the most common descriptive output and still absent in many companies. He suggests one as a practical
+first project after graduating: people who decided on intuition now have data.</li>
+<li><b>Predictive maintenance</b> on private jets is a balance: maintain too early and you waste money, too late and the consequences are serious.</li>
+<li><b>GenAI</b> makes visualization and some prediction easier, with caveats, and is less effective on prescriptive tasks for now.
+Same LLM, same question, two answers: fine for a restaurant pick, not for a diagnosis.</li>
+<li><b>Clinical documentation</b> (large Canadian hospital): an ambient mic captures the consult and an LLM writes the summary. He said
+about 40–45% of doctors in Canada use it and it saves 1–3 minutes per consultation. His claim, not checked.</li>
+<li><b>His advice on agents:</b> experiment with them to learn what they can do and how they fail, and learn the safeguards that keep them
+in scope. Poorly constrained agents can do real harm.</li>
+</ul>
 <h4>Operational decisions this course touches</h4>
 <p>Inventory · pricing, markdowns and promotions · supply chain · assortment and planogram · resource allocation ·
 fulfillment and procurement · strategic choices like opening a store · hiring and staffing · targeted offers.</p>
@@ -327,6 +354,37 @@ Google Trends. "Many data challenges" in all of them.</p>
 retailers struggle to set prices; testing helps if done carefully (charm pricing tested, several caveats).</p></div>
 </div></div>
       </div>
+
+      <div class="sc bl-accent" id="variation">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔀</div>
+            <div>
+              <div class="sc-tag ">03 · Variation</div>
+              <div class="sc-name">Variation beats volume, and A/B tests are the cleanest way to get it</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Two years of sales at one constant price can't show how demand responds to price. A much smaller dataset that covers several
+prices tells you more. <b>"The variation of the data is sometimes more important than the quantity of the data."</b></p>
+<p>He presented A/B testing as both causal inference (random assignment lets you attribute the difference to the treatment) and decision
+support. His example: a T-shirt at $49 vs $59, 1,000 visitors in each group, compare once there are enough observations. You test charm
+pricing ($9.95 vs $10) rather than assume it works.</p>
+<h4>The two ends of retail data</h4>
+<p>Point-of-sale data is structured. E-commerce data is richer and messier: clickstream, search keywords, time on page, scrolling. It can
+be massive and hard to manage. A campus store with about 60 cameras tracked where people walked and how long they stayed, for layout
+and product placement.</p>
+<h4>The promotion case: previewed, not taught</h4>
+<p>Supermarket margins average about 1.7%, so a few points of profit matter at scale. He spent three and a half years on the case. The AI
+beat managers' promotion decisions because it could process far more data and optimize carefully. He was clear this isn't a claim that AI
+is always better than people.</p>
+<div class="callout amber"><span class="c-label amber">Open</span>
+<p>Reading he named: <i>Lessons from More Than 1,000 E-Commerce Pricing Tests</i> (on disk in Readings &amp; Cases) and the Intelligems pricing
+case. Optional: his Columbia Business School talk with co-founder Bruno Boni, <b>Mon Nov 9</b>.</p></div>
+</div></div>
+      </div>
       <div class="divider">Markdown optimization — the retailer game</div>
 
       <div class="sc bl-accent" id="markdown-why">
@@ -334,7 +392,7 @@ retailers struggle to set prices; testing helps if done carefully (charm pricing
           <div class="sc-hdr-l">
             <div class="sc-ico ">🏷️</div>
             <div>
-              <div class="sc-tag ">03 · Markdowns</div>
+              <div class="sc-tag ">04 · Markdowns</div>
               <div class="sc-name">Why fashion retailers mark down: price skimming</div>
             </div>
           </div>
@@ -348,6 +406,17 @@ p<sub>lo</sub> and p<sub>hi</sub> buy at p<sub>lo</sub>.</p>
 ahead) and a <b>very mixed population</b>. Trend-driven customers are inelastic and pay full price early; elastic customers
 care about trend less and have less money. Selling to both over a season means starting high and marking down:
 <b>price markdowns, a.k.a. price skimming</b>.</p>
+<h4>The economics he drew</h4>
+<ul>
+<li>With D(p) = a − bp, revenue = p × D(p), the rectangle under the demand curve. Find p* by setting the derivative to zero or by a grid search.</li>
+<li>The two-price idea comes up via <b>Hal Varian</b> (former Berkeley professor, Google chief economist).</li>
+<li><b>Markdowns are time-based price discrimination</b>: different customers pay different prices for the same product at different
+times. Traditional price discrimination charges different people different prices at the same time. A student asked if this creates
+deadweight loss: he said yes and didn't elaborate.</li>
+<li><b>Lead times</b> of 6–8 months from Asia are why there's no mid-season replenishment.</li>
+<li><b>Positioning:</b> Hermès and Dior at the luxury end, H&amp;M and Costco at the price-sensitive end. Zara starts high and marks down, serving both early buyers and people willing to wait.</li>
+<li><b>Markdowns ≠ dynamic pricing.</b> Uber's price changes continually with the market; fashion sets a price and only cuts it. Electronic shelf labels allow more frequent changes.</li>
+</ul>
 </div></div>
       </div>
 
@@ -356,7 +425,7 @@ care about trend less and have less money. Selling to both over a season means s
           <div class="sc-hdr-l">
             <div class="sc-ico ">🎮</div>
             <div>
-              <div class="sc-tag ">04 · The Game</div>
+              <div class="sc-tag ">05 · The Game</div>
               <div class="sc-name">Retailer markdown game: 2,000 units, 15 weeks, prices only go down</div>
             </div>
           </div>
@@ -371,11 +440,40 @@ care about trend less and have less money. Selling to both over a season means s
 <tr><td>Moves</td><td>Each week: hold or lower. Never raise. Choosing 40% ends the game (nothing lower)</td></tr>
 <tr><td>End</td><td>Leftover stock is worth $0. Production cost is sunk, so the goal is total revenue</td></tr>
 </table>
-<p>The screen shows week, price, <b>sales (not demand)</b> and remaining inventory. Sales are capped by stock: in a
-stock-out week you never see how much you could have sold. The game is at
+<p>The screen shows week, price, <b>sales (not demand)</b> and remaining inventory. <b>Sales = MIN(Demand, Inventory)</b>: demand 100 with
+18 left sells 18; demand 100 with 120 left sells 100. Sales are a censored signal of demand, so in a stock-out week you never see how much
+you could have sold. Drop those weeks when you average. The game is at
 <code>randhawa.us/games/retailer/nyu.html</code>; <code>Sales-Data.xlsx</code> holds 15 past runs to analyse.</p>
 <p>A good strategy has two parts: <b>estimate demand</b> (historical lift factors + real-time sales), then <b>optimize</b>
 the markdown path (fixed-price heuristic, then an LP), re-solving as weeks pass.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="game-demos">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">👥</div>
+            <div>
+              <div class="sc-tag ">06 · The Room</div>
+              <div class="sc-name">What the room's games showed</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Who</th><th>Strategy</th><th>Result vs perfect foresight</th></tr>
+<tr><td>Cohen's demo</td><td>98 sold in week 1; held 3 weeks, 10% off for 3, 20% off for 2, 40% off in week 9</td><td>12% below. The deep cut came too early and gave up later sales at higher prices</td></tr>
+<tr><td>Charles</td><td>Hold $60 all season</td><td>938 units unsold, 28% of potential revenue lost. Too conservative</td></tr>
+<tr><td>Luca</td><td>One 10% cut, then hold</td><td>6% below</td></tr>
+<tr><td>Two students</td><td>Very different approaches</td><td>0% on a single run each</td></tr>
+</table>
+<div class="callout"><span class="c-label">The point</span>
+<p><b>"Doing one instance is not good enough."</b> One lucky run says nothing about a strategy. A student's "be greedy for as long as
+possible" is a useful instinct, but he wants it replaced by data and optimization, not treated as art. The benchmark is perfect foresight,
+which nobody has when deciding.</p></div>
+<p>Other runs shown (from the recording summary; not in the slide text, so I can't tie them to a schedule beyond what's noted):
+single price $95,610 vs $107,484 (11.0%) · $107,550 vs $111,078 (3.2%) · 6 weeks at $48 + 8 at $36, sold out in week 15, $82,404 vs $82,896 (0.6%).</p>
 </div></div>
       </div>
 
@@ -384,7 +482,7 @@ the markdown path (fixed-price heuristic, then an LP), re-solving as weeks pass.
           <div class="sc-hdr-l">
             <div class="sc-ico ">📈</div>
             <div>
-              <div class="sc-tag ">05 · Demand Estimation</div>
+              <div class="sc-tag ">07 · Demand Estimation</div>
               <div class="sc-name">Lift factors: absolute demand varies, the relative lift doesn't</div>
             </div>
           </div>
@@ -404,7 +502,22 @@ to the $60 weeks.</p>
 </table>
 <p>I recomputed these from the spreadsheet and they match slide 22 to two decimals.</p>
 <p><b>Real-time data</b> pins down the item. Sell 59 at $60 in week 1, and assume 59/week at $60, 59 × 1.31 = 77 at $54,
-59 × 1.73 = 102 at $48, 59 × 2.81 = 166 at $36. Lots of time to sell 2,000 units → $60; very little time → $36.</p>
+59 × 1.73 = 102 at $48, 59 × 2.81 = 166 at $36.</p>
+<table class="dt">
+<tr><th>Price</th><th>Units/week</th><th>Revenue/week</th><th>Step up from the price before</th></tr>
+<tr><td>$60</td><td>59</td><td>$3,540</td><td>–</td></tr>
+<tr><td>$54</td><td>77</td><td>$4,158</td><td>+31%</td></tr>
+<tr><td>$48</td><td>102</td><td>$4,896</td><td>+32%</td></tr>
+<tr><td>$36</td><td>166</td><td>$5,976</td><td>+62%</td></tr>
+</table>
+<p>Lots of time to sell 2,000 units → $60; very little time → $36. A long horizon lets you hold a high price; one week left forces it.</p>
+<h4>What he warned about</h4>
+<ul>
+<li><b>Everything rests on the 59.</b> If it's noisy, every forecast is noisy. A second observation of 61 builds confidence; an 88 says you need more data.</li>
+<li><b>15 runs may be too few.</b> Replay or scrape the game for more; he mentioned 10,000 runs as an example, not a requirement.</li>
+<li><b>Similar lift across items is an assumption to test</b>, not a rule. Socks, winter jackets and T-shirts may need separate factors: cluster by business judgment or machine learning, one lift per cluster.</li>
+<li><b>A new product's first price is close to a guess.</b> Use comparable products and earlier seasons. A $60 item needing two cuts right after week 1 means the estimate was badly off.</li>
+</ul>
 </div></div>
       </div>
 
@@ -413,7 +526,7 @@ to the $60 weeks.</p>
           <div class="sc-hdr-l">
             <div class="sc-ico ">🧮</div>
             <div>
-              <div class="sc-tag ">06 · Heuristics</div>
+              <div class="sc-tag ">08 · Heuristics</div>
               <div class="sc-name">Fixed price → two prices → run-out rate</div>
             </div>
           </div>
@@ -438,10 +551,13 @@ to the $60 weeks.</p>
 <table class="dt">
 <tr><th>Weeks at $48</th><th>Weeks at $36</th><th>Total demand</th><th>vs 1,941 available</th></tr>
 <tr><td>2</td><td>12</td><td>2,196</td><td>too fast</td></tr>
+<tr><td>3</td><td>11</td><td>2,132</td><td>too fast</td></tr>
 <tr><td>4</td><td>10</td><td>2,068</td><td>too fast</td></tr>
 <tr><td>5</td><td>9</td><td>2,004</td><td>still over</td></tr>
 <tr><td><b>6</b></td><td><b>8</b></td><td><b>1,940</b></td><td><b>just in time</b></td></tr>
 </table>
+<p>"I don't want to run out too early and I don't want to be stuck with leftover inventory." He also asked whether one more price point earns its
+complexity, and raised size and color as the next real-world problem.</p>
 </div></div>
       </div>
 
@@ -450,7 +566,7 @@ to the $60 weeks.</p>
           <div class="sc-hdr-l">
             <div class="sc-ico ">📐</div>
             <div>
-              <div class="sc-tag ">07 · LP Heuristic</div>
+              <div class="sc-tag ">09 · LP Heuristic</div>
               <div class="sc-name">The LP: weeks at each price, under time and inventory</div>
             </div>
           </div>
@@ -465,11 +581,49 @@ to the $60 weeks.</p>
 <tr><td>Limited inventory</td><td>59x<sub>60</sub> + 77x<sub>54</sub> + 102x<sub>48</sub> + 166x<sub>36</sub> ≤ 1,941 (= 2,000 − 59)</td></tr>
 </table>
 <p>Excel Solver's answer: <b>weeks 2–7 at 20% off ($48), weeks 8–15 at 40% off ($36)</b>. Revenue $3,540 + $77,182 =
-<b>$80,772</b>. Same plan as the run-out rate heuristic.</p>
+<b>$80,772</b>. Same plan as the run-out rate heuristic. The LP "understood that it was optimal to sell the last T-shirt on the last day."</p>
+<ul>
+<li><b>Garbage in:</b> inaccurate demand estimates make the LP solve the wrong problem. Check whether the answer makes business sense.</li>
+<li><b>Fractional weeks</b> may need handling in a real schedule; this example came out in whole weeks.</li>
+<li><b>$80,772 vs $82,404:</b> the recording summary leaves this unexplained. My read: $80,772 is the plan's expected revenue at week 1, using 59/week, and $82,404 is what one game actually paid under the same schedule.</li>
+</ul>
 <div class="callout green"><span class="c-label green">Doing better: re-optimization</span>
 <p>Here the LP is close to the best possible, but you can often beat it: <b>re-solve every week</b> with the updated demand
 estimate (one more week of sales) and the actual remaining inventory. Extensions: richer demand models, multiple items
 (cannibalization), limits on the number of markdowns, choosing the price points themselves. Zara is the practice example.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="reoptimize">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔁</div>
+            <div>
+              <div class="sc-tag ">10 · Robustness</div>
+              <div class="sc-name">Re-optimize, stress-test, then report a distribution</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<h4>Re-optimization</h4>
+<p>Update demand and inventory after a week's sales, then re-solve for weeks 3–15. Weekly is one option; he said companies often update every two
+or four weeks because refreshing data and solving costs money. You balance that cost against fresher information. For the assignment extension he
+suggested every 4–5 weeks.</p>
+<h4>Robustness</h4>
+<p>Change the inputs (59 vs 50, or forecasts ±10%) and re-solve. "If I find a drastically different solution, it doesn't provide confidence that my
+solution is robust."</p>
+<h4>How to validate</h4>
+<ol>
+<li>Is the solution intuitive, and does it make business sense?</li>
+<li>Run many cases, not one: 1,000–10,000 game instances came up.</li>
+<li>Report the average, standard deviation, confidence interval, and the best and worst parts of the distribution. A target of within 0.5% of optimal on average came up; the calculation wasn't specified.</li>
+<li>Test against noisy or misspecified forecasts before implementing.</li>
+</ol>
+<p><b>At scale:</b> 50,000–80,000 Zara products × 10 perturbations each ≈ a million LPs, so you pick which inputs to perturb, and backtesting helps choose.</p>
+<h4>Extensions he listed</h4>
+<p>Richer demand models · multiple items and cannibalization (a blue T-shirt markdown pulls from the green one) · size mix (one example: 40% M, 20% S, 10% XS, 20% L, 10% XL) · limits such
+as a cap on markdowns or 2–3 weeks between them · optimizing the price points themselves.</p>
 </div></div>
       </div>
 
@@ -478,7 +632,7 @@ estimate (one more week of sales) and the actual remaining inventory. Extensions
           <div class="sc-hdr-l">
             <div class="sc-ico ">🕹️</div>
             <div>
-              <div class="sc-tag ">08 · Worked — In-Class</div>
+              <div class="sc-tag ">11 · Worked — In-Class</div>
               <div class="sc-name">My first game: $104,226 vs $118,584 perfect foresight</div>
             </div>
           </div>
@@ -507,7 +661,7 @@ says you'd be left with stock. Don't react to one slow week: my $60 weeks ranged
           <div class="sc-hdr-l">
             <div class="sc-ico ">📦</div>
             <div>
-              <div class="sc-tag ">09 · Inventory</div>
+              <div class="sc-tag ">12 · Inventory</div>
               <div class="sc-name">Why hold inventory, and why it's called evil</div>
             </div>
           </div>
@@ -529,7 +683,7 @@ warehouse costs money instead of making it.</li>
 <li><b>Zara:</b> most apparel retailers lock in 40–60% of a season's line six months ahead and ~80% by season start. Zara
 commits only 15–25% six months out and 50–60% by season start, designing and making the rest mid-season.</li>
 <li><b>Walmart:</b> turns its inventory about 8 times a year (Target 6.4). Turn faster than your 30-day payment terms and
-your vendors finance your inventory.</li>
+your vendors finance your inventory, which can mean lower costs, lower prices and more sales. He cautioned that it takes buying power and scale.</li>
 </ul>
 </div></div>
       </div>
@@ -539,7 +693,7 @@ your vendors finance your inventory.</li>
           <div class="sc-hdr-l">
             <div class="sc-ico ">🎃</div>
             <div>
-              <div class="sc-tag ">10 · Newsvendor</div>
+              <div class="sc-tag ">13 · Newsvendor</div>
               <div class="sc-name">Marginal analysis: the pumpkin example</div>
             </div>
           </div>
@@ -557,6 +711,9 @@ is known</b>. Christmas trees, Halloween pumpkins, skiwear, flu vaccines, seats 
 <tr><td>251st</td><td>0.75 × (−$1) + 0.25 × ($3) = <b>$0</b></td><td>Indifferent</td></tr>
 </table>
 <p>Order <b>250</b> (or 251). The profit curve rises ("too little"), peaks ("just right"), then falls ("too much").</p>
+<p><b>The tie at 251:</b> Eugene's view was don't order it, since it adds no expected gain and uses space. The other view: it could serve one more
+customer if demand runs high. Someone asked whether the calculation should include a holding cost; the recording stops before the answer. Where demand is known
+well ahead, such as a customized car, the model matters less.</p>
 <div class="callout green"><span class="c-label green">Key idea</span>
 <p>At the optimal order quantity, the expected profit of ordering <b>one more unit is zero</b>.</p></div>
 </div></div>
@@ -567,7 +724,7 @@ is known</b>. Christmas trees, Halloween pumpkins, skiwear, flu vaccines, seats 
           <div class="sc-hdr-l">
             <div class="sc-ico ">🎯</div>
             <div>
-              <div class="sc-tag ">11 · Critical Fractile</div>
+              <div class="sc-tag ">14 · Critical Fractile</div>
               <div class="sc-name">P(D ≤ X) = cu / (cu + co)</div>
             </div>
           </div>
@@ -587,8 +744,17 @@ critical fractile (z-table, or <code>NORMINV(fractile, μ, σ)</code> in Excel).
 <h4>T-shirts</h4>
 <p>Demand N(1,000, 200); cost $10, price $15, salvage $8 → c<sub>u</sub> = 5, c<sub>o</sub> = 2, fractile 5/7 = 0.714,
 z = 0.57 → <b>1,114 shirts</b> (<code>NORMINV(5/7, 1000, 200)</code>).</p>
-<p><b>Slide question, "price drops to $12?"</b> c<sub>u</sub> = 2 and c<sub>o</sub> = 2 → fractile 0.5 → z = 0 → order
-<b>1,000</b>, just the mean. (My working; the slide leaves it as a question.)</p>
+<p><b>"Price drops to $12?"</b> c<sub>u</sub> = 2 and c<sub>o</sub> = 2 → fractile 0.5 → z = 0 → order <b>1,000</b>. That's the balanced-cost case, not a
+rule that the mean is always right.</p>
+<div class="callout"><span class="c-label">The executive trap</span>
+<p>In his exercise with executives, more than half ordered average demand, whatever the costs were. Push the price to $1 million and a missed sale is
+catastrophic, so order far more. At $10.10 you make $0.10 a sale against a $2 overstock, so order far less.</p></div>
+<ul>
+<li><b>Read the fractile as a threshold:</b> how likely must the next unit be to sell, given the two costs.</li>
+<li><b>Normal table:</b> cumulative 98.7% maps to z = 2.23 (table entry 0.9871).</li>
+<li><b>Service levels:</b> 99%, 99.9% or 99.99% get expensive fast. Uber's targets may vary by time of day, ZIP code and city.</li>
+<li><b>Demand may not be normal.</b> With enough data, read X off the empirical or simulated distribution; the normal formula is for when you only have a mean and standard deviation.</li>
+</ul>
 </div></div>
       </div>
       <div class="divider">Inventory management — Champagne, many periods</div>
@@ -598,7 +764,7 @@ z = 0.57 → <b>1,114 shirts</b> (<code>NORMINV(5/7, 1000, 200)</code>).</p>
           <div class="sc-hdr-l">
             <div class="sc-ico ">🍾</div>
             <div>
-              <div class="sc-tag ">12 · Champagne Case</div>
+              <div class="sc-tag ">15 · Champagne Case</div>
               <div class="sc-name">A liquor store's Champagne: hold vs backlog, every week</div>
             </div>
           </div>
@@ -611,13 +777,18 @@ bottles is costly (temperature, humidity). Under its loyalty program, a customer
 <table class="dt">
 <tr><th>Input</th><th>Value</th></tr>
 <tr><td>Demand per period</td><td>Normal, μ = 100, σ = 20 (unknown when you order)</td></tr>
-<tr><td>Lead time</td><td>Ordered at the end of a period → arrives at the start of the next</td></tr>
+<tr><td>Timing</td><td>Count and order Sunday evening → shipped overnight → delivered before Monday opening, so zero lead time. You order before seeing the week's demand</td></tr>
 <tr><td>Holding cost</td><td>$1.5 per unit per period</td></tr>
 <tr><td>Backlog cost</td><td>$3 per unit per period</td></tr>
 <tr><td>Current policy</td><td>If ending inventory ≤ 20, order 100; otherwise don't. Two numbers, safety stock 20</td></tr>
 </table>
-<p>Too much → holding cost; too little → backlog cost. Objective 1: the average cost per period of the current policy.
-Objective 2: beat it.</p>
+<p>Too much → holding cost; too little → backlog cost. Backlog costs twice holding, so the case says any optimal policy leans toward over-ordering.
+Objective 1: the average cost per period of the current policy. Objective 2: beat it.</p>
+<ul>
+<li><b>Backorder vs lost sale:</b> here the customer puts down a 20% deposit and waits. With milk at a grocery they just leave for a competitor.</li>
+<li><b>100 and 20 aren't random:</b> the case points out that David's two numbers are exactly the mean and the standard deviation. Constant orders suit the supplier and are easy to run.</li>
+<li><b>The consulting workflow he described:</b> understand the current operation, simulate its baseline cost, then propose and test better policies.</li>
+</ul>
 </div></div>
       </div>
 
@@ -626,7 +797,7 @@ Objective 2: beat it.</p>
           <div class="sc-hdr-l">
             <div class="sc-ico ">🧪</div>
             <div>
-              <div class="sc-tag ">13 · Worked — Simulation</div>
+              <div class="sc-tag ">16 · Worked — Simulation</div>
               <div class="sc-name">Steps 5–8: the spreadsheet, and why the current policy blows up</div>
             </div>
           </div>
@@ -653,7 +824,11 @@ Objective 2: beat it.</p>
 </table>
 <p>The current policy is intuitive and simple, but it performs badly. Ordering exactly the mean (100) only when stock is low
 means it never catches up, so the backlog wanders like a random walk. Ordering a bit more than the mean (115) from a higher
-trigger (70) fixes the drift.</p>
+trigger (70) fixes the drift. Re-run it with F9: "the cost is totally unpredictable."</p>
+<h4>Where do 30 and 135 come from?</h4>
+<p>This came up at the end of the session. Two ways were proposed: formulate it as an optimization problem, or brute-force candidate values and compare. Nothing was decided.
+The figure is <b>average cost per period</b>, not per bottle and not a total, which is what the "3,000 vs 120 × 3 = 360" confusion was about. Also, the demand
+mean and standard deviation are inputs; the manager's decisions are only the two policy numbers.</p>
 <div class="callout amber"><span class="c-label amber">Slide 31: what's wrong with any constant policy</span>
 <p>Beginning inventory is often negative. The order size should depend on how much is left. And since demand has the same
 distribution every period, you'd ideally <b>start every period at the same inventory level</b>.</p></div>
@@ -665,7 +840,7 @@ distribution every period, you'd ideally <b>start every period at the same inven
           <div class="sc-hdr-l">
             <div class="sc-ico ">🔁</div>
             <div>
-              <div class="sc-tag ">14 · Optimal Policy</div>
+              <div class="sc-tag ">17 · Optimal Policy</div>
               <div class="sc-name">Order-up-to 108.614: the newsvendor, every period</div>
             </div>
           </div>
@@ -686,8 +861,8 @@ so period 1 is row 2. Put it in E2 and fill down. Column F stays the cost.</p></
 <p><b>Where it's used:</b> hospitals keep an order-up-to level for each blood type and refill daily (shortages vs outdated
 red cells); Tesco refills high-volume non-perishables up to three times a day; car dealers, electronics.</p>
 <div class="callout green"><span class="c-label green">Summary</span>
-<p>Simulation lets you test and compare policies and their robustness (e.g., change the demand distribution). The constant
-policy is easy but performs badly; <b>order-up-to is optimal</b> and widely used.</p></div>
+<p>Simulation lets you test and compare policies and their robustness (e.g., change the demand distribution, or move the mean from 100 to 110). A robust
+policy still performs acceptably when the assumptions change. The constant policy is easy but performs badly; <b>order-up-to is optimal</b> and widely used.</p></div>
 </div></div>
       </div>
       <div class="divider">Demand prediction — guest lecture (Pentecoste & Gras)</div>
@@ -697,7 +872,7 @@ policy is easy but performs badly; <b>order-up-to is optimal</b> and widely used
           <div class="sc-hdr-l">
             <div class="sc-ico ">🛰️</div>
             <div>
-              <div class="sc-tag ">15 · Guest Lecture</div>
+              <div class="sc-tag ">18 · Guest Lecture</div>
               <div class="sc-name">Predicting demand for a tech e-commerce retailer</div>
             </div>
           </div>
@@ -715,7 +890,11 @@ sales for a tech gadgets e-commerce retailer.</p>
 <tr><td>Notebook Part 2</td><td>Decision trees with tuning, then k-means clustering</td></tr>
 </table>
 <p>Run in Google Colab (<code>!pip install scikit-learn</code> if a package is missing). The speaker's framing: less time on
-coding, more on concepts. Coding is getting easy with AI agents; the skill is knowing what to ask for and checking it.</p>
+coding, more on concepts. Coding is getting easy with AI agents; the skill is knowing what to ask for and checking it. An LLM isn't itself the forecasting
+solution: use the tools to build specialized methods. Mistral's time-series model family came up as an example of a specialized one.</p>
+<p><b>Where it started:</b> a project with the team running McGill's merchandise store, who wanted a better assortment, fewer stock-outs and more sales. It grew from
+prototypes into a case and then the book, <i>Demand Prediction in Retail</i>. <b>The trade-off:</b> too much stock costs warehousing and insurance and hurts most with perishables;
+too little means stock-outs and lost sales. A SKU (stock keeping unit) is each distinct product: red and blue T-shirts are two.</p>
 </div></div>
       </div>
 
@@ -724,7 +903,7 @@ coding, more on concepts. Coding is getting easy with AI agents; the skill is kn
           <div class="sc-hdr-l">
             <div class="sc-ico ">🔎</div>
             <div>
-              <div class="sc-tag ">16 · Exploration</div>
+              <div class="sc-tag ">19 · Exploration</div>
               <div class="sc-name">First look: types, ranges, and two plots</div>
             </div>
           </div>
@@ -734,7 +913,8 @@ coding, more on concepts. Coding is getting easy with AI agents; the skill is kn
 <ul>
 <li><code>dtypes</code> and <code>describe()</code> for types and ranges; <code>describe(include=['boolean','object'])</code>
 for categoricals. A boolean like <code>feat_main_page</code> is just 0/1, so look at value counts, not ranges.</li>
-<li><b>Price</b> runs $2 to $427, average $44. <b>Sales</b> run from 0 (no stock or no interest) to big spikes.</li>
+<li><b>Price</b> runs $2.39 to $227.72, average $44.43 (checked in <code>data_raw.csv</code>). <b>Sales</b> run from 0 (no stock or no interest) to big spikes.</li>
+<li><b>"You never ever start from clean data."</b> Be suspicious of exports that stop at a neat 100 or 1,000 rows (a SQL <code>LIMIT</code>), inverted column names, and sensors failing in harsh food-plant conditions or thunderstorms.</li>
 <li>Plot the target (weekly sales) and the main driver (price) over time, averaged across SKUs:
 <ul>
 <li><b>Price down → sales up</b>: price-sensitive customers.</li>
@@ -751,7 +931,7 @@ for categoricals. A boolean like <code>feat_main_page</code> is just 0/1, so loo
           <div class="sc-hdr-l">
             <div class="sc-ico ">✂️</div>
             <div>
-              <div class="sc-tag ">17 · Train / Test</div>
+              <div class="sc-tag ">20 · Train / Test</div>
               <div class="sc-name">Never split a time series at random</div>
             </div>
           </div>
@@ -768,6 +948,7 @@ first 70% of each SKU's 98 weeks (68) as training and the last 30 as test.</p>
 <div class="callout amber"><span class="c-label amber">Window size</span>
 <p>At least <b>a year</b>, so every window contains all twelve months. Windows shorter than the seasonality (summer,
 December) can't learn it, which is a red flag.</p></div>
+<p><b>Why backtest at all:</b> stakeholder confidence. A merchandiser may place orders for hundreds or thousands of units off this forecast.</p>
 </div></div>
       </div>
 
@@ -776,7 +957,7 @@ December) can't learn it, which is a red flag.</p></div>
           <div class="sc-hdr-l">
             <div class="sc-ico ">🕳️</div>
             <div>
-              <div class="sc-tag ">18 · Missing Data</div>
+              <div class="sc-tag ">21 · Missing Data</div>
               <div class="sc-name">Assume the data is bad</div>
             </div>
           </div>
@@ -792,7 +973,8 @@ December) can't learn it, which is a red flag.</p></div>
 <li><b>Keep missingness as a signal</b>: maybe it's a different product type, or a color the site never set.</li>
 </ol>
 <p>Missing data is usually <b>not random</b> (a sensor that breaks in harsh conditions is a pattern). Here it clusters on a
-few SKUs (43, 44, 42, 9), mostly mid-to-high-price products, with no strong pattern. The notebook fixes it two ways:
+few SKUs (43, 44, 42, 9; 10 rows, functionality 9 and 11), mostly mid-to-high-price products, with no strong pattern. SKU 43's most common color is gold, so that's what it gets.
+A human or AI reading the product image could fill color too; Mechanical Turk works only for what's visible, not specialist product knowledge. The notebook fixes it two ways:
 <b>manual</b> (<code>sales.at[row,'color'] = 'black'</code>) and scikit-learn's <code>SimpleImputer(strategy=
 'most_frequent')</code> fitted per SKU. With colors there's no average color, only the most frequent one.</p>
 <div class="callout green"><span class="c-label green">How he does it at work</span>
@@ -807,7 +989,7 @@ engineers or product experts so they can confirm or refute it. One or two rounds
           <div class="sc-hdr-l">
             <div class="sc-ico ">📍</div>
             <div>
-              <div class="sc-tag ">19 · Outliers</div>
+              <div class="sc-tag ">22 · Outliers</div>
               <div class="sc-name">Find them per SKU; think hard before dropping them</div>
             </div>
           </div>
@@ -815,14 +997,16 @@ engineers or product experts so they can confirm or refute it. One or two rounds
         </div>
         <div class="sc-body"><div class="sc-in">
 <p>An outlier is a statistically abnormal point. The notebook's <code>check_outliers</code> flags values beyond
-<b>mean ± k·σ within each SKU</b> (<code>groupby('sku').transform</code>). At k = 3: about 50 of ~4,000 rows (~1%).
-At k = 5: a handful, such as a product priced $1,130 against its usual level. Mean ± kσ suits roughly normal data; for
-long-tailed data use the interquartile range or absolute cut-offs.</p>
+<b>mean ± k·σ within each SKU</b> (<code>groupby('sku').transform</code>). At k = 3 the class saw about 50 of ~4,000 rows (~1%); at k = 5, a handful, including a value of about 1,130. Mean ± kσ suits roughly normal data; for
+long-tailed data use the interquartile range: [Q<sub>1</sub> − 1.5·IQR, Q<sub>3</sub> + 1.5·IQR].</p>
+<div class="callout"><span class="c-label">Checked</span>
+<p>That 1,130 can't be a price: the highest price in <code>data_raw.csv</code> is $227.72. The data does have <b>1,133 units sold</b> (SKU 25, week of Sep 3 2018, at $6.51). On the raw file, k = 3 flags
+32 prices and 85 sales weeks, so I can't tie out the class's ~50.</p></div>
 <div class="callout amber"><span class="c-label amber">Dropping is risky</span>
 <p>If the "outlier" is the best sales week of the year and you drop it, that is exactly the week your model will miss
 worst in production, and you'll badly under-order. Check with a domain expert first. Alternatives: regularization
 (Lasso/Ridge), or models that cope with outliers.</p></div>
-<p>Explore on raw values, not normalized ones. "$100 against a usual $40 ± 10" is easy to reason about; "0.78" is not.</p>
+<p>A September spike might be back-to-school, so ask. A high price is normal for a MacBook and strange for an iPhone case, which is why it's per SKU. Explore on raw values, not normalized ones. "$100 against a usual $40 ± 10" is easy to reason about; "0.78" is not.</p>
 </div></div>
       </div>
 
@@ -831,7 +1015,7 @@ worst in production, and you'll badly under-order. Check with a domain expert fi
           <div class="sc-hdr-l">
             <div class="sc-ico ">🧱</div>
             <div>
-              <div class="sc-tag ">20 · Features</div>
+              <div class="sc-tag ">23 · Features</div>
               <div class="sc-name">Trend, month dummies, lagged prices</div>
             </div>
           </div>
@@ -857,12 +1041,81 @@ random imputation) can give different results on each rerun unless you fix the s
 </div></div>
       </div>
 
+      <div class="sc bl-accent" id="dp-sparse">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🌱</div>
+            <div>
+              <div class="sc-tag ">24 · Sparse + Interactions</div>
+              <div class="sc-name">One data point, new products, feature counts, interactions</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>Sparse history:</b> one December sale can't teach a month pattern, or how the product sells in other months. A forecast that doesn't vary by month is a limited fallback.</li>
+<li><b>New product, no history:</b> borrow from similar products or prior launches (an older MacBook for a new one). Clustering is the advanced way to share information.</li>
+<li><b>Variation in features and target:</b> if vendor, functionality and price stay put but sales swing, the model is missing a driver: competitors, weather, the Super Bowl.</li>
+<li><b>Feature count:</b> rule of thumb, about one feature per 10 rows, not a hard limit. Plain linear regression can fail with more columns than rows.</li>
+<li><b>Interactions</b> capture features working together: your low price matters more when a competitor's is high; ice cream depends on category × season. Combinations explode, so start with a few plausible ones from domain knowledge and test with cross-validation. Stepwise forward or backward also came up.</li>
+<li><b>LLMs for features:</b> the presenter liked the idea. The proposal: a "digital twin" of an industry expert that prepares for the real expert meeting and gives a coding agent feedback. A proposal, not something built.</li>
+</ul>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-shocks">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🌪️</div>
+            <div>
+              <div class="sc-tag ">25 · Shocks</div>
+              <div class="sc-name">COVID-era data: neither delete it nor believe it</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The case: a private-equity firm looking at a home-gardening company whose sales were flat, then surged in COVID. Will demand last once people go back to work?</p>
+<p>Neither extreme works: <b>removing the period</b> pretends it had no effect; <b>treating it as the new normal</b> assumes the surge continues. Instead:</p>
+<ol>
+<li><b>Scenarios:</b> bound the outcome between a baseline (4% growth was one example) and higher-growth cases, with churn modeled.</li>
+<li><b>Cohorts:</b> compare customers acquired in the disruption with earlier regulars on purchase patterns, demographics and churn.</li>
+<li><b>Ask customer-facing teams</b> whether the new customers would have come anyway.</li>
+</ol>
+<div class="callout"><span class="c-label">The question to answer</span>
+<p>Was COVID the trigger that brought people who'd have become customers anyway, or a way to get customers unlikely to keep coming? Retention hasn't been observed yet, and a model can't learn a pattern absent from its training data.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-metrics">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">⚖️</div>
+            <div>
+              <div class="sc-tag ">26 · Metrics</div>
+              <div class="sc-name">Judge a forecast by what its errors cost</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Is over- or under-forecasting worse? It depends on under-production vs overstock cost, salvage value and perishability, plus materials, labor, delivery, insurance, warehousing and lost sales. High warehousing cost pushes you to under-forecast; expensive stock-outs push the other way.</p>
+<p>Strategy changes it too. The instructor said LVMH-type luxury brands destroy unsold stock or buy back discounted resale to protect the brand, and Stüssy uses biweekly drops and hidden quantities to create scarcity.</p>
+<p><b>Out of sample</b> means data not used to fit. In-sample R² can rise as you add features without generalizing any better.</p>
+<table class="dt">
+<tr><th>Out-of-sample R²</th><td>1 − Σ(r<sub>t</sub> − r̂<sub>t</sub>)² / Σ(r<sub>t</sub> − r̄)²</td></tr>
+</table>
+<p>Also on the table: RMSE and absolute error. No single metric was chosen. <b>For ROI,</b> put money on each kind of error and report dollars saved or sales gained, not just R². A lift curve was mentioned; the recording ends before it's explained.</p>
+</div></div>
+      </div>
+
       <div class="sc bl-accent" id="dp-linear">
         <div class="sc-hdr" onclick="toggle(this)">
           <div class="sc-hdr-l">
             <div class="sc-ico ">📊</div>
             <div>
-              <div class="sc-tag ">21 · Linear Methods</div>
+              <div class="sc-tag ">27 · Linear Methods</div>
               <div class="sc-name">Centralized vs decentralized vs Lasso vs fixed effects</div>
             </div>
           </div>
@@ -885,6 +1138,40 @@ random imputation) can give different results on each rerun unless you fix the s
 shrinks the noisy coefficients and helps further. SKU fixed effects are the middle ground: one model, but each product gets
 its own baseline (0.351).</p></div>
 <p>Caveat: the α sweep picks the best value on the test set, as the notebook does. Strictly, tune on a validation split.</p>
+<ul>
+<li><b>SKU 11 baseline:</b> first test week forecast 43 vs actual 30. A starting point to improve on, not an accurate model.</li>
+<li><b>The trade-off (Abbas's framing):</b> 44 models seems excessive, but pooling lets one product distort another. Pooling helps a low-history product in a sensible category, and hurts when iPhones and MacBooks get forced together.</li>
+<li><b>0.517 is an average.</b> Some SKUs may sit at 0.7–0.8 and others near 0.3, and a weak high-revenue product is still a business risk.</li>
+<li><b>SingularMatrixWarning</b> on some SKUs points to zero-variance or perfectly collinear features in that SKU's slice.</li>
+</ul>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-regularization">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🗜️</div>
+            <div>
+              <div class="sc-tag ">28 · Regularization</div>
+              <div class="sc-name">Lasso, Ridge, Elastic Net, and why fixed effects work</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Method</th><th>Penalty added to OLS</th><th>Effect</th></tr>
+<tr><td>Lasso (L1)</td><td>α Σ|β<sub>j</sub>|</td><td>Drives some coefficients to exactly zero: automatic feature selection</td></tr>
+<tr><td>Ridge (L2)</td><td>α Σβ<sub>j</sub>²</td><td>Shrinks coefficients, none to zero</td></tr>
+<tr><td>Elastic Net</td><td>Weighted L1 + L2</td><td>Both</td></tr>
+</table>
+<p>Regularization is the concept; Lasso is one implementation. α = 0 is plain OLS. On SKU 11, Lasso kept current price, main-page promotion, trend and some months, and dropped older price lags and some vendor dummies. A dropped feature isn't proven irrelevant, especially a one-hot column.</p>
+<ul>
+<li><b>Tuning α:</b> too high drops useful features. Different SKUs carry different noise, so one global α is suboptimal: put it inside the SKU loop. Random search covers several parameters faster than a rigid grid. Spend the compute when small accuracy gains are worth real money.</li>
+<li><b>SKU fixed effects:</b> 44 dummy columns give each product its own intercept while slopes stay shared. Store-wide seasonality and promotions get the big sample; the intercept handles each product's baseline. Open question from class: add SKU × price slopes too?</li>
+<li><b>Log prices:</b> prices are right-skewed (most under $50, a few at $200+). ln(price) on own and competitor prices gets closer to symmetric and added about +0.02. Vendor and time indicators stay as they are. Square root and power transforms are other options; handle zeros first.</li>
+</ul>
+<p>Class figures for SKU 11: all features ~0.309, regularized ~0.339 (my run at α = 0.5: 0.334). The class sweep figure of ~0.556 at α = 2 matches my run, but it isn't the top: mine keeps climbing to 0.602 at α = 10.</p>
 </div></div>
       </div>
 
@@ -893,7 +1180,7 @@ its own baseline (0.351).</p></div>
           <div class="sc-hdr-l">
             <div class="sc-ico ">🌳</div>
             <div>
-              <div class="sc-tag ">22 · Trees & Clusters</div>
+              <div class="sc-tag ">29 · Trees & Clusters</div>
               <div class="sc-name">Decision trees, tuning, and k-means groups of SKUs</div>
             </div>
           </div>
@@ -915,6 +1202,85 @@ validation, refit on all training weeks, report on test.</p>
 <code>int(0.70*98)</code>. The decentralized-tree cell fits <code>DT_i</code> but predicts with the centralized tree (saved
 output 0.03); use <code>DT_i.predict</code>. Add <code>random_state=0</code> for repeatable trees.</p></div>
 <p>Same story as the linear models: per-product models win, and the per-SKU Lasso (0.602) is the best of the day.</p>
+<p><b>Limiting max_features acts a bit like regularization:</b> you penalize by using fewer features. Trees capture non-linear relationships and interactions without manual terms or log transforms.</p>
+<div class="callout amber"><span class="c-label amber">Doesn't tie out</span>
+<p>The recording summary has centralized 0.44 and decentralized 0.51 (max_features 28, max_depth 4). My runs, which match the notebook's saved outputs, are 0.159 and 0.399. I can't tell which split or metric the class figures used, so I kept mine.</p></div>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-validation">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧪</div>
+            <div>
+              <div class="sc-tag ">30 · Validation + Drift</div>
+              <div class="sc-name">Train / validation / test, and what happens after launch</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Tuning on the test set contaminates your benchmark. The nested split:</p>
+<table class="dt">
+<tr><th>Set</th><th>Share</th><th>Use</th></tr>
+<tr><td>Test</td><td>30%</td><td>Held out from the start; final out-of-sample score only</td></tr>
+<tr><td>Validation</td><td>21%</td><td>Model selection (30% of the remaining 70%)</td></tr>
+<tr><td>Sub-train</td><td>49%</td><td>Fit candidates, then refit on all 70%</td></tr>
+</table>
+<p>With five folds, the folds come from the training data only; one fold is validation, and the test data was isolated at the start.</p>
+<p><b>Model drift:</b> macro shifts, changing preferences and fading brands decay accuracy, so you retrain on a schedule. <b>Roles:</b> data scientists prototype, engineer features and tune; machine learning engineers build deployment and retraining pipelines, control inference cost and track drift.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-interpret">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🗺️</div>
+            <div>
+              <div class="sc-tag ">31 · Choosing a Model</div>
+              <div class="sc-name">Explaining a tree, ensembles, and what order to try things</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Two families:</b> linear (OLS, Lasso, Ridge, Elastic Net, fixed effects, manual transforms) and tree-based (decision trees, random forests, bagging, gradient boosting such as XGBoost).</p>
+<h4>A tree you can read to a merchandiser</h4>
+<table class="dt">
+<tr><th>Split</th><th>Average weekly sales</th></tr>
+<tr><td>Priced $5–$15</td><td>61</td></tr>
+<tr><td>Priced $15+</td><td>40</td></tr>
+<tr><td>Under $5, and the price was higher two weeks ago</td><td>~200: deal-seekers</td></tr>
+</table>
+<p>For non-technical stakeholders, split big trees into business zones, color them and drop the math.</p>
+<h4>The progression</h4>
+<p>Baseline linear model to prove the idea → decision trees to build intuition with domain experts → XGBoost, ensembles or deep learning once there's buy-in. More complexity doesn't guarantee better results on small or noisy data. A student asked whether that makes neural networks the worst option; the recording ends before the answer.</p>
+<p><b>Ensembles:</b> blending linear, trees and boosting by averaging or voting is fine, as long as you optimize for your north-star metric, the out-of-sample loss. The presenter said Tesla's decision systems combine differing sub-models and voting.</p>
+</div></div>
+      </div>
+
+      <div class="sc bl-accent" id="dp-clusters">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧩</div>
+            <div>
+              <div class="sc-tag ">32 · Clustering</div>
+              <div class="sc-name">The middle ground: groups of SKUs, with a fallback</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Between 1 global model and 44 separate ones. <b>Start with subject-matter experts:</b> fast movers, best sellers, subscriptions, impulse buys. Then go quantitative: aggregate to one row per SKU (average price, price standard deviation, sales volume, promotion frequency), cluster, and fit a regression per cluster.</p>
+<table class="dt">
+<tr><th>Algorithm</th><th>How it behaves</th></tr>
+<tr><td>K-means</td><td>You have to guess K up front. Sensitive to uneven density and non-spherical clusters</td></tr>
+<tr><td>DBSCAN</td><td>Density-based: finds the number of clusters itself and labels noise points</td></tr>
+</table>
+<p><b>Live demo, K = 4:</b> clusters 0, 1 and 3 took most items; cluster 2 held just 2 premium products, and they split off again at K = 2. Well-populated clusters beat the global model (about 0.10 → 0.11–0.14); the 2-product cluster did badly for lack of data.</p>
+<div class="callout green"><span class="c-label green">The fallback</span>
+<p>Use a cluster model where it helps and send the weird SKUs back to the centralized model. Choose K with the elbow method and silhouette scores, under a practical cap of about 10 models. <b>Cold start:</b> place a new product in a cluster from its catalog attributes and use that model.</p></div>
+<p>The closing summary: <b>"Test, measure, learn, iterate."</b> Spend your energy linking results to business decisions rather than on algorithm names.</p>
 </div></div>
       </div>
 
@@ -923,23 +1289,33 @@ output 0.03); use <code>DT_i.predict</code>. Add <code>random_state=0</code> for
           <div class="sc-hdr-l">
             <div class="sc-ico amber">⚠️</div>
             <div>
-              <div class="sc-tag amber">23 · Not Captured</div>
-              <div class="sc-name">What the recording missed</div>
+              <div class="sc-tag amber">33 · Not Captured</div>
+              <div class="sc-name">What the recordings missed, and where sources disagreed</div>
             </div>
           </div>
           <span class="chevron">▼</span>
         </div>
         <div class="sc-body"><div class="sc-in">
-<p>Granola recorded only <b>~1:59–2:51pm</b>: the guest lecture's exploration, split, missing data, outliers and feature
-engineering (cards 16–20 come from it).</p>
+<p><b>Sources now:</b> Plaud's AI summaries of all four sessions (8:32, 11:02, 1:37, 4:01), the slides, my photos, the notebooks, my runs and Granola's ~1:59–2:51pm. The summaries aren't a verbatim transcript, and quotes in them have no confirmed speaker.</p>
+<h4>Unanswered on the recording</h4>
 <ul>
-<li><b>Cohen's morning (8:30–12:30)</b>, cards 01–14: written from the slides, my photos of slides 28, 30 and 32 and of his
-solution spreadsheet, and my verified runs. What he said out loud isn't here.</li>
-<li><b>The rest of the guest lecture after ~2:51pm</b>, cards 21–22: written from the two notebooks, their saved outputs and
-my runs.</li>
-<li>Whether <b>Promotion Optimization</b> (Part 4, the lecture behind Assignment 3) was covered on Day 3 is unknown.</li>
+<li>What a student meant by "APT", and whether the course is retail-only</li>
+<li>Whether the pumpkin calculation should include a holding cost</li>
+<li>Whether neural networks are the "worst" option, and the speaker's closing advice on what to focus on</li>
+<li>The lift curve, and which slide and spreadsheet columns were mismatched (he acknowledged a mismatch)</li>
 </ul>
-<p>To be filled from the full-day transcript.</p>
+<h4>Where sources disagreed</h4>
+<table class="dt">
+<tr><th>Item</th><th>Conflict</th><th>Used</th></tr>
+<tr><td>Champagne σ</td><td>Summary says 10 in one place</td><td><b>20</b>: the case and the slide both say so</td></tr>
+<tr><td>$54 lift</td><td>1.21 vs 1.31</td><td><b>1.31</b>: slide 22 and my recompute</td></tr>
+<tr><td>Top price</td><td>This page said $427</td><td><b>$227.72</b>: raw data. My earlier error</td></tr>
+<tr><td>"Price of 1,130"</td><td>Above the top price</td><td><b>1,133 units</b> is the match in the data</td></tr>
+<tr><td>Order-up-to</td><td>"Start each week with 100" vs 108.614</td><td><b>108.614</b>: slide 32</td></tr>
+<tr><td>$48 then $40</td><td>$40 isn't a game price</td><td><b>$48 then $36</b>: the slides</td></tr>
+<tr><td>Lecturer</td><td>Summary: "Jorge", "Zenit AI"</td><td><b>Arthur Pentecoste, Zenyt.ai</b>: their deck</td></tr>
+</table>
+<p><b>Still open:</b> 1,000 vs 2,000 periods for Assignment 2 (slide says 2,000, a note says extend to 1,000). There's no written A1 or A2 brief on disk, so check Brightspace.</p>
 </div></div>
       </div>
 
@@ -958,6 +1334,9 @@ my runs.</li>
         </div>
         <div class="sc-body"><div class="sc-in">
 <ul>
+<li><b>Variation beats volume</b>: constant-price history can't show price response. A/B tests are the cleanest source of variation.</li>
+<li><b>Sales = MIN(Demand, Inventory)</b>: sales are censored; drop stock-out weeks when estimating demand.</li>
+<li><b>One instance proves nothing</b>: report mean, standard deviation, confidence interval and tails over many runs; perturb forecasts (±10%).</li>
 <li><b>Markdown = price skimming</b>: long lead time + mixed customers. Week 1 at full price tells you the item's level;
 historical <b>lift factors</b> (1.31 / 1.73 / 2.81) give the other prices.</li>
 <li><b>Run-out rate</b>: pick the price mix that sells out exactly in the last week. The <b>LP</b> (weeks at each price, ≤ weeks
@@ -972,6 +1351,10 @@ X = μ + zσ = <code>NORMINV(cf, μ, σ)</code>. At the optimum, one more unit i
 <li><b>Outliers</b>: mean ± kσ within SKU; dropping the best week can make the model fail exactly when it matters.</li>
 <li><b>Features</b>: trend, month dummies with drop_first, lagged prices via groupby-shift.</li>
 <li><b>Per-product beats pooled</b>: centralized 0.114 → decentralized 0.517 → + Lasso 0.533 (0.602 at α = 10).</li>
+<li><b>L1 zeroes, L2 shrinks</b>, Elastic Net does both; α = 0 is OLS. <b>Fixed effects</b> = own intercept, shared slopes (0.351).</li>
+<li><b>Nested split</b>: 49 sub-train / 21 validation / 30 test. Tuning on test contaminates the benchmark.</li>
+<li><b>Clusters</b>: experts first, then K-means (guess K) or DBSCAN (finds it, flags noise); fall back to the centralized model for weird SKUs.</li>
+<li><b>Shocks</b>: scenarios + cohorts, neither delete nor extrapolate. <b>Metrics</b>: price the errors; the costlier mistake sets your bias.</li>
 </ul>
 </div></div>
       </div>
@@ -995,7 +1378,7 @@ X = μ + zσ = <code>NORMINV(cf, μ, σ)</code>. At the optimum, one more unit i
         <div class="ac-b">
           <div class="ac-label">Post-module · 20%</div>
           <div class="ac-title">Assignment 1 — Markdown optimization</div>
-          <div class="ac-desc">Individual. Builds on the retailer game, <code>Sales-Data.xlsx</code> and the LP from class.</div>
+          <div class="ac-desc">Individual. Builds on the retailer game, <code>Sales-Data.xlsx</code> and the LP from class. Per Cohen: reproduce the lecture example on the sample, and that minimum can still earn an A. Optional extensions: a scraper for more observations (API or not, depends on the site), the LP over 1,000 or 10,000 instances with statistics, re-optimizing every 4–5 weeks, robust or perturbation-based optimization.</div>
           <div class="ac-due">Due <span>Sun Dec 20 · 11:55pm</span></div>
         </div>
       </div>
@@ -1004,7 +1387,7 @@ X = μ + zσ = <code>NORMINV(cf, μ, σ)</code>. At the optimum, one more unit i
         <div class="ac-b">
           <div class="ac-label">Post-module · 30%</div>
           <div class="ac-title">Assignment 2 — The inventory problem from class</div>
-          <div class="ac-desc">Individual. The Champagne simulation (<code>Inventory_Simulation_Inclass.xls</code>).</div>
+          <div class="ac-desc">Individual. The Champagne simulation (<code>Inventory_Simulation_Inclass.xls</code>): baseline policy, a better constant policy, then an alternative. He said answers to the first two were largely covered in class and the third wasn't fully revealed. A class note says extend periods 1–20 to 1–1,000; the slide says 2,000, so confirm.</div>
           <div class="ac-due">Due <span>Sun Dec 20 · 11:55pm</span></div>
         </div>
       </div>
@@ -1016,7 +1399,7 @@ X = μ + zσ = <code>NORMINV(cf, μ, σ)</code>. At the optimum, one more unit i
           <div class="ac-desc">Individual. All 15 questions on the case: log-log demand models in R for SKU88
           (<code>singleitemSKU88.csv</code>, <code>Studentspart1.R</code>), five-brand cross-price models
           (<code>multipleitempart1/2.csv</code>, <code>Studentspart2.R</code>), then the promotion optimization formulation
-          (binary price-ladder variables, at most 4 promotions, robustness).</div>
+          (binary price-ladder variables, at most 4 promotions, robustness). He called this the substantial one. The lecture behind it (Part 4) hasn't been taught.</div>
           <div class="ac-due">Due <span>Sun Dec 20 · 11:55pm</span></div>
         </div>
       </div>
