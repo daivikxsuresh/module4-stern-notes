@@ -233,9 +233,38 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
     <a href="#next"><span class="dot"></span>REST API Prep</a>
     <a href="#not-captured-4"><span class="dot"></span>Not Captured</a>
   </div>
+  <div class="sb-group">Day 5 — Fri Nov 6</div>
+  <div class="sb-nav">
+    <a href="#recap5"><span class="dot"></span>Recap + Gridlines</a>
+    <a href="#map-critique"><span class="dot"></span>Map Critique</a>
+    <a href="#geo-data"><span class="dot"></span>Geographic Data</a>
+    <a href="#geocoding"><span class="dot"></span>Geocoding</a>
+    <a href="#act7"><span class="dot"></span>Activity 7 — Coffee Shops</a>
+    <a href="#projections"><span class="dot"></span>Map Projections</a>
+    <a href="#map-types"><span class="dot"></span>Map Types</a>
+    <a href="#act8-data"><span class="dot"></span>Activity 8 — The Data</a>
+    <a href="#act8-build"><span class="dot"></span>Activity 8 — The Build</a>
+    <a href="#normalize"><span class="dot"></span>Normalize by Population</a>
+    <a href="#dash-design"><span class="dot"></span>Dashboard Design</a>
+    <a href="#dash-layout"><span class="dot"></span>Dashboard Layout</a>
+    <a href="#act9"><span class="dot"></span>Activity 9 — Connect</a>
+    <a href="#act9-build"><span class="dot"></span>Activity 9 — Build</a>
+    <a href="#eda"><span class="dot"></span>Box Plots + Histograms</a>
+    <a href="#multivariate"><span class="dot"></span>Scatter Matrix + Bubbles</a>
+    <a href="#heatmaps"><span class="dot"></span>Heat Maps</a>
+    <a href="#act10"><span class="dot"></span>Activity 10 — Crime</a>
+    <a href="#sunburst"><span class="dot"></span>Sunburst Walkthrough</a>
+    <a href="#audience5"><span class="dot"></span>Audience + Memory</a>
+    <a href="#perception"><span class="dot"></span>Perception Demos</a>
+    <a href="#storytelling"><span class="dot"></span>Presenting Data</a>
+    <a href="#slides"><span class="dot"></span>PowerPoint Fixes</a>
+    <a href="#postmodule"><span class="dot"></span>Post-Module Brief</a>
+    <a href="#not-captured-5"><span class="dot"></span>Not Captured</a>
+  </div>
   <div class="sb-group">Reference</div>
   <div class="sb-nav">
     <a href="#hooks4"><span class="dot"></span>Exam Hooks — Day 4</a>
+    <a href="#hooks5"><span class="dot"></span>Exam Hooks — Day 5</a>
   </div>
 </nav>
 
@@ -243,9 +272,10 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
   <div id="hdr">
     <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 4 · Data Visualization</div>
     <h1 class="hdr-title">Data <span>Visualization</span></h1>
-    <p class="hdr-sub">Prof. Kristen Sosulski · audience, data, question · chart chooser · ten design standards · Tableau</p>
+    <p class="hdr-sub">Prof. Kristen Sosulski · audience, data, question · chart chooser · ten design standards · maps · dashboards · presenting · Tableau</p>
     <div class="day-tabs">
       <button class="day-tab active" data-panel="day4">Day 4 — Thu Nov 5</button>
+      <button class="day-tab" data-panel="day5">Day 5 — Fri Nov 6</button>
       <button class="day-tab" data-panel="assignments">Assignments</button>
     </div>
   </div>
@@ -809,6 +839,779 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
 
     </div>
 
+    <div id="panel-day5" class="day-panel">
+      <div class="divider">Warm-up — a recap and a few critiques</div>
+      <div class="sc bl-accent open" id="recap5">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔁</div>
+            <div>
+              <div class="sc-tag ">22 · Recap</div>
+              <div class="sc-name">Gridlines, the “Other” bar, and the bubble chart again</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The class recapped Day 4: filters (including a custom one), selective and dynamic highlighting, a little animation, and encoding variables as the right data type. That last one comes back today with geography.</p>
+<ul>
+<li><b>The bubble chart, done as well as it can be, still fails.</b> Color only repeats what bubble size already shows, so it's a redundant encoding. A bar would be better.</li>
+<li><b>Background images and piles of icons</b> on a slide hurt readability even when the chart underneath is fine.</li>
+<li><b>A good horizontal bar:</b> the "Other" category sits at the bottom, not mixed in, and each bar has its value labeled at the end.</li>
+<li><b>Time series:</b> watch the scaling, and too many series means you end up labeling and coloring everything, which gets messy.</li>
+<li><b>New York Times egg prices:</b> the line is the color of the yolk, the scale is simple, horizontal gridlines run all the way across from the axis, and only the endpoint is labeled.</li>
+</ul>
+<div class="callout"><span class="c-label">When do gridlines belong?</span>
+<p>A classmate asked. <b>Label bars directly and you need no y-axis and no gridlines.</b> On a time series you don't label every point, so gridlines at natural intervals help the reader.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="map-critique">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🗺️</div>
+            <div>
+              <div class="sc-tag ">23 · Map Critique</div>
+              <div class="sc-name">What good and bad maps do</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<div class="anom-list">
+<div class="anom"><span class="anom-b ok">Good</span><div class="anom-text"><strong>Insets for Alaska and Hawaii.</strong> Show all the geography. People leave them out because they're far from the continental US; we built insets in the pre-module lab.</div></div>
+<div class="anom"><span class="anom-b ok">Good</span><div class="anom-text"><strong>Small states labeled outside the map</strong> (Massachusetts, New Jersey) instead of crammed in. Abbreviations are a decision you make.</div></div>
+<div class="anom"><span class="anom-b ok">Good</span><div class="anom-text"><strong>Show it complex, then zoom in.</strong> A National Renewable Energy Lab map (Billy J. Roberts) is dense; zooming into Texas is the storytelling move.</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>Icons as data points.</strong> An Australian wildfire map ends up making the whole continent look like it's on fire.</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>Colors that collapse in grayscale.</strong> A greenish blue, a teal and a dark red-brown-black, plus the territories in their own colors: in grayscale the reds look like the blacks and browns.</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>Two encodings on one map.</strong> An electric-vehicle map used fill (cost) plus bubbles (market share) plus a mountain-range background. The fill is already an encoding; in grayscale some bubbles vanish (Louisiana).</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>Missing data that looks like data.</strong> White and hatching can look too alike. Pick one, define it, use it consistently.</div></div>
+</div>
+<ul>
+<li>A red/blue election map stays readable in grayscale, but more contrast would help.</li>
+<li>A COVID map had aligned insets and a light-yellow-to-dark-red stepped scale, but used raw cases, so the population problem shows up (that's Activity 8).</li>
+<li>A stepped scale has to end somewhere: the last bin is "greater than" (10–15% … &gt;30%).</li>
+<li>Labeling values on small geographies makes them unreadable, so many maps rely on fill only.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="divider">Geospatial data — what you have decides what you can map</div>
+      <div class="sc bl-accent" id="geo-data">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📍</div>
+            <div>
+              <div class="sc-tag ">24 · Geographic Data</div>
+              <div class="sc-name">Level of detail: what a map can actually show</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>First check you have the data for the question: a trend needs time series, a location question needs location data. Then name the geographic level you actually have.</p>
+<table class="dt">
+<tr><th>Level</th><th>What it gives you</th></tr>
+<tr><td>Exact address</td><td>Her "dream" data, plus its latitude and longitude (44 West 4th Street → exact coordinates). Only this lets you plot precise points</td></tr>
+<tr><td>ZIP / city / county</td><td>A category. Best you can do is enumerate (count) by that area</td></tr>
+<tr><td>State / country / region</td><td>A category; Tableau places it at the center of the area (Australia's lat/long is the middle of Australia)</td></tr>
+</table>
+<ul>
+<li><b>Blue globe</b> = a categorical geographic field. <b>Green globe</b> = latitude/longitude measures.</li>
+<li><b>Italic Latitude (generated) and Longitude (generated)</b> are made by Tableau from a category, not your exact address. A big mistake is thinking you have that data when you don't.</li>
+<li><b>Filled map</b> = dots enumerated by geography, which creates the darker shades. <b>Point map</b> = exact position, possible only with geocoded addresses. Her NYC recycling-bin example: with ZIP codes only, enumerate by ZIP.</li>
+<li><b>Roll-ups:</b> a map of adults who think global warming is happening runs at county level and rolls up to state and national. It uses a stepped divergent scale, which works because most values sit in a middle band; in grayscale the 40–55% colors can look the same.</li>
+</ul>
+<p>Level of detail is a big theme for the course.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="geocoding">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🛰️</div>
+            <div>
+              <div class="sc-tag ">25 · Geocoding</div>
+              <div class="sc-name">Address to latitude and longitude with Geocodio</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Geocoding</b> converts exact street addresses into latitude and longitude so software can plot the points.</p>
+<ul>
+<li><b>Geocodio</b> (manual 4.5.1): a free account, no credit card. Simple and reliable for a few hundred or a few thousand rows; she's used it about ten years. You can drop personal fields before uploading.</li>
+<li><b>At scale</b> (say 100,000 rows): the Google Cloud geocoding API, or pay Geocodio, which is affordable.</li>
+<li><b>Accuracy type</b> column: <i>rooftop</i> is the most accurate. <i>Range interpolation</i> estimates between known points, so it's less accurate.</li>
+</ul>
+<h4>The steps she walked</h4>
+<ol>
+<li>Download the coffee shops CSV from the lab (221 rows). Log in to Geocodio.</li>
+<li>Upload spreadsheet › Upload (not copy-paste). It shows rows, cost and time.</li>
+<li>Choose <b>address to coordinates</b> (not reverse geocoding).</li>
+<li>Check the address column mapping and the preview, then "Yes, looks good".</li>
+<li>Skip the add-on fields it offers, then geocode. Big jobs get emailed.</li>
+<li>Download. The file has a long name, which also becomes a variable name in Tableau.</li>
+</ol>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="act7">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">☕</div>
+            <div>
+              <div class="sc-tag ">26 · Activity 7</div>
+              <div class="sc-name">Starbucks vs Dunkin’: two filled maps and a point map</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<h4>Filled maps</h4>
+<ol>
+<li>Connect › Text file › the Geocodio CSV. The green globes are the Geocodio latitude and longitude.</li>
+<li>Her demo: double-click Country, then City, County, Postal Code. Each shows Tableau's generated points. "These aren't coffee shops. These are just the ZIP codes."</li>
+<li>Postal Code on the map, the italic count of records to <b>Color</b>: shops enumerated by ZIP.</li>
+<li>Store to <b>Filters</b> › Dunkin'. Put the count on Label.</li>
+<li>Color › Edit: <b>Stepped</b>, custom end <b>10</b> (nine is an odd endpoint).</li>
+<li>Duplicate the sheet and switch the filter to Starbucks. The 1–10 scale carries over, so the two maps compare fairly. Name the sheets.</li>
+</ol>
+<p><b>The filled map's limit:</b> it can't show both brands at once, since combining them just sums the stores. And don't plot bubbles on top of the ZIP fills.</p>
+<h4>Dashboard</h4>
+<ul>
+<li>Set the size first: wider than 1000 for a full screen, Generic Desktop, or a size for PowerPoint.</li>
+<li>Bring a legend back with the sheet's down arrow › Legends, but with direct labels you don't need one.</li>
+<li><b>Align by numbers, not by eye:</b> select a floating object › Layout. Her example set both maps to y = 120, width 460, height 625.</li>
+</ul>
+<h4>Point map</h4>
+<ol>
+<li>Store → Color. Address lines 1 and 3 → Detail (line 2 added nothing).</li>
+<li>Shift-click Geocodio Latitude and Longitude and drop them in the middle of the view.</li>
+<li>If two shops share coordinates: Analysis › uncheck <b>Aggregate Measures</b>. Rare for stores; common for apartments in one building (Washington Square Village).</li>
+<li>Map › <b>Background Layers</b>: Normal or Light style (washout to lighten), ZIP code boundaries and labels. Streets is too noisy.</li>
+<li>Color › <b>border, halo, opacity</b>: the three levers for overlapping points.</li>
+<li>Tooltip: keep only the angle-bracket fields, store first.</li>
+</ol>
+<div class="callout amber"><span class="c-label amber">Locale trap</span>
+<p>If your computer is set to another country, a small "unknown" indicator appears at the bottom right of the map. Click it › Edit Locations › United States.</p></div>
+<div class="callout green"><span class="c-label green">My build</span>
+<p><code>suresh_daivik_activity_7_geocoding.twbx</code>: Dunkin' 92 rows across 23 ZIPs, Starbucks 129 across 26; 214 distinct locations in the 221 rows. Starbucks tops out at 13 in 10036, so her 1–10 scale clips 10036 and 10017. Dunkin' blue, Starbucks orange, side-by-side dashboard.</p></div>
+<p>Her takeaways: level of detail; get latitude and longitude for exact addresses whenever you can, or you're only enumerating; keep paired scales equal (same start and end); stepped scales.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="projections">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🌐</div>
+            <div>
+              <div class="sc-tag ">27 · Projections</div>
+              <div class="sc-name">Mercator, Albers, equal-rectangular, orthographic</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Projection</th><th>Use and distortion</th></tr>
+<tr><td>Mercator</td><td>Tableau's default, and Google Maps'. Land grows toward the poles: move the US to Australia's latitude and it shrinks; Greenland and Russia balloon. Not the best for a world GDP map</td></tr>
+<tr><td>Equal-rectangular</td><td>Better for thematic world maps. R or Python give easy access to it</td></tr>
+<tr><td>Albers</td><td>What US election maps mostly use, with good county borders</td></tr>
+<tr><td>Orthographic</td><td>(She said "orthogonal.") A globe seen from above, rotated to the area of interest: shipping lanes, waterways, flight paths</td></tr>
+</table>
+<p><b>Her Panama course example:</b> Shanghai to New York by sea, viewed looking down on the North Pole. The Suez route is the longest; the Panama Canal about 25 days; if both are blocked, ship to Long Beach and go by truck or train.</p>
+<ul>
+<li><b>Explain your geography.</b> An unusual view needs telling how to read it, and your audience's mental map may not match yours (hers is New York-centric).</li>
+<li><b>Custom backgrounds:</b> Tableau can plot on a basketball court (a capstone on NBA three-point shots), but then it's x and y, not latitude and longitude.</li>
+</ul>
+<p>The book's version (p 54): Mercator preserves angles and shapes in small areas and suits connection maps; Albers for US census and government data; equal-rectangular for thematic world maps.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="map-types">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧭</div>
+            <div>
+              <div class="sc-tag ">28 · Map Types</div>
+              <div class="sc-name">Points, fills, lines, density and cartograms</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>There are only a few ways to put data on a map:</p>
+<table class="dt">
+<tr><th>Technique</th><th>Her examples</th></tr>
+<tr><td>Points / bubbles</td><td>Aviation accidents; volume by shipping port; outbound housing searches from San Francisco</td></tr>
+<tr><td>Filled regions</td><td>GDP by country. Gray often means missing, zero or none (or "not yet reported" in an election). Define which</td></tr>
+<tr><td>Lines</td><td>Connection maps: the Shanghai shipping routes; Nike run-app paths around Central Park and the West Side Highway, shown in a Nike store</td></tr>
+<tr><td>Density</td><td>Tableau's Density mark: darker = more observations, not bound by borders. Temperature, homelessness, where there's no precise location</td></tr>
+<tr><td>Cartogram</td><td>Regions resized by the data (Republicans vs Democrats; energy consumption). To make a point, not for precision</td></tr>
+</table>
+<div class="anom-list">
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>A noisy background map</strong>, such as highway numbers nobody needs.</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>A divergent scale with many geographies in each band</strong>: it breaks in grayscale.</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>Transparency</strong> changes the fill colors, so they no longer match the legend.</div></div>
+</div>
+<p><b>NYC 311 calls</b> (feeling safe in parks or the subway, fire services, trash pickup): a divergent scale that is mostly green, with red and orange picking out the pockets where things aren't good.</p>
+</div></div>
+      </div>
+      <div class="divider">Activity 8 — a COVID bubble map with a chart in the tooltip</div>
+      <div class="sc bl-accent" id="act8-data">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🦠</div>
+            <div>
+              <div class="sc-tag ">29 · Activity 8</div>
+              <div class="sc-name">The cumulative-data trap</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Goal:</b> a bubble map of US COVID cases by state where hovering a state shows its case trend, a whole worksheet inside the tooltip. It brings Lab 3 (time series) together with geospatial: manual 3.5.</p>
+<ol>
+<li>Get the New York Times county-level data from GitHub and <b>read the README</b> so you know the level of detail. First case 01/21/2020; the file ends 05/13/2022.</li>
+<li>Try it alone: Cases → Size, double-click State.</li>
+</ol>
+<div class="callout amber"><span class="c-label amber">The trap she set on purpose</span>
+<p>The cases are <b>cumulative</b>: each day already includes every day before it. Summing all days gave California about 2.8 billion, more than the US population, which should be a red flag. You want the last value.</p></div>
+<ol>
+<li>Date → Filters › <b>Range of dates</b>, so you see the range in the data.</li>
+<li>Drag the start slider all the way to 05/13/2022. California is now about 9.35 million against a population of about 39 million: plausible.</li>
+</ol>
+<p><b>Look at the numbers before any design work.</b> Then Size › Edit Sizes with natural start and end values (she suggested 10,000 to 10,000,000), and Background Layers with light state names and borders, no county names. Puerto Rico is optional.</p>
+<div class="callout green"><span class="c-label green">My check</span>
+<p>Last date 2022-05-13: California 9,351,630; all states together 82,367,095.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="act8-build">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🗺️</div>
+            <div>
+              <div class="sc-tag ">30 · Activity 8</div>
+              <div class="sc-name">Insets, and a time series in the tooltip</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ol>
+<li>Make the continental map perfect first ("perfect, perfect, perfect"). Name it Continental.</li>
+<li>Duplicate it twice for Alaska and Hawaii, keeping the same size scale.</li>
+<li>New sheet, the time series: Date on Columns at the day level, continuous; Cases on Rows. The total runs to about 82 million.</li>
+<li>Label the line end (she also likes the first case). Format the date axis: a short date suits the small tooltip box. Hide the header, the title and the word "Cases".</li>
+<li>Back on the map: Tooltip › Insert › Sheets › the time series. It now shows the trend for whichever state you hover.</li>
+<li>Dashboard: select each inset › Layout › 200 × 200, and align both at y = 555. If a map shifts, zoom out.</li>
+</ol>
+<div class="callout green"><span class="c-label green">My build</span>
+<p><code>suresh_daivik_activity_8_covid_tooltip.twbx</code>: sheets Continental, AK, HI, Time series, Dashboard 1, Cases per 100K. Size legend 5,000 to ≥9,000,000. Screenshots: <code>suresh_daivik_activity_8_tooltip.png</code> (California hover) and <code>suresh_daivik_activity_8_cases_per_100k.png</code>.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="normalize">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">⚖️</div>
+            <div>
+              <div class="sc-tag ">31 · Normalize</div>
+              <div class="sc-name">Per 100,000 people: same data, different message</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The raw bubbles track population: California, Texas, Florida and New York are biggest, which you'd expect. Per 100,000 people, <b>Rhode Island and Alaska are highest</b>. A different message from the same data.</p>
+<ol>
+<li>Download the US state population Excel from Brightspace class materials.</li>
+<li>Data Source › Add connection › Excel. Drag Sheet1 next to us-counties and match <b>State = State1</b>. She likened it to a join on state; Tableau makes it a relationship.</li>
+<li>New worksheet, so the bubble map stays as it was. Date filter to the last day again.</li>
+<li>Calculated field: <code>SUM([Cases])/SUM([Population])*100000</code> (capital P).</li>
+<li>Put it on Color for a filled map. Adjust the gradient; labels optional.</li>
+</ol>
+<p><b>AI tip:</b> AI is great at writing Tableau calculated fields, since it's Tableau's own language, not Python. She stopped before the dashboard step.</p>
+<div class="callout green"><span class="c-label green">My check</span>
+<p>Rhode Island 34,744 and Alaska 34,697 per 100K; the lowest is Maryland at 17,034. DC and the territories have no population row, so they're blank.</p></div>
+</div></div>
+      </div>
+      <div class="divider">Dashboards — design, then Lab 7 with live data</div>
+      <div class="sc bl-accent" id="dash-design">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📟</div>
+            <div>
+              <div class="sc-tag ">32 · Dashboard Design</div>
+              <div class="sc-name">What a dashboard is for, and why most fail</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>As a business intelligence tool, a dashboard <b>fits on one screen, answers "what's happening now?", and can be understood at a glance</b>. Stephen Few set many of the standards (book p 101 cites him). Dashboards began in the 1980s as executive information systems; now people at every level get one, filtered by role.</p>
+<ul>
+<li><b>Cadence:</b> looked at weekly? hourly? Set by how often the data changes. If it isn't updating, nobody comes back.</li>
+<li><b>How it's used:</b> scan the big picture, zoom in (a mouse-over or a tooltip chart like Activity 8), link out to the details.</li>
+<li><b>"Now" is scoped:</b> year to date, this quarter, this month, yesterday.</li>
+<li><b>What goes on it:</b> top 10 lists (customers, products, complaints), best ads, open issues, KPIs. For the capstone: what are your two or three numbers?</li>
+</ul>
+<h4>Why they fail</h4>
+<p>The class: too much information, hard to filter, not today's priorities. It has to tell a story and be actionable, and <b>"doing nothing is still an action"</b>. Data validation happens while building: if you don't trust it you won't act on it.</p>
+<div class="anom-list">
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>Beyond one screen.</strong> The important part is below the fold.</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>No context.</strong> Gauges instead of sparklines or bullet graphs.</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>A KPI with no evaluation.</strong> October units: 869. Good or bad? By how much?</div></div>
+<div class="anom"><span class="anom-b bad">Pitfall</span><div class="anom-text"><strong>Highlighting everything</strong>, so nothing stands out; clutter like a clock, or the '90s animated envelope; color overuse; a poor chart choice.</div></div>
+</div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="dash-layout">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📐</div>
+            <div>
+              <div class="sc-tag ">33 · Dashboard Layout</div>
+              <div class="sc-name">Grid, KPIs with context, plan before you build</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>The screen is a grid</b> with limited real estate. Use a reasonable number of columns and rows. Most important top-left; a single KPI goes right up top.</li>
+<li><b>Evaluate every number:</b> against target, above or below, by how much (say +5% with an arrow). The hover can hold "vs yesterday".</li>
+<li><b>Round and use units.</b> No more precision than needed; the mouse-over has the rest.</li>
+<li><b>Apples with apples:</b> group related metrics and label the groups. Show the same measure the same way (not a line for apples and a gauge for oranges), and line them up.</li>
+<li>She'll post dashboard style guides; the <b>BBC</b>'s has templates: KPI up front, then charts that expand it by category, by time and by relationship.</li>
+</ul>
+<div class="callout"><span class="c-label">Her checklist for your dashboards</span>
+<p>A KPI. A way to filter or interact. The ten design principles. Published to Tableau Public as a live link, unless the data is proprietary.</p></div>
+<h4>The process</h4>
+<ol>
+<li>Sketch the grid on paper first: title and logo, three KPIs, filters, the charts.</li>
+<li>Add the containers.</li>
+<li>Drop each sheet into its own "parking spot".</li>
+<li>Beautify: title, text, logo, then the filters last.</li>
+<li>Go back to every tooltip. Erase one you don't need; never leave "Day of Date".</li>
+</ol>
+<p>Building the interface and building the components are separate activities. Use a <b>parameter</b> to show what's selected next to the filter, and make it big. Reminder from her slides: divergent palettes with many reds and blues read as three colors and fall apart in grayscale, so test.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="act9">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔌</div>
+            <div>
+              <div class="sc-tag ">34 · Activity 9</div>
+              <div class="sc-name">Lab 7: connect a live stock API</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>The EV Showdown:</b> Tesla vs Rivian on live data. One chart (growth of $1,000), two KPI tiles (latest close, % change with ▲ or ▼), a Time Period filter, a "Showing:" line, the logo, published to Tableau Public. The arrows are Unicode characters, so they work across platforms and aren't graphics. Colors: dark red <code>#A50021</code> and gold <code>#F2B705</code>, one dark and one light so they stay distinct in grayscale. Manual ch 7 / her site's Lab 7.</p>
+<h4>Setup</h4>
+<ol>
+<li>A free <b>Twelve Data</b> account → API key. Keep it somewhere safe.</li>
+<li><b>REST API connector</b>, a <code>.taco</code> from Tableau Exchange (it may ask you to log in with your NYU account) → Documents › My Tableau Repository › Connectors.</li>
+<li><b>Driver</b>, a <code>.jar</code> from tableau.com/support/drivers → <code>~/Library/Tableau/Drivers</code> on a Mac.</li>
+<li>Quit and reopen Tableau. Connect › To a Server › More › REST API should appear.</li>
+</ol>
+<p>The connector isn't specific to Twelve Data; it works for any REST API, open data included. REST = representational state transfer.</p>
+<h4>How an API call works</h4>
+<ul>
+<li>An <b>endpoint</b> for a set of data, then <b>parameters</b> after the "?": <code>symbol=TSLA&amp;interval=1day…&amp;apikey=…</code>.</li>
+<li><b>Limits:</b> her plan showed 800 credits and 8 calls a minute. Building the extract is one call; a refresh after the 4:00 close is another.</li>
+<li>A key lasts while the account is active. For client work, use a separate key per project so billing stays separate.</li>
+<li><b>Test the URL in a browser first</b> (each refresh costs a credit). The JSON reply has a list called <code>values</code>: one dictionary per day with datetime, open, high, low, close, volume.</li>
+</ul>
+<h4>Connect</h4>
+<ol>
+<li>REST API › paste the URL with your key › Response Format JSON › JSON Path <code>$.values[*]</code> › Sign In. Rename <code>rest_table</code> to TESLA.</li>
+<li>Add (+) › REST API again (don't reuse the first) › same URL with <code>symbol=RIVN</code>. Drag it next to TESLA, click OK on the warning, rename it RIVIAN.</li>
+<li><b>A relationship on date, not an inner join.</b> An inner join keeps only matching dates; the stocks don't share an IPO date. The start date 2021-11-10 is Rivian's first trading day, which is why the lab's version still works.</li>
+<li>Save as <b>.twb</b>. Data › Refresh Data Source calls the API again.</li>
+</ol>
+<h4>Prepare</h4>
+<ol>
+<li>Rename datetime to <b>Date</b>, spelled exactly; the later steps depend on the names.</li>
+<li>Prices arrive as text (ABC), because JSON puts quotes around everything. Change the type and the next call breaks. So cast instead: <code>Tesla Close = FLOAT([close])</code>, <code>Rivian Close = FLOAT([close (rest_table1)])</code>.</li>
+<li>Test: Date (exact) on Columns, Tesla Close on Rows gives a line. Put both on one chart with a dual axis or Measure Values; Rivian's prices are on a very different scale.</li>
+</ol>
+<p>A classmate's takeaway: this is why you'd use Tableau. A static graphic is a heavy lift (the doughnut was ten steps); live data refreshes itself.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="act9-build">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📊</div>
+            <div>
+              <div class="sc-tag ">35 · Activity 9</div>
+              <div class="sc-name">Growth of $1,000, KPI tiles, containers</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<h4>Time Period filter</h4>
+<p>A string parameter <b>Time Period</b> (1 month, 3 months, 6 months, Year to date, 1 year, 3 years, Since Rivian IPO (Nov 2021); default 1 year), plus a calculated field <b>In Period</b> on every sheet's Filters, set to True:</p>
+<p><code>[Date] &gt;= CASE [Time Period] WHEN "1 month" THEN DATEADD('month', -1, {MAX([Date])}) … ELSE #2021-11-10# END</code></p>
+<h4>Growth of $1,000</h4>
+<ol>
+<li><code>Tesla = 1000 * SUM([Tesla Close]) / LOOKUP(SUM([Tesla Close]), FIRST())</code>, and the same for Rivian. <code>LOOKUP(…, FIRST())</code> is the close on the first day shown.</li>
+<li>Date › Exact Date, Continuous on Columns. Tesla on Rows; drop Rivian on the Tesla axis to get Measure Values.</li>
+<li>Each table calculation › Edit › Specific Dimensions › <b>Date</b>.</li>
+<li>Line mark, the two hex colors, Measure Names and Measure Values on Label › Line Ends, aliases "Tesla value" and "Rivian value", the tooltip as a sentence, no gridlines, a question as the title.</li>
+<li><b>Check: both lines start at 1,000.</b></li>
+</ol>
+<p>End labels can collide when the period changes (try one month). On a dashboard you might drop them and let the hover do it.</p>
+<h4>KPI tile</h4>
+<ol>
+<li><code>Last Mark = LAST() = 0</code>, a true/false.</li>
+<li><b>Tesla PercentChange</b>: (last close − first close) ÷ ABS(first close), both through <code>LOOKUP</code>.</li>
+<li><b>Tesla % Difference with Arrow</b>: a string with "+", the rounded percent and ▲, or ▼ if negative.</li>
+<li><b>Tesla PercentChangeColor</b>: Up / Down / No change, the same IF logic as Day 4's WINDOW_MAX highlight.</li>
+<li>Text mark. Date (exact, continuous) on Columns; Tesla Close and the arrow on Text; the color field on Color; In Period and Last Mark on Filters, both True.</li>
+<li><b>Every pill with a triangle computes using Date</b>, Last Mark included. Clear Show Header.</li>
+<li>Text › … : type "Latest close", Insert › SUM(Tesla Close), large and bold, then the arrow field. Use Insert; typed field names show as names.</li>
+<li>Up, Down and No change all charcoal <code>#333333</code>; the arrow carries the direction. Title the sheet TESLA in the brand red.</li>
+</ol>
+<p>Last Mark hides every day but the last, leaving one number. Date has to stay in the view so the first and last closes can be found.</p>
+<h4>Dashboard</h4>
+<ul>
+<li>Generic Desktop. Tiled horizontal and vertical containers, with <b>temporary borders</b> so you can see them (remove later). Seven spots: title, "Showing:", the dropdown, logo; the two KPIs; the chart.</li>
+<li>Image object › <code>tesla_vs_rivian.png</code>. Text object for the title, in <b>sentence case</b>, not Title Case. Text object "Showing:" + Insert › Parameters › Time Period.</li>
+<li>Drag the chart in; float the Measure Names legend and delete it. Footer: your name | Source: Twelve Data API.</li>
+<li>Publish: Server › Tableau Public (you must be logged in). Turn off downloads so your key stays private. Or take a screenshot.</li>
+</ul>
+<p><b>The Rivian tile is optional homework</b>; a screenshot can go in the worksheet. If Tableau is missing things, check you're not on an unactivated trial.</p>
+<div class="callout amber"><span class="c-label amber">My status (Nov 6)</span>
+<p>The REST connector is installed on this Mac; the driver <code>.jar</code> wouldn't download without a Tableau login, so there's no live data here and Activity 9 isn't built.</p></div>
+</div></div>
+      </div>
+      <div class="divider">Exploratory and multivariate graphics</div>
+      <div class="sc bl-accent" id="eda">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📦</div>
+            <div>
+              <div class="sc-tag ">36 · Exploratory Graphics</div>
+              <div class="sc-name">Box plots, histograms and Anscombe’s quartet</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Box plots and histograms are for <b>exploring</b>: for you, or a technical audience. Not a broad one; there's too much to explain.</p>
+<ul>
+<li><b>Box plot:</b> high, low, median line, 25th and 75th percentiles; the box is the middle 50%.</li>
+<li><b>In Tableau:</b> one measure on Rows or Columns gives a single line. Analysis › uncheck <b>Aggregate Measures</b>, then Show Me › box plot (grayed out until you do). Each dot is an observation, so know the entity.</li>
+<li><b>Several box plots:</b> the same min and max (fix the axis; that's the little pin), equal spacing and layout.</li>
+<li><b>Histogram:</b> one continuous variable on Columns › Show Me › Histogram. Tableau makes a <b>bin</b> field (not italic, though Tableau made it) and a count.</li>
+<li><b>Bin size is the interval width</b>, not the number of bars: size 4 means 4–8, 8–12. The default (1.51 here) is usually best. Edit the bin field to change it; put the count on Label.</li>
+<li>The <b>summary card</b> gives count, min, max, mean and median.</li>
+</ul>
+<div class="callout green"><span class="c-label green">Anscombe's quartet (book p 14, Fig 1.10)</span>
+<p>Four datasets with the same summary: x mean 9, x variance 11, y mean 7.5, the same correlation to three decimals. Plotted, they're nothing alike: one linear, one curved, one with a single outlier, one with stacked values plus an outlier. Summary statistics and graphics together reveal the structure.</p></div>
+<h4>Scatter plot and trend line</h4>
+<p>x on Columns, y on Rows gives one dot until you disaggregate; Circle mark. Analysis › Trend Lines › Show, then Edit: linear, logarithmic, exponential, power or polynomial, and you can force the y-intercept to zero. For exploration you'd usually take it off. Her workbook: "statistical data graphics" (.twbx, class files).</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="multivariate">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔢</div>
+            <div>
+              <div class="sc-tag ">37 · Multivariate</div>
+              <div class="sc-name">Scatter matrix, small multiples, bubbles</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<h4>Scatter plot matrix</h4>
+<ul>
+<li>One row per city, one column per crime: do some crimes predict others? Lots of arsons when there are lots of robberies?</li>
+<li><b>Build:</b> the same variables on Rows and Columns, in the same order: every pair on one sheet. Add trend lines.</li>
+<li>The diagonal is each variable against itself, a perfect correlation (larceny vs larceny). For a presentation, move it to a dashboard and cover the diagonal with boxes holding the variable names. R does all this automatically.</li>
+<li>A <b>LOESS curve</b> follows the shape of the data rather than a straight regression line.</li>
+<li>Present it like the Day 4 storytelling: show the messy big picture, then zoom into one plot (murders vs population). Good for exploring and comparing continuous data; overwhelming at first.</li>
+</ul>
+<h4>Small multiples</h4>
+<ul>
+<li>Group by a category and give each its own little plot. Good without animation, for time periods or categories, but exact values are harder to read.</li>
+<li><b>Order them:</b> a chart of shots of spirits per week per person of drinking age ran max to min, South Korea down to Indonesia (old data, around 2010).</li>
+<li><b>Use the first chart as the legend</b>, as a baby-names grid did for boys and girls, with annotations (Ariel after <i>The Little Mermaid</i>).</li>
+</ul>
+<h4>Bubble chart</h4>
+<ul>
+<li>A scatter plus size (continuous) plus color: four dimensions. But circle areas only allow rough comparison, and bubbles hide data.</li>
+<li><b>Best practices:</b> a visible size legend; selective labels (or label all); interactive or animated is best; halos, borders and transparency for overlaps.</li>
+<li>The crime bubble: Massachusetts cities, <b>normalized per 10,000 people</b>, or Boston's population dominates.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="heatmaps">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🟥</div>
+            <div>
+              <div class="sc-tag ">38 · Heat Maps</div>
+              <div class="sc-name">Shaded tables, and a separate legend per variable</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>A heat map is a table shaded by value. A single-color continuous gradient is good; labels in the cells are optional.</p>
+<ul>
+<li><b>Birthday popularity</b> (month × day): white borders separate cells of equal value, which would otherwise merge into one block; square marks; February 29 is rare. Not a Tableau default.</li>
+<li><b>Fatal crashes involving alcohol</b> (month × time of day, percentages, divergent): midnight to 4am is dark; 6am to noon is low.</li>
+<li><b>Bad:</b> temperature over time for every state, made in R, is unreadable; and similar colors collapse in grayscale.</li>
+</ul>
+<div class="callout amber"><span class="c-label amber">The crime-data problem</span>
+<p>City on Rows, Measure Names on Columns, Measure Values on Color. One gradient across every crime fails: larcenies far outnumber arsons, so one column is always dark, there are lots of zeros, and without borders the cells merge. <b>Fix: a separate legend for each variable</b>, each on its own scale. In her Massachusetts example burglaries ran 26 to 220; motor vehicle thefts and robberies stood out in Boston, larceny in Provincetown.</p></div>
+<p><b>Best practices:</b> make the scale work, decide on labels vs color only, and use a separate legend per variable when they're measured on different scales.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="act10">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔥</div>
+            <div>
+              <div class="sc-tag ">39 · Activity 10</div>
+              <div class="sc-name">Crime data: heat map, scatter matrix, bubble</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Lab 5 crime data (<code>crime.csv</code>): one row per city, crime counts plus rates <b>per 10,000 people</b>. Use the rates; counts bring back the population problem.</p>
+<h4>10c heat map, as she demoed (manual 5.4.1)</h4>
+<ol>
+<li>New workbook › Text file › crime data.</li>
+<li>City → Rows, Measure Names → Columns, Measure Values → Color.</li>
+<li>On the Measure Values card, remove everything except the per-10,000 rates: eight crimes.</li>
+<li>Measure Values › <b>Use Separate Legends</b>. Do it first; it wipes any color changes you made before.</li>
+<li>Color › border. Measure Values → Label. A blank cell means no data, so no crime.</li>
+<li>City filter › Show Filter › Multiple Values (dropdown). The legends rescale to the cities selected.</li>
+<li>Dashboard: <b>tiled containers, not floating</b>. Eight small containers across the top so each legend sits over its column; take the column labels off later.</li>
+</ol>
+<p>Tools like this are single interfaces for exploring data, a little different from a dashboard.</p>
+<h4>10a and 10b</h4>
+<p>10a, the scatter plot matrix: the per-10,000 rates on both Rows and Columns, City on Detail, trend lines, then the dashboard with boxes over the diagonal (manual 5.2.1). 10b, the bubble chart (manual 5.3.1). She said "after the break, we'll do 10a–10d real quick"; that part wasn't recorded.</p>
+<div class="callout green"><span class="c-label green">My builds</span>
+<p><code>suresh_daivik_activity_10a_scatter_matrix.twbx</code>: seven rates on both shelves, trend lines on; dashboard and title not done. <code>suresh_daivik_activity_10b_bubble.twbx</code>: done. <code>suresh_daivik_activity_10c_heatmap.twbx</code>: eight rates, separate legends, values match her figure (larceny-thefts tops out at 523.2); Blue-Green on each legend, aliases and the legend dashboard not done.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="sunburst">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">☀️</div>
+            <div>
+              <div class="sc-tag ">40 · Exploration</div>
+              <div class="sc-name">The sunburst walkthrough</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The recording joins this walkthrough partway, and the presenter isn't named. A drug-discovery startup with few resources has to choose where to focus.</p>
+<ul>
+<li><b>Data:</b> pharma companies' 10-K filings list revenue for their biggest drugs. Hours of collection, which is often a big part of visualization.</li>
+<li><b>Structure:</b> drug → disease → therapeutic area, and each level adds to 100% of the one above. Rather than a hundred pies, one <b>sunburst</b>.</li>
+<li><b>An oncology team</b> sees drugs approved for one cancer with more indications in the pipeline (Keytruda: approved for lung cancer).</li>
+<li><b>An inflammation and immunology team</b> sees concentration: Humira made about $18.5 billion in 2017, in an arthritis market of $40–50 billion.</li>
+</ul>
+<p>A rich visualization lets different experts see different things. The class: it needs labels and interaction. Its ordering doesn't follow the pie rule because the rings are concentric, but you can control that. Her point: big visualizations are for exploration, and to present one you have to walk people into it.</p>
+</div></div>
+      </div>
+      <div class="divider">Audience, perception and presenting — no Tableau</div>
+      <div class="sc bl-accent" id="audience5">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧠</div>
+            <div>
+              <div class="sc-tag ">41 · Audience</div>
+              <div class="sc-name">How people learn: Mayer’s multimedia learning theory</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Recap of what to know about an audience: data literacy, where they are when they receive it, why they care or should, prior knowledge.</p>
+<ul>
+<li><b>As humans:</b> attention (always competing with technology; close the laptops), distraction, subject knowledge, biases, physical limits.</li>
+<li><b>Memory:</b> she said we forget about half of what we learn within an hour, unless we put it into practice, connect new knowledge to old, and build mental models. Correct ones; wrong ones are very hard to undo.</li>
+<li><b>Think like an educator,</b> not "my thirty-hour presentation". Share work early: the Williamsburg boards and the Gapminder chart showed we each read a graphic differently.</li>
+</ul>
+<div class="callout"><span class="c-label">Richard Mayer, multimedia learning theory</span>
+<p>How we construct knowledge from words and pictures; the foundation of her learning-science lab. We have <b>dual channels</b> (eyes and ears), each with <b>limited capacity</b>, and learning is <b>active processing</b>: attending to relevant information, organizing it into a mental representation, integrating it with what we know. Split attention (a phone in a meeting) disrupts it. The book quotes Mayer in ch 6.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="perception">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">👁️</div>
+            <div>
+              <div class="sc-tag ">42 · Perception</div>
+              <div class="sc-name">What the eye misses, and preattentive attributes</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Demo</th><th>Takeaway</th></tr>
+<tr><td>Two yellow boxes</td><td>The same box on two different squiggly backgrounds; the class saw bacteria. We don't attend to everything we see</td></tr>
+<tr><td>Dolphin in the rose</td><td>We see what we know and expect (book p 250). <b>Don't make your best data point the dolphin in the rose</b></td></tr>
+<tr><td>Flashed image pairs</td><td>A house and tree in fall; two people from behind (a Hawaiian shirt, a cane). The class recalled a lot in under a second but missed the difference between the images</td></tr>
+<tr><td>Count the fives</td><td>Seven fives in a grid of digits. About twenty seconds and few hands; highlighted, they're instant</td></tr>
+</table>
+<p><b>Preattentive processing:</b> what stands out before you think, with no counting: color, shape, size, spatial position, movement (book p 134). Rosling's big red bubble, a highlighted bar, a circle, an animated annotation. <b>Highlight to draw attention, but not everything</b>, or you're back where you started. And don't make your audience count rows and columns.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="storytelling">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎤</div>
+            <div>
+              <div class="sc-tag ">43 · Storytelling</div>
+              <div class="sc-name">Present like McCandless and the New York Times</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Voice plus images, not voice plus on-screen text.</b> We read faster than a presenter talks, so text on the slide competes with the speaker and lowers retention. Images with narration spare both channels. Bullet points also make you say more, to re-explain them.</p>
+<ul>
+<li><b>A Stern management colleague's video:</b> Gallup's confidence in institutions has small business second from the top and large corporations near the bottom, just above Congress; small businesses generate almost half of US GDP. Her narration matches what's on screen, with progressive reveal, annotation and highlighting of whatever she mentions.</li>
+<li><b>David McCandless (TED):</b> he shows a chart with no labels and asks what rises twice a year, at Easter and two weeks before Christmas, peaks on Mondays and flattens in summer. He repeats the guesses (chocolate, shopping, sick leave), then shows only the title and <b>waits</b> while people laugh: 10,000 Facebook status updates mentioning a breakup, lowest on Christmas Day. Then he scrolls through it with annotations. A stacked area because a TED room is dark and thin lines vanish. <b>Steal this.</b></li>
+<li><b>New York Times, Usain Bolt:</b> every Olympic 100-meter medalist racing him, comparing with measures you can feel, with sound at the end so you hear the gap. They'd started from a flat chart.</li>
+</ul>
+<p><b>Engagement:</b> use their prior knowledge, ask questions, personalize it (ask them something ahead of time).</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="slides">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🖥️</div>
+            <div>
+              <div class="sc-tag ">44 · Slides</div>
+              <div class="sc-name">PowerPoint pet peeves, and her quick fixes</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>The class's pet peeves:</b> reading the slides; misalignment; information overload; slide junk; jarring transitions; too long on one topic, then rushing ("not this slide"); turning your back; small font (<b>her number one</b>); charts with no explanation; bullets that already say everything.</p>
+<p>Slides can support a talk, serve as talking points, or be a handout. Design for the first.</p>
+<h4>Quick fixes (book ch 7)</h4>
+<ul>
+<li><b>16:9 widescreen</b>, not 4:3; the black bars shrink everything (book p 153).</li>
+<li>Show full screen; cut the text.</li>
+<li><b>1–6–6:</b> one idea per slide, six lines, six words a line. She credited Seth Godin; the book credits John Zimmer (2010), p 159.</li>
+<li><b>Presenter view:</b> next slide, timer and notes (book p 164).</li>
+<li><b>Match the slide background to the chart's.</b> A white chart on a blue slide adds noise; it should look built in.</li>
+<li>Explain your charts.</li>
+<li><b>Images:</b> keep the aspect ratio locked so nothing gets squished.</li>
+<li><b>Tableau to slides:</b> a dashboard at 1600 × 900, stretch the sheet, export a PNG. Set fonts at 16–20 in Tableau, not its default 9pt, which stays tiny however much you stretch.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="divider">Post-module — what she wants</div>
+      <div class="sc bl-accent" id="postmodule">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎬</div>
+            <div>
+              <div class="sc-tag ">45 · Post-Module</div>
+              <div class="sc-name">The video, the dashboard and the paper report</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The pre-module was reps; the post-module brings it together. <b>The big takeaway is format:</b> design for one format and reuse it everywhere, and it works for none.</p>
+<h4>Team (capstone)</h4>
+<ul>
+<li>A dashboard of your capstone KPIs; use its individual graphics across a narrative in a <b>video under three minutes</b>, in presentation mode.</li>
+<li>A peer assessment, three questions per teammate (a tool her lab vibe-coded).</li>
+<li><b>Graded on</b> how well you use data graphics to deliver the message and insight, not your technical Tableau skill. The dashboard shows how you surfaced the insight; the presentation shows how you communicate it with your voice.</li>
+</ul>
+<h4>Making the video</h4>
+<ol>
+<li>Export the slides as images and put them in order.</li>
+<li>Write a script or talking points; record the narration.</li>
+<li>Lay the narration over the images, edit, publish. Or record live over the slides, then still edit.</li>
+</ol>
+<ul>
+<li><b>Tools:</b> ScreenFlow (her Mac favorite), Camtasia, QuickTime, NYU Stream, Captivate, Premiere, PowerPoint's recorder.</li>
+<li><b>Submit a link,</b> not a video file: YouTube or NYU Stream, private but shareable.</li>
+<li>Tell a story, not "on slide one we created this data graphic…". Don't read the slides.</li>
+<li>A talking head distracts (research says so); cutting to your face is fine.</li>
+<li><b>AI voice:</b> she first said fine, then took it back. Would you give it to a client? If not, don't.</li>
+<li>Keep one style guide and palette across all the graphics; switching from gray to color is jarring.</li>
+</ul>
+<p>Examples: a 2012 team video on HIV in South Africa (strong narrative, ran over time) and a less polished one (flat images, lots of text, poor audio, though the music helped move it along).</p>
+<h4>Individual (paper report)</h4>
+<p>Anything unrelated to the capstone: find data or call an API. A full-page report with a narrative that references the graphics, or make it feel like a news article. A chance to try a chart you want to challenge yourself with. Tableau or R, whatever works.</p>
+<div class="callout amber"><span class="c-label amber">AI on the post-module</span>
+<p>She'd prefer the graphics weren't generated by AI, but she isn't hunting for it; the assignments are about how effective the graphics are in their medium. The course rule stands: AI is allowed and must be cited.</p></div>
+<p>All the slides will be posted; everything from Day 4 already is.</p>
+</div></div>
+      </div>
+      <div class="sc bl-amber" id="not-captured-5">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico amber">⚠️</div>
+            <div>
+              <div class="sc-tag amber">46 · Not Captured</div>
+              <div class="sc-name">What the recording missed</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Source: Granola "Day 5 Module 4", read end to end (0–527 minutes), plus Lab 7 on her site, the book and the practice manual. Microphone only, so the wording is rough and I've paraphrased.</p>
+<ul>
+<li><b>~90–94 and ~112–152 minutes:</b> students building Activity 8 on their own, and a break. The recording picks up again at the inset layout.</li>
+<li><b>~230–298:</b> lunch.</li>
+<li><b>~408–457:</b> the afternoon break and the 10a/10b demos she promised for after it. The recording resumes partway through the sunburst walkthrough, so I can't say who presented it.</li>
+<li><b>Names fixed against the book and lab:</b> Geocodio (heard "Geocodeo"), density map (heard "Tensitic"), cartograms (heard "cardiograms"), Anscombe, Mayer, McCandless. "Orthogonal" is what she said for the orthographic view.</li>
+<li><b>Her slides aren't on disk.</b> She said they'd all be posted, so slide-only details (map sources, the chart examples) are as she described them.</li>
+<li>The Twelve Data limits are what her account showed that day. A US population figure she gave was garbled, so I left it out.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="divider">Reference</div>
+      <div class="sc bl-green" id="hooks5">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">🪝</div>
+            <div>
+              <div class="sc-tag green">Reference · Day 5</div>
+              <div class="sc-name">Exam hooks — Day 5</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>Geography:</b> exact address → lat/long beats ZIP, city, county, state, country. Italic generated lat/long = the center of a category, not your data. Filled map enumerates; point map needs geocoding.</li>
+<li><b>Geocoding:</b> address → coordinates. Rooftop beats range interpolation. Geocodio for small jobs, Google Cloud for big ones.</li>
+<li><b>Maps:</b> insets for Alaska and Hawaii; the same scale across insets and paired maps; one encoding per map; define missing data; run the grayscale test.</li>
+<li><b>Scales:</b> continuous, stepped, divergent. Divergent only when most values sit mid-range.</li>
+<li><b>Projections:</b> Mercator (default) distorts toward the poles; Albers for US government data; equal-rectangular for world themes; orthographic for routes.</li>
+<li><b>Cumulative data:</b> filter to the last day and sanity-check against population (2.8 billion wrong, 9.35 million right).</li>
+<li><b>Normalize:</b> <code>SUM([Cases])/SUM([Population])*100000</code>. Per 100K, California gives way to Rhode Island and Alaska.</li>
+<li><b>Dashboards (Few):</b> one screen, what's happening now, at a glance. Evaluate every KPI; top-left; sketch → containers → components → beautify.</li>
+<li><b>Lab 7:</b> <code>FLOAT()</code> the text prices; relationship, not inner join; <code>LOOKUP(…, FIRST())</code>; <code>LAST() = 0</code>; compute using Date.</li>
+<li><b>EDA:</b> box plots need Aggregate Measures off; bin size = interval width; Anscombe: same stats, different pictures.</li>
+<li><b>Heat maps:</b> separate legends per variable, set before any formatting.</li>
+<li><b>Perception:</b> preattentive attributes; the dolphin in the rose; voice + images, not voice + text; 1–6–6.</li>
+<li><b>Post-module:</b> graded on message, not Tableau skill. Video under three minutes, a link not a file.</li>
+</ul>
+</div></div>
+      </div>
+
+    </div>
+
     <div id="panel-assignments" class="day-panel">
       <div class="divider">Data Visualization — graded components</div>
 
@@ -835,7 +1638,7 @@ code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: 
         <div class="ac-b">
           <div class="ac-label">Post-module · 30% · Group (MLiQ)</div>
           <div class="ac-title">Capstone Team Project</div>
-          <div class="ac-desc">A dashboard prototype of the capstone KPIs plus 5 visual displays, as .twbx. Word doc with team names and the video presentation URL. Peer evaluation form too.</div>
+          <div class="ac-desc">A dashboard prototype of the capstone KPIs plus 5 visual displays, as .twbx. Word doc with team names and the video presentation URL. Peer evaluation form too. The video is under 3 minutes, shared as a private-but-shareable link, not a file (Day 5).</div>
           <div class="ac-due">Due <span>Sun Dec 20 · 11:59pm ET</span></div>
         </div>
       </div>
