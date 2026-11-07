@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Analytics · Module 4 · NYU Stern MSBAi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0a0d12;
+  --surface: #10141b;
+  --card:    #141a22;
+  --border:  #1c2a38;
+  --accent:  #a78bfa;
+  --accent-soft: rgba(167,139,250,.08);
+  --amber:   #fbbf24;
+  --green:   #38bdf8;
+  --red:     #f87171;
+  --text:    #f2ede6;
+  --muted:   #7f98a9;
+  --faint:   #26384a;
+  --sidebar-w: 256px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Lora', Georgia, serif;
+  font-size: 16px; line-height: 1.75;
+  display: flex; min-height: 100vh; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: radial-gradient(circle, rgba(167,139,250,.04) 1px, transparent 1px);
+  background-size: 28px 28px; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, rgba(167,139,250,.07) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── GATE ── */
+#gate { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.gate-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 44px; max-width: 360px; width: 90%; text-align: center; }
+.gate-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); margin-bottom: 18px; }
+.gate-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 24px; }
+.gate-input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; letter-spacing: .08em; outline: none; text-align: center; transition: border-color .2s; }
+.gate-input:focus { border-color: var(--accent); }
+.gate-btn { margin-top: 12px; width: 100%; padding: 10px; border-radius: 8px; border: none; cursor: pointer; background: var(--accent); color: #0a0d12; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; transition: opacity .2s; }
+.gate-btn:hover { opacity: .85; }
+.gate-err { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--red); margin-top: 10px; min-height: 16px; }
+
+/* ── SIDEBAR ── */
+#sidebar {
+  position: fixed; top: 0; left: 0;
+  width: var(--sidebar-w); height: 100vh;
+  background: rgba(10,13,18,.97); border-right: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  overflow-y: auto; overflow-x: hidden;
+  z-index: 100; padding: 24px 0 40px;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.sb-brand { padding: 0 18px 20px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.sb-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); border: 1px solid rgba(167,139,250,.25); border-radius: 4px; padding: 3px 8px; margin-bottom: 8px; }
+.sb-title { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); line-height: 1.3; }
+.sb-sub { font-size: 12px; color: var(--muted); margin-top: 3px; font-style: italic; }
+.sb-group { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); padding: 14px 18px 5px; }
+.sb-nav a { display: flex; align-items: center; gap: 9px; padding: 7px 18px; text-decoration: none; font-size: 13px; color: var(--muted); transition: color .15s, background .15s; border-left: 2px solid transparent; }
+.sb-nav a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+.sb-nav a.active { color: var(--accent); border-left-color: var(--accent); background: var(--accent-soft); }
+.sb-nav .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--faint); flex-shrink: 0; transition: background .15s; }
+.sb-nav a.active .dot { background: var(--accent); }
+.sb-back-row { border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.sb-back-row a { display: flex; align-items: center; gap: 8px; padding: 12px 18px; text-decoration: none; font-family: 'JetBrains Mono', monospace; font-size: 10.5px; letter-spacing: .05em; color: var(--muted); transition: color .15s, background .15s; }
+.sb-back-row a:hover { color: var(--text); background: rgba(255,255,255,.03); }
+
+/* ── MAIN ── */
+#main { margin-left: var(--sidebar-w); flex: 1; position: relative; z-index: 1; }
+
+/* ── HEADER ── */
+#hdr { padding: 48px 56px 32px; border-bottom: 1px solid var(--border); }
+.hdr-eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.hdr-title { font-family: 'DM Serif Display', serif; font-size: 42px; color: var(--text); line-height: 1.15; margin-bottom: 6px; }
+.hdr-title span { color: var(--accent); }
+.hdr-sub { color: var(--muted); font-size: 15px; margin-bottom: 28px; font-style: italic; }
+.day-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.day-tab { padding: 8px 20px; border-radius: 6px; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: .07em; cursor: pointer; border: 1px solid var(--border); color: var(--muted); background: transparent; transition: all .2s; }
+.day-tab:hover { color: var(--text); border-color: var(--accent); }
+.day-tab.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+/* ── CONTENT ── */
+#content { padding: 36px 56px 80px; }
+.day-panel { display: none; }
+.day-panel.active { display: block; }
+
+/* ── SECTION CARD ── */
+.sc {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+  transition: box-shadow .2s, transform .18s;
+  animation: fadeUp .45s cubic-bezier(.16,1,.3,1) both;
+}
+.sc:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.35); }
+.sc.bl-accent { border-left: 3px solid var(--accent); }
+.sc.bl-amber  { border-left: 3px solid var(--amber); }
+.sc.bl-green  { border-left: 3px solid var(--green); }
+
+.sc-hdr { padding: 20px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 16px; user-select: none; transition: background .15s; }
+.sc-hdr:hover { background: rgba(255,255,255,.02); }
+.sc-hdr-l { display: flex; align-items: center; gap: 14px; }
+.sc-ico { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; background: var(--accent-soft); border: 1px solid rgba(167,139,250,.2); }
+.sc-ico.amber { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.2); }
+.sc-ico.green { background: rgba(56,189,248,.1); border-color: rgba(56,189,248,.2); }
+.sc-tag { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; }
+.sc-tag.amber { color: var(--amber); }
+.sc-tag.green { color: var(--green); }
+.sc-name { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--text); line-height: 1.25; }
+.chevron { color: var(--muted); transition: transform .25s; font-size: 14px; flex-shrink: 0; opacity: .7; }
+.sc.open .chevron { transform: rotate(180deg); }
+
+.sc-body { max-height: 0; overflow: hidden; transition: max-height .4s ease, opacity .3s ease; opacity: 0; }
+.sc.open .sc-body { max-height: 4000px; opacity: 1; }
+.sc-in { padding: 4px 28px 28px 80px; border-top: 1px solid var(--border); }
+
+/* ── PROSE ── */
+.sc-in p { margin-bottom: 14px; color: rgba(242,237,230,.88); }
+.sc-in p:last-child { margin-bottom: 0; }
+.sc-in strong, .sc-in b { color: var(--text); font-weight: 600; }
+.sc-in em { color: var(--accent); font-style: italic; }
+.sc-in ul { padding-left: 20px; margin-bottom: 14px; color: rgba(242,237,230,.85); }
+.sc-in li { margin-bottom: 7px; }
+.sc-in li::marker { color: var(--accent); }
+.sc-in ol { list-style: none; padding-left: 0; margin-bottom: 14px; counter-reset: step; }
+.sc-in ol li { counter-increment: step; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 10px; color: rgba(242,237,230,.85); }
+.sc-in ol li::before { content: counter(step); flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-soft); border: 1px solid rgba(167,139,250,.2); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 3px; }
+.sc-in h4 { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--text); margin: 22px 0 9px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+
+/* ── CALLOUT ── */
+.callout { background: var(--accent-soft); border: 1px solid rgba(167,139,250,.2); border-radius: 9px; padding: 15px 18px; margin: 16px 0; }
+.callout.amber { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.22); }
+.callout.green { background: rgba(56,189,248,.07); border-color: rgba(56,189,248,.22); }
+.c-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 7px; }
+.callout.amber .c-label { color: var(--amber); }
+.callout.green .c-label { color: var(--green); }
+.callout p { color: rgba(242,237,230,.88); margin: 0; font-size: 14.5px; line-height: 1.65; }
+
+/* ── ANOMALY LIST (good/bad badges) ── */
+.anom-list { display: flex; flex-direction: column; gap: 10px; margin: 14px 0; }
+.anom { background: var(--surface); border: 1px solid var(--border); border-radius: 9px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+.anom-b { flex-shrink: 0; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; border-radius: 5px; padding: 3px 8px; margin-top: 2px; white-space: nowrap; }
+.anom-b.bad { color: var(--red); background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); }
+.anom-b.ok  { color: var(--green); background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.2); }
+.anom-text { font-size: 14.5px; color: rgba(242,237,230,.82); line-height: 1.65; }
+.anom-text strong { color: var(--text); }
+
+/* ── TABLE ── */
+.dt { width: 100%; border-collapse: collapse; font-size: 14px; margin: 14px 0; }
+.dt th { background: var(--accent-soft); color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+.dt td { padding: 10px 14px; border-bottom: 1px solid rgba(28,42,56,.7); color: rgba(242,237,230,.82); vertical-align: top; line-height: 1.55; }
+.dt td:first-child { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: nowrap; }
+.dt td strong { color: var(--text); }
+.dt tr:last-child td { border-bottom: 0; }
+.dt tr:hover td { background: rgba(167,139,250,.03); }
+
+code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; background: rgba(167,139,250,.09); color: var(--accent); border-radius: 4px; padding: 1px 6px; }
+
+/* ── ASSIGNMENTS ── */
+.assign-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 12px; display: flex; gap: 18px; align-items: flex-start; }
+.ac-ico { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; background: var(--accent-soft); border: 1px solid rgba(167,139,250,.2); display: flex; align-items: center; justify-content: center; font-size: 17px; }
+.ac-b { flex: 1; }
+.ac-label { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+.ac-title { font-family: 'DM Serif Display', serif; font-size: 18px; color: var(--text); margin-bottom: 4px; }
+.ac-desc { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+.ac-due { font-family: 'JetBrains Mono', monospace; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
+.ac-due span { color: var(--accent); }
+.done-badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; background: rgba(56,189,248,.1); color: #38bdf8; border: 1px solid rgba(56,189,248,.2); border-radius: 20px; padding: 2px 8px; margin-left: 8px; }
+
+.divider { font-family: 'JetBrains Mono', monospace; font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--faint); margin: 32px 0 14px; padding-left: 2px; }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+
+</head>
+
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-label">Network Analytics · Module 4</div>
+    <div class="gate-title">Daivik's Notes</div>
+    <input id="gate-input" class="gate-input" type="password" placeholder="password" autocomplete="off" />
+    <button class="gate-btn" onclick="tryUnlock()">Enter</button>
+    <div class="gate-err" id="gate-err"></div>
+  </div>
+</div>
+
+<nav id="sidebar" style="display:none">
+  <div class="sb-back-row"><a href="../">← Module 4 hub</a></div>
+  <div class="sb-brand">
+    <div class="sb-badge">NA · Module 4</div>
+    <div class="sb-title">Network Analytics</div>
+    <div class="sb-sub">Prof. Arun Sundararajan</div>
+  </div>
+  <div class="sb-group">Day 6 — Sat Nov 7</div>
+  <div class="sb-nav">
+    <a href="#orientation"><span class="dot"></span>Orientation</a>
+    <a href="#karate"><span class="dot"></span>Karate Club</a>
+    <a href="#blogs"><span class="dot"></span>Political Blogs</a>
+    <a href="#amazon"><span class="dot"></span>Amazon Co-Purchase</a>
+    <a href="#prism-pipes"><span class="dot"></span>Prism vs Pipes</a>
+    <a href="#tie-strength"><span class="dot"></span>Strong vs Weak Ties</a>
+    <a href="#fb-setup"><span class="dot"></span>Facebook Study Setup</a>
+    <a href="#look-first"><span class="dot"></span>Look Before You Model</a>
+    <a href="#logit"><span class="dot"></span>Logistic Regression</a>
+    <a href="#predict"><span class="dot"></span>Prediction + Confusion Matrix</a>
+    <a href="#bias"><span class="dot"></span>Selection Bias + Friends</a>
+    <a href="#net-sampling"><span class="dot"></span>Network Sampling</a>
+    <a href="#covid"><span class="dot"></span>COVID Tests: US vs China</a>
+    <a href="#roc"><span class="dot"></span>ROC Curve + Operating Point</a>
+    <a href="#vc-dating"><span class="dot"></span>VC + Dating</a>
+    <a href="#closure"><span class="dot"></span>Models + Triadic Closure</a>
+    <a href="#local-bridges"><span class="dot"></span>Bridges vs Local Bridges</a>
+    <a href="#theorem"><span class="dot"></span>Weak Ties Theorem</a>
+    <a href="#holes"><span class="dot"></span>Structural Holes + Brokerage</a>
+    <a href="#maintain"><span class="dot"></span>So What Do You Do</a>
+    <a href="#communities"><span class="dot"></span>Why Community Detection</a>
+    <a href="#bfs"><span class="dot"></span>Shortest Paths + BFS</a>
+    <a href="#edge-removal"><span class="dot"></span>Remove the Bridgey Edges</a>
+    <a href="#walktrap"><span class="dot"></span>Random Walks + Walktrap</a>
+    <a href="#wild"><span class="dot"></span>Communities in the Wild</a>
+    <a href="#search"><span class="dot"></span>Hypertext + Search</a>
+    <a href="#pagerank"><span class="dot"></span>PageRank</a>
+    <a href="#pagerank-use"><span class="dot"></span>Why PageRank Everywhere</a>
+    <a href="#power-laws"><span class="dot"></span>Power Laws</a>
+    <a href="#why-power"><span class="dot"></span>Normal vs Power Law</a>
+    <a href="#averages"><span class="dot"></span>Averages Lie</a>
+    <a href="#contagion"><span class="dot"></span>Epidemics vs Social Contagion</a>
+    <a href="#homophily"><span class="dot"></span>Influence vs Selection</a>
+    <a href="#tough-mudder"><span class="dot"></span>Tough Mudder Experiment</a>
+    <a href="#experiments"><span class="dot"></span>Experiments + Counterfactuals</a>
+    <a href="#propensity"><span class="dot"></span>Propensity Score Matching</a>
+    <a href="#yahoo-go"><span class="dot"></span>Yahoo Go (cut off)</a>
+    <a href="#not-captured-6"><span class="dot"></span>Not Captured</a>
+  </div>
+  <div class="sb-group">Reference</div>
+  <div class="sb-nav">
+    <a href="#hooks6"><span class="dot"></span>Exam Hooks — Day 6</a>
+  </div>
+</nav>
+
+<div id="main" style="display:none">
+  <div id="hdr">
+    <div class="hdr-eyebrow">NYU Stern · MSBAi · Module 4 · Network Analytics</div>
+    <h1 class="hdr-title">Network <span>Analytics</span></h1>
+    <p class="hdr-sub">Prof. Arun Sundararajan · prism and pipes · tie strength · weak ties and structural holes · community detection · PageRank · power laws · contagion</p>
+    <div class="day-tabs">
+      <button class="day-tab active" data-panel="day6">Day 6 — Sat Nov 7</button>
+      <button class="day-tab" data-panel="assignments">Assignments</button>
+    </div>
+  </div>
+
+  <div id="content">
+    <div id="panel-day6" class="day-panel active">
+      <div class="divider">Morning — why networks: prism and pipes</div>
+      <div class="sc bl-accent open" id="orientation">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧭</div>
+            <div>
+              <div class="sc-tag ">01 · Orientation</div>
+              <div class="sc-name">Verification is the job now</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Arun Sundararajan</b>, with Ilias Triantafyllopoulos as the teaching fellow (TA). About 75 of us, Saturday morning, so no round of introductions.</p>
+<ul>
+<li>AI systems now do a lot of the analytics that used to need a human to write the code. His view after three years of watching it: the value of a good data scientist has gone <b>up</b>, because the tools are in far more hands. Being a crack Python programmer is worth a little less.</li>
+<li>Generative AI <b>lowered the cost of generating</b> (text, images, code, analytics) but <b>raised the cost of verifying</b>. For a logo or a cartoon, checking is the same as it was with a human artist: you look at it. For code or an analysis, if you can't verify it, it's useless or it's risky, and it's your reputation on the line.</li>
+<li>So his courses have moved from <em>here's how to do it</em> to <em>here's what's going on under the hood</em>. Your job is more and more to judge whether the AI did it right and how to use what it did.</li>
+<li>Laptops are for notes. Close browsers, AI and email. Someone laughing at an Instagram post distracts him and spreads to the people sitting nearby, a network effect.</li>
+</ul>
+<div class="callout"><span class="c-label">Shape of the day</span>
+<p>A little over half on the <b>prism</b> side (what the structure of a network tells you), the rest on the <b>pipes</b> side (how things flow through it). The pre-class work was there so the vocabulary is already familiar.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="karate">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🥋</div>
+            <div>
+              <div class="sc-tag ">02 · Zachary’s Karate Club</div>
+              <div class="sc-name">A min cut predicted who left with whom</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Zachary, an anthropologist, started studying a karate club around 1970 and watched it for three years: who went for a drink with whom, who seemed to interact a lot. He mapped <b>78 friendships among 34 members</b> by hand.</p>
+<p>Mid-study the owner (also an instructor) and a part-time instructor fell out, he thinks over fees. The part-timer started his own club and took members with him.</p>
+<ul>
+<li>Vocabulary: this kind of <b>graph</b> isn't an x–y chart. Circles are <b>nodes</b>, lines are <b>edges</b>. Network science studies graphs and ties them back to something real: flights between cities, how a company is organised, contagion risk in the financial system.</li>
+<li><b>Min cut</b>: split the graph into two pieces by cutting as few edges as possible. He named the Ford–Fulkerson algorithm from operations research (the recording heard it as "four full percent"). It isn't the best way to find communities, but it's common.</li>
+<li>The cut predicted every member's choice <b>except one</b>. The class guessed nodes 3 and 9. It was <b>node 9</b>, three weeks from his black belt. Switching meant starting over as a brown belt, so he stayed. The social structure said move; his individual incentive won.</li>
+<li>Luca's point: in an organisational network you'd ask a different question, such as who bridges the two groups.</li>
+</ul>
+<div class="callout"><span class="c-label">Takeaway</span>
+<p>Math on the pattern of connections can reveal real behaviour, and twenty years in, he still looks for the network in every dataset he analyses.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="blogs">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🗳️</div>
+            <div>
+              <div class="sc-tag ">03 · Political Blogs</div>
+              <div class="sc-name">Echo chambers before algorithms (2003 data)</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>A study published around 2004 on data from 2003, by a researcher then at the University of Michigan who later joined Facebook. This was before Facebook and Twitter, five or six years before Google personalised search, and well before social media advertising.</p>
+<ul>
+<li><b>Node</b> = a blog. <b>Edge</b> = a blogroll link, the list of five or ten other blogs a blogger recommended.</li>
+<li>The hope back then: a newspaper gives you one editorial line (he gave the New York Times as more liberal and the Wall Street Journal as more conservative), but with blogs you'd click from a Democratic blog to a Republican counterpoint and end up balanced.</li>
+<li>What they found: <b>Republican blogs linked to Republican blogs, Democratic blogs to Democratic blogs.</b> Start in the red and keep clicking, and you stay in the red. Polarisation formed on its own, almost a decade before the algorithmic filter bubble.</li>
+</ul>
+<div class="callout amber"><span class="c-label">Does left/right in the picture mean anything?</span>
+<p>No. The layout only lets you see it. A network picture grabs a room's attention more than a regression or a table, so it can be misused; he drew this one to make his point. The analytics is what quantifies it: the community structure is almost entirely predicted by political leaning.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="amazon">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📚</div>
+            <div>
+              <div class="sc-tag ">04 · Amazon Co-Purchase</div>
+              <div class="sc-name">Who decides the shelf?</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>He put up a few of our pre-module Amazon visualizations (and joked that any nobody claimed must have been made by AI).</p>
+<p><b>How the network was built.</b> For each book, look at everyone who bought it (his example: <i>Networks, Crowds, and Markets</i>, with 57,000 buyers), rank everything else those people bought, and show the top five under <b>customers who bought this also bought</b>. At one point about <b>20% of Amazon's book sales</b> started from one of those clicks.</p>
+<table class="dt">
+<tr><th>Model</th><th>Who decides what sits where</th></tr>
+<tr><td>Retailer</td><td>Best Buy decides, often with machine learning. Popular items don't need the best spot (people find them anyway), and very unpopular ones waste it, so you might rank by <b>lift</b>.</td></tr>
+<tr><td>Slotting fee</td><td>The manufacturer buys the space and fills it (Sony buys prime shelf space). The famous one: Google paying Apple around <b>$9B a year</b> to be Safari's default search engine.</td></tr>
+<tr><td>Amazon</td><td>Online there are no aisles, just hyperlinks, so <b>the link network is the aisle structure</b>. Amazon let the customer decide through revealed choice: put products that are bought together next to each other.</td></tr>
+</table>
+<p><b>Oprah's Book Club.</b> He studied every book picked for it, plus its neighbours in the co-purchase graph. In some cases only about <b>10%</b> of the economic impact went to the featured book; about <b>90%</b> went to the books around it.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="prism-pipes">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔭</div>
+            <div>
+              <div class="sc-tag ">05 · Prism and Pipes</div>
+              <div class="sc-name">The two things a network does</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<table class="dt">
+<tr><th>Dimension</th><th>What the network is doing</th><th>Examples</th></tr>
+<tr><td>Prism</td><td>A lens on what things <b>are</b>: similarity, groupings, communities</td><td>Book genres in the co-purchase graph. You can act on a community without ever putting a label on it.</td></tr>
+<tr><td>Pipes</td><td>A conduit for <b>attention, contagion, influence</b></td><td>Oprah's spillover, Uber's referral payments, a video going viral on Instagram, how the web was designed to route attention.</td></tr>
+</table>
+<div class="callout"><span class="c-label">Why we don't stop at the picture</span>
+<p>Six slides, six very different pictures, all the same network. Visualising is a powerful way to communicate, but it doesn't tell an analyst the whole story. You have to measure it.</p></div>
+<p>One more picture: a 1970s dating network, self-reported. Almost every relationship in it was male–female because other relationships went unreported, which is an early hint of the bias section.</p>
+</div></div>
+      </div>
+      <div class="divider">Tie strength — close vs not close</div>
+      <div class="sc bl-accent" id="tie-strength">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🤝</div>
+            <div>
+              <div class="sc-tag ">06 · Strong vs Weak Ties</div>
+              <div class="sc-name">What makes a tie close</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>(Everyone stood up for 45 seconds first.) Why a binary close / not-close split in an age of precise data? Because analytics only becomes useful inside a social, economic or political context, and sociologists found that ties between people really do fall loosely into <b>strong</b> and <b>weak</b>.</p>
+<p>What the class said separates them:</p>
+<ul>
+<li>Frequency of communication</li>
+<li>Trust</li>
+<li>Weak ties are often functional or purpose-driven: a coworker, a manager</li>
+<li>Volume and depth of what you've shared, how much you've opened up</li>
+<li>Emotional affect: what happens to you affects them, and the reverse</li>
+<li>How long you've known them</li>
+</ul>
+<p><b>Exercise:</b> write down your closest friends. Most of the room had a small list; very few had 25 or more. This is the same prompt the study's subjects got.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="fb-setup">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📘</div>
+            <div>
+              <div class="sc-tag ">07 · Facebook Tie-Strength Study</div>
+              <div class="sc-name">The data point is an edge</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Scientists at Facebook, roughly eight or nine years after it launched (he put the study at 2011), asked volunteers to list their closest friends.</p>
+<ul>
+<li>Those Facebook friends were labelled <b>strong</b>; every other Facebook friend of that subject was labelled <b>weak</b>. If Sanchit named three people, three of his Facebook friends are strong and the rest are weak.</li>
+<li>So each <b>edge</b> (subject ↔ friend) is a data point with a binary label and a set of features, the same labels-and-features setup as machine learning.</li>
+<li>Features: comments, messages, wall posts, likes, photo tags (appearing in the same photo, whoever tagged it), pokes, plus attributes such as family, event invites, shared gender identity, age difference, same employer, same school and shared groups.</li>
+</ul>
+<p>Aside: he joined Facebook in 2005 because his undergrads were on it. By 2008–09 the norm that students and professors don't connect there had settled. LinkedIn is different. Connect with him there (send a note saying you're in his MSBA class), because his main use of it is introducing students to people.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="look-first">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔎</div>
+            <div>
+              <div class="sc-tag ">08 · Summarise First</div>
+              <div class="sc-name">Look at the data before the heavy machinery</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The first step in any study, network or not: <b>summary statistics</b>. Means and standard errors for close vs not-close friends, and eyeball the differences. Don't just toss everything into a model.</p>
+<ul>
+<li>Correlation of the strong/weak label with each variable (he thinks it was a rank correlation): <b>comments</b> highly correlated; <b>age difference</b> negatively correlated; gender identity, employer, same school and groups only weakly.</li>
+<li>Then ask whether each one makes sense. <b>Photo tags</b> are proof of a real-world relationship: you were in the same physical place. <b>Wall posts</b> might really be measuring how long you've been friends, since people wall-posted a lot in 2005–06 and hardly at all by 2011.</li>
+<li>Sometimes the goal is a black-box prediction (which customers to advertise to). Often it's to explain and decide, and then the variables have to make sense.</li>
+</ul>
+<div class="callout amber"><span class="c-label">Data ≠ reality</span>
+<p>You have a sample, not the population. There's bias, measurement error, noise and missing data, so the truth in your dataset isn't the truth in the world.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="logit">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📈</div>
+            <div>
+              <div class="sc-tag ">09 · Logistic Regression</div>
+              <div class="sc-name">Which interactions predict a close friend</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Rule of thumb:</b> if a coefficient is roughly <b>double its standard error or more</b>, it's statistically significant at 5% (a t-score of about 2).</p>
+<table class="dt">
+<tr><th>Variable</th><th>Result as he read it</th></tr>
+<tr><td>Comments, messages, wall posts</td><td>Significant: they predict close friendship</td></tr>
+<tr><td>Likes</td><td>Not predictive. You throw likes at everybody.</td></tr>
+<tr><td>Family members</td><td>Predictive of strong ties</td></tr>
+<tr><td>Event invites</td><td>Not significant</td></tr>
+<tr><td>Shared gender identity</td><td>Positive: more likely a strong tie</td></tr>
+<tr><td>Age</td><td>Doesn't seem to matter</td></tr>
+<tr><td>Same employer</td><td>Matters, but not much</td></tr>
+<tr><td>Same school</td><td>Doesn't matter</td></tr>
+</table>
+<div class="callout"><span class="c-label">Lucas: why is the comments coefficient small if it's the strongest signal?</span>
+<p>Scale. Comments can move by tens (up to around a hundred), while "same employer" can only move from 0 to 1. A variable with big swings gets a small coefficient for the same effect on the 0–1 probability. How the study normalised the variables matters, and he hadn't re-checked that.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="predict">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎯</div>
+            <div>
+              <div class="sc-tag ">10 · Prediction</div>
+              <div class="sc-name">Flatten the network into a table</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li>Second part of the study: predict whether each edge is strong or weak. They tried logistic regression, a <b>support vector machine (SVM)</b> and a decision tree.</li>
+<li>Why not unsupervised clustering? There's a labelled ground truth, so it's binary classification. They took the network out and made a <b>flat dataset</b>: every edge is a row with a label and features.</li>
+<li><b>Confusion matrix</b>, with positive = strong tie. False positive (type I, top-right) = predicted strong, actually weak. False negative (type II, bottom-left) = predicted weak, actually strong.</li>
+<li><b>False negatives far outnumbered false positives.</b> That sets up the threshold discussion after the break.</li>
+</ul>
+<p>"Reality" here means the data's labels, which is separate from the reality of the population.</p>
+</div></div>
+      </div>
+      <div class="divider">Bias and sampling</div>
+      <div class="sc bl-accent" id="bias">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🪤</div>
+            <div>
+              <div class="sc-tag ">11 · Bias</div>
+              <div class="sc-name">Population vs sample</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>You're almost never looking at all the data. Even a model trained on everything humans have written hasn't seen everything that could have been written. The <b>population</b> is what you're trying to study; the <b>sample</b> is the data you have. Always ask what your sources of bias are.</p>
+<table class="dt">
+<tr><th>Bias</th><th>What it is</th><th>His example</th></tr>
+<tr><td>Selection</td><td>The sample isn't the population</td><td>More social people join Facebook. Zachary may have missed quiet friendships and over-counted people who are loud about theirs. Online reviews over-represent the tails: furious or thrilled.</td></tr>
+<tr><td>Volunteer</td><td>The sample selects itself</td><td>The people who agree to a Facebook study may be more social or more open.</td></tr>
+<tr><td>Exclusion</td><td>The analyst drops part of the data</td><td>Dropping incomplete surveys drops people who dislike surveys.</td></tr>
+<tr><td>Survivorship</td><td>Only the survivors are in the data</td><td>Customers who stayed a year leave out the churners. Abraham Wald and the warplanes: the army wanted to armour where returning planes had holes; the planes that didn't come back were hit in the engine.</td></tr>
+<tr><td>Hawthorne effect</td><td>People act differently when observed</td><td>Performative reviews. You'd have listed different friends if the list were read aloud.</td></tr>
+</table>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="net-sampling">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">❄️</div>
+            <div>
+              <div class="sc-tag ">12 · Network Sampling</div>
+              <div class="sc-name">Why random samples fail for networks</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ol>
+<li><b>Mixed relationship types.</b> Digital traces lump everything into one kind of edge. His LinkedIn mixes former students, strangers and high-school friends; a Facebook friend means many things.</li>
+<li><b>Missing edges.</b> Colleagues he sees every day aren't LinkedIn connections, because he doesn't need them to be.</li>
+<li><b>Random sampling breaks.</b> A poll takes a couple of thousand random people. Take 2,000 random Americans and there will be almost no friendships between them, and you'd miss most of the ones there are.</li>
+</ol>
+<div class="callout"><span class="c-label">Snowball sampling</span>
+<p>Start with one person, add all their friends, then all of their friends (a two-step snowball). Then start again from another random person. Network sampling is a whole field; this is the common approach.</p></div>
+</div></div>
+      </div>
+      <div class="divider">Thresholds — false positives vs false negatives</div>
+      <div class="sc bl-accent" id="covid">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧪</div>
+            <div>
+              <div class="sc-tag ">13 · Thresholds</div>
+              <div class="sc-name">Same test, different threshold</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The puzzle he left over the break: US COVID tests rarely gave false positives but often gave false negatives (negative today, positive tomorrow). In China it was the other way round, with similar technology.</p>
+<ul>
+<li>Class answers: in the US a false positive hurts the economy, in China a false negative hurts the party (Luca); gentler swabs in the US; testing volume.</li>
+<li>His answer: assume identical tests. A test measures something and calls it positive past a <b>threshold</b>. China set a lower threshold (more false positives), the US a higher one (more false negatives).</li>
+<li>Why: the <b>relative cost of a false negative vs a false positive</b>. A missed case costs more in China (density; collective good over the individual). A false alarm costs more in the US (individual freedom; people staying home hurts the economy). He gave this as a common theory, not a settled fact.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="roc">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📉</div>
+            <div>
+              <div class="sc-tag ">14 · ROC Curve</div>
+              <div class="sc-name">The curve is the model; the threshold is the decision</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li>The <b>true positive rate</b> and the <b>false positive rate</b> are measured separately. The false negative rate is 1 − the true positive rate.</li>
+<li>The <b>ROC (receiver operating characteristic) curve</b> is a property of the test or model. <b>Where you sit on it is set by the threshold.</b> The US and China could share one curve and sit at opposite ends.</li>
+<li>Extremes: a test that always says positive has a zero false negative rate and a very high false positive rate; always negative is the reverse.</li>
+<li>If anyone tells you "based on the ROC curve, operate here," question it. The right point depends on the cost of a false positive vs a false negative.</li>
+<li>Some models are simply better: their curve sits above the other everywhere. Pick the highest <b>AUC (area under the curve)</b>, unless the curves cross and you'd be operating where the higher-AUC model is worse.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="vc-dating">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">💸</div>
+            <div>
+              <div class="sc-tag ">15 · Cost Asymmetry</div>
+              <div class="sc-name">Venture capital and dating</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Early-stage venture capital (VC).</b> A fund of, say, $200M (a few hundred million is typical) charges around 2% a year in fees, so $4M a year. It makes about 25 investments. The expectation: about 20 go to zero, the hope is that the other five return 2–3x, and that one is the <b>fund returner</b> at 25–50x.</p>
+<ul>
+<li>False positive = invest in a company that fails: cheap, it's expected.</li>
+<li>False negative = pass on the winner: very costly.</li>
+<li>No early-stage VC he's met regrets a failed investment. Every regret is a company they passed on. A mutual fund or pension fund has a very different trade-off, so even with the same analysis machine they'd operate at a different point.</li>
+</ul>
+<p><b>Dating.</b> Finding your soulmate on a date = true positive. Skipping someone who wasn't = true negative. A wasted evening = false positive. Skipping your soulmate = false negative. How often you say yes reflects how you weigh those costs. One student once said the costliest error is the true positive.</p>
+</div></div>
+      </div>
+      <div class="divider">Triadic closure, weak ties, structural holes</div>
+      <div class="sc bl-accent" id="closure">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🔺</div>
+            <div>
+              <div class="sc-tag ">16 · Triadic Closure</div>
+              <div class="sc-name">A simplified model of how friendships close</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>What a social scientist means by a model:</b> a simplified representation of a complex reality, not a fitted machine-learning model. You can't model the economy perfectly without modelling every person in it. You know the model is wrong; you use it for <b>direction and magnitude</b>. That's why the Fed moves rates by a quarter point, not 0.37.</p>
+<p><b>Triadic closure</b> (Granovetter): if A is close to B and A is close to C, it's highly likely B and C have at least a weak tie. Why, from the class:</p>
+<ul>
+<li>More opportunity to meet each other</li>
+<li>It's easier for A: one shared relationship instead of two parallel ones, and no having to choose sides if B and C fight</li>
+<li>B and C are both close to A, so they likely have things in common</li>
+</ul>
+<div class="callout amber"><span class="c-label">The counterexample</span>
+<p>His daughter in middle school: she wanted her friends to be friends <b>through her</b>, so she'd be the broker. It passed by high school. The business version: the colleague who wants every introduction to go through them.</p></div>
+<p><b>Strong triadic closure</b>: in the model, turn "highly likely" into "always". If A has strong ties to B and C, B and C have at least a weak tie.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="local-bridges">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🌉</div>
+            <div>
+              <div class="sc-tag ">17 · Local Bridges</div>
+              <div class="sc-name">Manhattan has no bridges, only local bridges</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>Bridge:</b> remove it and the graph splits. An island with exactly one bridge to the mainland.</li>
+<li><b>Local bridge:</b> an edge whose two endpoints <b>share no neighbour</b>. Removing it doesn't disconnect anything; it just makes distances much longer. Close the Williamsburg Bridge and you take the Manhattan Bridge or the Holland Tunnel, with a longer commute.</li>
+<li>Add edges until every pair shares a neighbour and there are no local bridges left.</li>
+<li>Local bridges connect otherwise distant parts of the network. They bring Brooklyn closer to Manhattan.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="theorem">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧩</div>
+            <div>
+              <div class="sc-tag ">18 · Strength of Weak Ties</div>
+              <div class="sc-name">Local bridges are weak ties</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<div class="callout"><span class="c-label">The theorem</span>
+<p>If strong triadic closure holds and every node has at least two strong ties, then <b>every local bridge is a weak tie</b>.</p></div>
+<p><b>Proof.</b> Say A–B is a local bridge and it's strong. A has another strong tie, A–E. By strong triadic closure, E and B must be connected. Now A and B share a neighbour (E), so A–B isn't a local bridge. Contradiction.</p>
+<p><b>Real world:</b> closure isn't 100%, but it's highly likely, so local bridges are <b>likely</b> to be weak ties.</p>
+<ul>
+<li>Granovetter's original question was how people hear about jobs. Most heard through an <b>acquaintance</b>, not a close friend.</li>
+<li>Why: strong ties put you in a dense cluster where everyone has the same information. If you hear something new, it probably came from a distant part of the network, and the ties reaching there are weak ties.</li>
+<li>The same holds in organisations: novel ideas and early warnings tend to come from another part of the company, not the people you work with every day.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="holes">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🕳️</div>
+            <div>
+              <div class="sc-tag ">19 · Structural Holes</div>
+              <div class="sc-name">Broker or centre: which position wins</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Real networks aren't the neat grid you'd draw. They're <b>dense islands with vast empty space between</b>, and triadic closure is one reason they cluster. Dunbar put the typical person at about 150 friends and acquaintances, out of billions you could know. (His 7,000 LinkedIn connections aren't real.) The gaps where you'd expect edges are <b>structural holes</b>; the weak ties that cross them span the holes.</p>
+<p>Hundreds of studies in the 1980s and 1990s used email data to ask whether network position predicts success: investment banking, executive recruiting, real estate, engineering teams, factories. They compared two people:</p>
+<table class="dt">
+<tr><th>Position</th><th>What it is</th><th>When it predicted success</th></tr>
+<tr><td>Centrality</td><td>Many ties to people who are tied to each other, at the centre of a tight cluster</td><td>The Medici business network in Florence. Before courts, contracts and insurance, social capital was the source of trust: whether you got your money back depended on whom you could trust.</td></tr>
+<tr><td>Brokerage</td><td>Connects otherwise disconnected parts, spanning structural holes</td><td>Modern, largely American and European firms: promotions, higher pay, more commissions. Institutions supply trust now, so the broker's access control and fresh information win.</td></tr>
+</table>
+<p>The readings give metrics for this, such as <b>betweenness centrality</b>. The concept matters more than the formula. Abishna asked about personality: he didn't remember a finding, but a brokerage position only pays if you're comfortable acting as the gatekeeper.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="maintain">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">☕</div>
+            <div>
+              <div class="sc-tag ">20 · Personal Takeaway</div>
+              <div class="sc-name">Ties have to be maintained</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li>LinkedIn connections aren't real connections unless you maintain them. You choose which ties to maintain, so put some effort into the ones that take you <b>outside</b> your cluster. They cost more to keep up, but modern evidence says that's the position of power.</li>
+<li>How he maintains them: read the other person. For some it's a walk, for others coffee, a drink, a meal. Strike a balance between ego and humility, and think of some relationships as long-term investments, like an angel investor.</li>
+<li>With AI, people will shift jobs and even occupations more often, and the network is a big part of how you do that.</li>
+<li>As a student you have an opening: "I'm a student and I want to learn this" opens doors, because successful people like being asked to teach. Many students waste it.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="divider">Afternoon — community detection</div>
+      <div class="sc bl-accent" id="communities">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🗺️</div>
+            <div>
+              <div class="sc-tag ">21 · Community Detection</div>
+              <div class="sc-name">No natural number of pieces</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>So far the properties belonged to a node (broker, inside a cluster, degree 5) or an edge (bridge, local bridge). <b>Global</b> properties describe the whole graph, and the most common one is <b>community structure</b>.</p>
+<ul>
+<li>An organisational network (edges = at least a set amount of email between two people, Charles asked). You can eyeball units (maybe accounting, maybe operations), but the same graph can be drawn many ways, so you need an algorithm.</li>
+<li>The karate club had a clear question: what if it splits in two? Usually you don't know the number. <b>Global airline network</b> (cities connected by direct flights) during COVID: banning travel from one country is pointless if another country in the same cluster stays open.</li>
+<li>A 14,000-node graph splits trivially into 14,000 one-node pieces, which tells you nothing. There's no logical place to stop, so these methods let you go back and forth depending on your question.</li>
+<li>A library in Python or R does it for you (it did long before Claude). Know what it's doing: the result is <b>probabilistic, not deterministic</b>.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="bfs">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🛤️</div>
+            <div>
+              <div class="sc-tag ">22 · Shortest Paths</div>
+              <div class="sc-name">Breadth-first search on the early Internet</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The example graph was the early Internet: SRI, UCSB, UCLA, Utah, SDC, RAND, Stanford, MIT, BBN, Harvard, Carnegie, Lincoln.</p>
+<ul>
+<li><b>Path length</b> = number of edges. Neighbours are at length 1. Between two nodes there may be more than one shortest path: MIT → Carnegie has two paths of length 3.</li>
+<li>Brute force (list every path for every pair, roughly n(n−1) pairs) is expensive.</li>
+</ul>
+<p><b>Breadth-first search (BFS)</b>, from one start node:</p>
+<ol>
+<li>Mark the start node's neighbours 1.</li>
+<li>Mark the unmarked neighbours of the 1s as 2.</li>
+<li>Keep going (3, 4, …) until every node is marked.</li>
+</ol>
+<p>Each number is that node's shortest-path length from the start, and following the marks back gives the path. Run it once per node for the whole graph. From UCSB, as heard: two nodes at 1, three at 2, three at 3, two at 4, two at 5.</p>
+<div class="callout amber"><span class="c-label">Check</span>
+<p>He called the average slightly more than three. The counts as the recording caught them average 35/12 ≈ 2.9, so one count was probably misheard.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="edge-removal">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">✂️</div>
+            <div>
+              <div class="sc-tag ">23 · Edge Removal</div>
+              <div class="sc-name">Cut the edges on the most shortest paths</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>A 14-node practice graph. Shortest paths called out in class: 7 → 8 is one hop; 3 → 12 goes 3-7-8-12; 4 → 9 goes 4-6-7-8-9. One edge kept showing up: <b>7–8</b>.</p>
+<ol>
+<li>Find shortest paths and count how many each edge sits on.</li>
+<li>Remove the edge on the most shortest paths (7–8 first, which reveals two communities).</li>
+<li>Repeat. Here the next ones were 8–12, 8–9, 3–7 and 7–6.</li>
+</ol>
+<ul>
+<li>Intuition: an edge on many shortest paths connects distant parts, so it's "bridgey". Removing those separates the communities.</li>
+<li>It's a heuristic, not perfect, but it was a big step forward from pure math and is widely used.</li>
+<li>On the karate club it finds <b>four</b> well-defined communities, not two. We looked for two only because of the story.</li>
+<li>There's a stopping rule he didn't cover. Keep removing and every node ends up alone; each algorithm balances how much the next removal breaks the network.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="walktrap">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🚶</div>
+            <div>
+              <div class="sc-tag ">24 · Random Walks</div>
+              <div class="sc-name">Walktrap: the default in the library</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Random walk:</b> no goal, pick a direction at random. The class voted his steps (forward, left, right, back). In 3D you have six choices, fewer against a wall. Finance models a stock price as a kind of random walk.</p>
+<p><b>On a graph</b> your choices are your neighbours. Node 6 has neighbours 4, 5 and 7, so you flip a three-sided coin.</p>
+<ul>
+<li>Walk long enough and some edges are traversed far more often. Those are the bridgey edges again, so a random walk is a cheap approximation of shortest-path counting on a big graph.</li>
+<li><b>Walktrap</b> (he spelled it out; the transcript caught "walktrab") is what the Python community-detection library implements. Do the random walk and record every jump. Then choose the split into communities where <b>jumps within communities are as large a share as possible and jumps between them as small as possible</b>. That gap also tells you when to stop.</li>
+<li>Eugene asked whether that assumes the communities up front. No: walk first, then score possible divisions against the recorded jumps.</li>
+<li>In practice: run the walk around 100 times and average, and add a small chance of jumping to a random part of the graph so the walk doesn't get trapped (PageRank uses the same trick).</li>
+</ul>
+<div class="callout"><span class="c-label">Why Walktrap is the standard</span>
+<p>Not because it's the most intuitive (removing bridgey edges is). It's standard because, tried on real problems, it gives communities people find useful.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="wild">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🐬</div>
+            <div>
+              <div class="sc-tag ">25 · Applications</div>
+              <div class="sc-name">Santa Fe, airlines, dolphins, wheat</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>Santa Fe Institute</b> collaborations: the communities matched the new fields its scientists defined, including agent-based modelling (simulate an economy of thousands of programmed people and test policies), statistical physics and mathematical ecology.</li>
+<li><b>Global airline network</b> (airports, direct flights): the US and Mexico form one community separate from the rest of Central America; Central America extends into northern South America; Africa splits into three; the Middle East, India and North Africa group with Europe. For travel bans, draw the boundary by community, not by geography. New York City was receptive during COVID; the federal government wasn't.</li>
+<li>Also: characters in a Broadway play (largely useless, he said), dolphins off New Zealand (four communities), and the wheat trade, which he mapped when Russia invaded Ukraine.</li>
+</ul>
+<div class="callout amber"><span class="c-label">Post-module hint</span>
+<p>He said the post-module assignment may ask you to apply community detection. Look for the network in data that isn't obviously a network; someone mapped investment ties between AI companies to look for cycles.</p></div>
+<p><b>Constructed networks:</b> co-purchase is one. Netflix connected you to people who watched what you watched and recommended what they watched, which is <b>collaborative filtering</b>. Nearly every recommender system relies on an underlying graph.</p>
+</div></div>
+      </div>
+      <div class="divider">Search and PageRank</div>
+      <div class="sc bl-accent" id="search">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🌐</div>
+            <div>
+              <div class="sc-tag ">26 · Search</div>
+              <div class="sc-name">Spider, index, rank</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>For centuries information was organised in sequence: books, newspapers, an index at the back. <b>Hypertext</b>, the idea the web was built on, organised it as a network, so you could click through the moment you got curious. A student mentioned Obsidian's graph view of linked notes; he said making that useful is genuinely hard.</p>
+<p>Most of us now find things by searching (or reading the AI overview), not by surfing. The search engines came in a run: Yahoo's hand-curated directory, then AltaVista (the best of them), InfoSeek, Lycos, Ask Jeeves, Excite, then Google.</p>
+<table class="dt">
+<tr><th>Job</th><th>What it means</th></tr>
+<tr><td>1 · Spider</td><td>Find every page and know where it is</td></tr>
+<tr><td>2 · Index</td><td>Map keywords to pages. Until about 2022 only Google, Microsoft and Baidu had indexed the web effectively.</td></tr>
+<tr><td>3 · Rank</td><td>Order the matching pages for a query</td></tr>
+</table>
+<p>The others were as good as Google at spidering and indexing. Google changed <b>ranking</b>. Before it, ranking used page content, which was easy to game: paste "Bill Clinton" 500 times in white text at the bottom of your page.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="pagerank">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">⭐</div>
+            <div>
+              <div class="sc-tag ">27 · PageRank</div>
+              <div class="sc-name">Two definitions, one number</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>The web is a graph: nodes are pages, and a hyperlink from A to B is a directed edge.</p>
+<table class="dt">
+<tr><th>Definition</th><th>Idea</th></tr>
+<tr><td>Random surfer</td><td>Over a very long random walk, the share of time spent on each page. In a walled city, a random walker passes through the centre more often than the corners.</td></tr>
+<tr><td>Recursive importance</td><td>An important page is one that other important pages point to.</td></tr>
+</table>
+<p>Both definitions give <b>exactly the same numbers</b>. That's compelling, and on top of that it works: Google's "I'm Feeling Lucky" skipped the results list and took you straight to the top page. Using Google for the first time is one of his top three technology experiences.</p>
+<ul>
+<li><b>Hubs and authorities</b> (Jon Kleinberg, who wrote our textbook): two scores per page, how authoritative it is and how good it is at pointing to authoritative pages. In PageRank those are one number. It was computationally hard.</li>
+<li>He said Google combined it with PageRank into something called Hilltop, then went quiet around 2002 as search ads made ranking a trade secret. OpenAI has followed the same open-then-closed path.</li>
+<li>A page that's never shown as a search result can still have a high PageRank; it just isn't served.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="pagerank-use">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧮</div>
+            <div>
+              <div class="sc-tag ">28 · PageRank in Practice</div>
+              <div class="sc-name">Always add it as a feature</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>His own studies: which customers to give a limited number of free products; whether an event around one product moves its neighbours' demand; whether price changes in the network foreshadow demand changes. <b>In every network study he's done, PageRank added value. It's the only network measure that always did.</b></p>
+<ul>
+<li>If you've built a network, compute PageRank and add it, as a feature for prediction or a variable for explanation. Your AI system won't add it unless you tell it to.</li>
+<li>What it captures: the share of the network's attention a node gets.</li>
+<li>It's <b>global</b>. You can't compute it from one piece of the network; every node's PageRank depends on the whole graph. The day's arc: local node properties → community structure → PageRank, which puts the whole structure into each node.</li>
+</ul>
+<div class="callout green"><span class="c-label">Our pre-module Amazon graph</span>
+<p>The maximum out-degree was 5 because Amazon showed five co-purchased items. The in-degree distribution was very skewed: most nodes have few pointing at them, a few have many.</p></div>
+</div></div>
+      </div>
+      <div class="divider">Degree distributions and power laws</div>
+      <div class="sc bl-accent" id="power-laws">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📊</div>
+            <div>
+              <div class="sc-tag ">29 · Degree Distributions</div>
+              <div class="sc-name">The same straight line, everywhere</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Summarising a network needs a different baseline from other data. A <b>degree distribution</b> counts how many nodes have each degree.</p>
+<ul>
+<li>The web's in- and out-degree in 1999, on log-log axes: a <b>downward-sloping straight line</b>. Each 10× increase in degree cuts the frequency by some factor of 10. After 1999 the web got too big, and pages became dynamic, so people stopped measuring it.</li>
+<li>The same shape shows up in scientific citations, collaboration among rap musicians, athletes and teams, an early Facebook predecessor, Facebook in 2009, and protein interactions in yeast.</li>
+</ul>
+<div class="callout"><span class="c-label">The power law</span>
+<p>f(k) = a · k<sup>−c</sup>. Take logs: log f(k) = log a − c · log k, a straight line with slope −c on log-log axes.</p></div>
+<p>Compare heights in a class: most people near the average, a few at each extreme (normal). Networks instead have a huge number of nodes with small degree and a few with degrees millions of times larger.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="why-power">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🎲</div>
+            <div>
+              <div class="sc-tag ">30 · Where Power Laws Come From</div>
+              <div class="sc-name">Dice vs the rich get richer</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Why normal:</b> roll one fair die and every face comes up a sixth of the time. Two dice: 7 is most likely (six ways). Three dice: 10 and 11. Four dice: 14. By five dice the shape looks normal. That's the <b>central limit theorem (CLT)</b>: an outcome built from many independent random pieces is normally distributed. Height is shaped by genetics, nutrition, sport and more, so heights are normal.</p>
+<p><b>Thought experiment:</b> each new web page arrives with 1–10 links and points them at random existing pages. Then degree would be normal. It isn't.</p>
+<p>Now attach <b>slightly preferentially</b>: you're a bit more likely to link to the New York Times, which many pages already link to, than to his page. That alone gives a power law, the way the CLT gives a normal. The rich get richer. Albert-László Barabási (Northeastern) showed this; the recording heard "Garibasi", and the Ugander et al. reading cites Barabási and Albert (1999).</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="averages">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">⚠️</div>
+            <div>
+              <div class="sc-tag ">31 · Summary Statistics</div>
+              <div class="sc-name">Plot the data before you trust the mean</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Thought experiment: NYU advertises an average MSBA starting salary of $600K. After you've paid, you learn 90% of graduates got no job and 10% started at $6M. Nobody lied; you assumed a normal distribution around the mean.</p>
+<ul>
+<li>For a power law the <b>variance is undefined (infinite)</b>, and the mean doesn't tell you what's typical. An average out-degree of about three says little.</li>
+<li>So <b>always plot your data</b> and look at the shape. Ask: is it a power law, and what's the exponent? How fast does the tail fall, and how far does it reach?</li>
+</ul>
+<h4>Questions from the room</h4>
+<ul>
+<li>Human friendship networks rarely follow a power law: constraints cut the tail (nobody has 10 million friends). Follower counts come closer.</li>
+<li>The airline network doesn't either: one airport can't take 10,000 flights.</li>
+<li>Word frequencies follow a power law. Wealth does at the high end; at the low end it may be log-normal.</li>
+<li>You need preferential attachment with nothing capping the number of connections. Hyperlinks have no limit; protein networks are small enough not to hit theirs.</li>
+<li>Digital spread has no physical friction, but limited attention adds virtual friction: "I only retweet three things a day."</li>
+</ul>
+</div></div>
+      </div>
+      <div class="divider">Pipes — contagion, homophily, experiments</div>
+      <div class="sc bl-accent" id="contagion">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🦠</div>
+            <div>
+              <div class="sc-tag ">32 · Contagion</div>
+              <div class="sc-name">Most spread is tiny cascades</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p><b>Epidemiology</b> built our first model of contagion. People sit in a multilayer contact network: within a neighbourhood, between areas, between cities by air. The question: does a pathogen die out or take over the whole network? There's a <b>phase transition</b> at <b>R0</b> (R-naught, the average number of people each infected person infects) = 1. At 0.99 it stays local; at 1.01 you have an epidemic. Lockdowns and vaccination push that number down by cutting edges or removing nodes.</p>
+<p><b>Social contagion is different.</b> Companies want the epidemic. But on early Twitter most information spread in <b>tiny cascades</b>: one person to one other, or one to two. Lots of people get news directly rather than from a patient zero. If you only study what goes viral, you miss most of the spread.</p>
+<div class="callout amber"><span class="c-label">The real question: is it contagion at all?</span>
+<p>If he told the class that buying a certain book guarantees an A, nearly all of us (connected on LinkedIn) would buy it within a week. It would look viral. It had nothing to do with the network: we were all correlated by sitting in his classroom.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="homophily">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🧲</div>
+            <div>
+              <div class="sc-tag ">33 · Three Explanations</div>
+              <div class="sc-name">Influence, selection, or a shared cause</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Connected people behaving alike has three possible explanations (the recording picks up after the break, partway through this):</p>
+<table class="dt">
+<tr><th>Explanation</th><th>Direction</th></tr>
+<tr><td>Influence</td><td>Connection → behaviour</td></tr>
+<tr><td>Selection</td><td>Behaviour → connection: similar people seek each other out</td></tr>
+<tr><td>Shared cause</td><td>Something else drives both, e.g. growing up somewhere with strong anti-smoking norms</td></tr>
+</table>
+<p><b>High-school grades</b> show <b>assortative mixing</b>: good students befriend good students. Selection: parents steer you, or advanced classes seat you together. Influence: if your friends study all the time you feel the pressure, and if they look down on studying your grades slip. Shared cause: resources (neighbourhood, activities, a stable home, tutors) shape both whom you meet and your grades.</p>
+<div class="callout"><span class="c-label">Why it matters</span>
+<p>In network data all three look identical. Parents keeping kids away from smokers, or schools mixing high and low performers, are wasted (even harmful) if there's no real influence. Companies spending to "go viral" when the pattern is really shared demographics should target those characteristics instead. It's harder than correlation vs causation because selection adds another layer.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="tough-mudder">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">🏃</div>
+            <div>
+              <div class="sc-tag ">34 · Social Advertising Experiment</div>
+              <div class="sc-name">Facebook, Tough Mudder, and the Z × T grid</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>One of Facebook's earliest social ads: an ad for a page (Tough Mudder) showing names of your friends who'd liked it. Question: does showing friends' names make you more likely to like the page?</p>
+<ul>
+<li><b>Z</b> = how many of your friends liked the page (affiliated peers). Buckets 0, 1, 2, 3, 4+. Drop 0 and 4+; keep 1, 2 and 3.</li>
+<li><b>T</b> = how many friends' names the ad showed (1, 2 or 3). T can't be bigger than Z; it can be smaller.</li>
+<li>About ten minutes on a handout. He joked it was 20% of the grade; we kept our sheets.</li>
+</ul>
+<table class="dt">
+<tr><th>Comparison</th><th>Result</th><th>What it means</th></tr>
+<tr><td>Z = 2: shown 2 names vs 1</td><td>A little over 30% higher response</td><td>The social effect of the ad itself (influence)</td></tr>
+<tr><td>Shown 1 name: Z = 2 vs Z = 1</td><td>About 20% higher</td><td>Not the ad. Homophily (you share traits with more people who like it), or influence from outside the ad (you've heard about it more).</td></tr>
+</table>
+<div class="callout"><span class="c-label">Why bucket by Z</span>
+<p>Just showing some people two names and others one, across everyone, mixes in the Z effect. Comparing <b>within the same Z</b> isolates the effect of showing names. Facebook didn't care why the Z groups differ. He'll post the paper on Brightspace.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="experiments">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">⚗️</div>
+            <div>
+              <div class="sc-tag ">35 · Experiments</div>
+              <div class="sc-name">The control group is an approximation</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>He said this part won't be tested in the post-module assignment, but be aware: even when you can experiment, network data needs careful design.</p>
+<ul>
+<li><b>Randomized controlled trial (RCT):</b> randomly assign a treatment group and a control group.</li>
+<li>What you really want is the <b>counterfactual</b>: what would have happened to the treated group without the treatment. You can't observe it. The control group's outcome is your approximation, the best one we know.</li>
+<li>The trap: treating RCTs as the gold standard and choosing business problems by what you can experiment on. That's backwards. The business problem leads; if you can't experiment, do the best you can with observational data.</li>
+<li>Economists mostly can't experiment (you can't raise rates for half the economy), which is why they built econometrics. In business, interesting things usually happen first and you work out why afterwards.</li>
+</ul>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="propensity">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">⚖️</div>
+            <div>
+              <div class="sc-tag ">36 · Propensity Scores</div>
+              <div class="sc-name">Match on the likelihood of being treated</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Observational data: some people got a medicine, some didn't. Covariates may drive both who got it and how they did. Richer patients go to better hospitals; younger people may be likelier to opt in and also recover faster.</p>
+<ol>
+<li>Model the <b>probability of being treated</b> from the covariates (age, past health, everything you have). Ignore the outcome at this step. This is separate from instrumental variables.</li>
+<li>Score everyone with that model: their <b>propensity score</b>.</li>
+<li>Match each treated person with an untreated person who has the same score, and compare outcomes.</li>
+</ol>
+<p>Why: with a crystal ball you'd find each person's exact twin, but you can't, and you'd be stuck arguing whether age or income matters more. The score collapses all the covariates into one number. He cited a well-known statistics paper showing this is the best observational approximation of the counterfactual short of an experiment, with some residual issues.</p>
+</div></div>
+      </div>
+      <div class="sc bl-accent" id="yahoo-go">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico ">📱</div>
+            <div>
+              <div class="sc-tag ">37 · Networked Propensity Scores</div>
+              <div class="sc-name">Yahoo Go on the IM network</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Next he applied propensity scores to a network, using a 2007–08 study.</p>
+<ul>
+<li>Yahoo Instant Messenger (IM) was the most popular messenger, with around 500 million users.</li>
+<li><b>Yahoo Go</b> was a download for flip phones with some smartphone-ish features (stock quotes, browsing) and nothing to do with messaging. It launched around the iPhone launch, got no press, and reached about half a million adopters in six months.</li>
+<li>The theory: word about it was spreading over Yahoo IM. His visualisation showed a slice of the IM network over time: a node turns green on the day it adopts, then blue the next day.</li>
+</ul>
+<div class="callout amber"><span class="c-label">Recording ends here</span>
+<p>The rest of this study and the wrap-up weren't captured.</p></div>
+</div></div>
+      </div>
+      <div class="sc bl-amber" id="not-captured-6">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico amber">⚠️</div>
+            <div>
+              <div class="sc-tag amber">38 · Not Captured</div>
+              <div class="sc-name">What the recording missed</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<p>Source: Granola "Module 4 Day 6", read end to end (0–529 minutes). Microphone only, so the wording is rough and I've paraphrased. Names are checked against the readings on disk.</p>
+<ul>
+<li><b>~115–147 minutes:</b> the morning break (he called it at 10:30).</li>
+<li><b>~220–299:</b> lunch. The recording resumes partway into shortest paths on the early-Internet graph, so the start of that segment is missing.</li>
+<li><b>~417–470:</b> the afternoon break and the opening of the influence / selection section. It resumes mid-example on smoking, so how he first defined the three labels isn't on the recording.</li>
+<li><b>~487–495:</b> quiet handout time. <b>After ~529:</b> the rest of Yahoo Go and the wrap-up.</li>
+<li><b>Names fixed:</b> Granovetter (heard "Granolavera"; spelled as in Gilbert &amp; Karahalios), Barabási (heard "Garibasi"; cited in Ugander et al.), Walktrap (heard "walktrab"), Ford–Fulkerson (heard "four full percent", read that way by the Granola summary). The political-blogs researcher and the Facebook tie-strength and Tough Mudder papers weren't clearly named, so they're left unnamed.</li>
+<li><b>His slides aren't on disk</b> (<code>Network Analytics/Slides/</code> is empty). Slide-only numbers, such as the regression table, the confusion-matrix counts and the Tough Mudder response rates per cell, are only as he said them aloud.</li>
+<li>The BFS average from UCSB doesn't add up as heard (see the Shortest Paths card).</li>
+</ul>
+</div></div>
+      </div>
+      <div class="divider">Reference</div>
+      <div class="sc bl-green" id="hooks6">
+        <div class="sc-hdr" onclick="toggle(this)">
+          <div class="sc-hdr-l">
+            <div class="sc-ico green">🪝</div>
+            <div>
+              <div class="sc-tag green">Reference · Day 6</div>
+              <div class="sc-name">Exam hooks — Day 6</div>
+            </div>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="sc-body"><div class="sc-in">
+<ul>
+<li><b>Prism vs pipes:</b> structure tells you what things are; flow carries attention, contagion and influence.</li>
+<li><b>Karate club:</b> 34 members, 78 friendships. The min cut predicted the split for everyone but node 9 (three weeks from a black belt).</li>
+<li><b>Tie strength:</b> the edge is the data point. Comments, messages, wall posts and photo tags predict close friends; likes don't. Significant at about 2× the standard error. Coefficient size depends on the variable's scale. False negatives outnumbered false positives.</li>
+<li><b>Bias:</b> selection, volunteer, exclusion, survivorship (Wald's planes), Hawthorne. Network sampling: mixed tie types, missing edges, random samples have no edges → snowball sampling.</li>
+<li><b>Thresholds:</b> the ROC curve is the model; the operating point is a decision set by the cost of false positives vs false negatives (COVID US vs China; VCs regret the passes).</li>
+<li><b>Granovetter:</b> strong triadic closure + every node has ≥2 strong ties ⇒ every local bridge is a weak tie. Local bridge = endpoints share no neighbour. Weak ties bring new information (jobs).</li>
+<li><b>Position:</b> brokerage across structural holes predicted success in modern firms; centrality did in Medici Florence, when trust came from the network.</li>
+<li><b>Community detection:</b> no natural number of communities. Remove the edges on the most shortest paths (karate → four). Walktrap = random walk, then maximise within- vs between-community jumps.</li>
+<li><b>BFS:</b> mark neighbours 1, theirs 2, and so on; the mark is the shortest-path length.</li>
+<li><b>PageRank:</b> random-surfer share = important pages pointed to by important pages. It's global. Always add it as a feature.</li>
+<li><b>Power law:</b> f(k) = a·k<sup>−c</sup>, a straight line on log-log axes, from preferential attachment (the CLT gives normal). Mean and variance mislead, so plot the data.</li>
+<li><b>Contagion:</b> R0 = 1 is the phase transition. Social spread is mostly tiny cascades. Influence, selection and a shared cause all look like assortative mixing.</li>
+<li><b>Tough Mudder:</b> compare within the same Z to isolate the effect of T (names shown).</li>
+<li><b>Propensity score:</b> model P(treated | covariates), then match treated and untreated on the score.</li>
+</ul>
+</div></div>
+      </div>
+
+    </div>
+
+    <div id="panel-assignments" class="day-panel">
+      <div class="divider">Network Analytics — graded components</div>
+
+      <div class="assign-card">
+        <div class="ac-ico">✅</div>
+        <div class="ac-b">
+          <div class="ac-label">Pre-module · 20% · Individual</div>
+          <div class="ac-title">Lessons 1–3 written assignments<span class="done-badge">✓ Done</span></div>
+          <div class="ac-desc">Lesson 1: Ugander et al. (2011), Figures 1–3, and whether Figure 2 says people are "close together" or "far apart." Lesson 2: Easley &amp; Kleinberg Ch. 3, Exercises 3–5. Lesson 3: Easley &amp; Kleinberg Ch. 14, Exercise 4. One PDF.</div>
+          <div class="ac-due">Due <span>Fri Oct 23 · 11:59pm ET</span></div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">✅</div>
+        <div class="ac-b">
+          <div class="ac-label">Pre-module · 20% · Individual</div>
+          <div class="ac-title">Network data analysis<span class="done-badge">✓ Done</span></div>
+          <div class="ac-desc">The Amazon co-purchase network (<code>pre_module.pdf</code> + <code>data.zip</code>). Questions go to the TA, Ilias Triantafyllopoulos.</div>
+          <div class="ac-due">Due <span>Fri Oct 30 · 11:59pm ET</span></div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">👥</div>
+        <div class="ac-b">
+          <div class="ac-label">Post-module · 40% · Group (capstone group)</div>
+          <div class="ac-title">LinkedIn data assignment</div>
+          <div class="ac-desc">Done in capstone groups using data from LinkedIn. Syllabus: "Details will be available in November." Day 6: he said it may ask you to apply community detection, and the experiments / propensity-score material won't be tested in it.</div>
+          <div class="ac-due">Due <span>not posted yet · Module 4 runs to Dec 20</span></div>
+        </div>
+      </div>
+      <div class="assign-card">
+        <div class="ac-ico">🙋</div>
+        <div class="ac-b">
+          <div class="ac-label">20%</div>
+          <div class="ac-title">Class participation</div>
+          <div class="ac-desc">The in-person day, Sat Nov 7.</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+<script>
+const KEY = 'notes-unlocked', PWD = 'huncho';
+if (sessionStorage.getItem(KEY) === 'true') unlock();
+document.getElementById('gate-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+function tryUnlock() {
+  if (document.getElementById('gate-input').value.trim().toLowerCase() === PWD) {
+    sessionStorage.setItem(KEY, 'true'); unlock();
+  } else {
+    document.getElementById('gate-err').textContent = 'wrong password';
+    document.getElementById('gate-input').value = '';
+  }
+}
+function unlock() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('sidebar').style.display = 'block';
+  document.getElementById('main').style.display = 'block';
+}
+function toggle(hdr) { hdr.closest('.sc').classList.toggle('open'); }
+document.querySelectorAll('.day-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+const navLinks = document.querySelectorAll('.sb-nav a[href^="#"]');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+  });
+}, { rootMargin: '-25% 0px -65% 0px' });
+document.querySelectorAll('.sc[id]').forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
